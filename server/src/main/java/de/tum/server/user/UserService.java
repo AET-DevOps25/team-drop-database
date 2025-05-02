@@ -1,6 +1,9 @@
 package de.tum.server.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +16,15 @@ public class UserService {
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public UserDetailsService userDetailsService(){
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) {
+                return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found."));
+            }
+        };
     }
 
     public UserEntity getUserByEmail(String email) {
