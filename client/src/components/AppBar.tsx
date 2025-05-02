@@ -1,230 +1,161 @@
 'use client';
 
-import React, {useState, MouseEvent} from 'react';
-import Link from 'next/link';
-import {useRouter} from 'next/navigation';
+import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import MenuIcon from '@mui/icons-material/Menu';
-// import { useTranslation } from "react-i18next";
-// import i18n from "i18next";
-// import LanguageDetector from "i18next-browser-languagedetector";
+import AirplaneTicketIcon from '@mui/icons-material/AirplaneTicket';
 
-interface Page {
-    key: string;
-    route: string;
-}
+const pages = ['Consult', 'Explore', 'About'];
+const settings = ['Profile', 'Logout'];
 
-interface Language {
-    code: string;
-    name: string;
-    icon: string;
-}
+function ResponsiveAppBar() {
+    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-function MyAppBar() {
-    // const { t } = useTranslation();
-    const router = useRouter();
-
-    const pages: Page[] = [
-        {key: "navBar.projects", route: "/projects"},
-        {key: "navBar.contact", route: "/contact"}
-    ];
-
-    const languages: Language[] = [
-        {code: 'zh', name: '中文', icon: '🇨🇳'},
-        {code: 'en', name: 'English', icon: '🇺🇸'},
-        {code: 'de', name: 'Deutsch', icon: '🇩🇪'},
-    ];
-
-    // const getInitialLanguage = (): Language => {
-    //     const storedLanguage = typeof window !== 'undefined' ? localStorage.getItem('appLanguage') : null;
-    //     if (storedLanguage) {
-    //         return languages.find(lang => lang.code === storedLanguage) || languages[1];
-    //     }
-    //     const detectedLanguage = new LanguageDetector().detect();
-    //     return languages.find(lang => lang.code === detectedLanguage) || languages[1];
-    // };
-
-    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-    const [anchorElLang, setAnchorElLang] = useState<null | HTMLElement>(null);
-    // const [currentLanguage, setCurrentLanguage] = useState<Language>(getInitialLanguage);
-    // todo: 把这个改了
-    const [currentLanguage] = useState<Language>(languages[0]);
-
-    // useEffect(() => {
-    //     i18n.changeLanguage(currentLanguage.code);
-    //     document.title = t("navBar.title");
-    // }, [currentLanguage, t]);
-
-    const handleToggleDrawer = () => {
-        setDrawerOpen(!drawerOpen);
+    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElNav(event.currentTarget);
+    };
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
     };
 
-    const handleOpenLanguageMenu = (event: MouseEvent<HTMLElement>) => {
-        setAnchorElLang(event.currentTarget);
+    const handleCloseNavMenu = () => {
+        setAnchorElNav(null);
     };
 
-    const handleCloseLanguageMenu = () => {
-        setAnchorElLang(null);
-    };
-
-    // const handleLanguageChange = (language: Language) => {
-    //     setCurrentLanguage(language);
-    //     if (typeof window !== 'undefined') {
-    //         localStorage.setItem('appLanguage', language.code);
-    //     }
-    //     i18n.changeLanguage(language.code);
-    //     handleCloseLanguageMenu();
-    // };
-
-    const handleNavigation = (route: string) => {
-        router.push(route); // 使用 Next.js router 快速跳转，不刷新页面
-        setDrawerOpen(false); // 如果是 Drawer 里的，跳转后顺便关掉 Drawer
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
     };
 
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <AssignmentIndIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
-                    {/* Logo按钮，用 Link 包裹 */}
-                    <Link href="/" style={{textDecoration: 'none', color: 'inherit'}}>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            sx={{
-                                mr: 2,
-                                display: {xs: 'none', md: 'flex'},
-                                flexGrow: 0,
-                                fontFamily: 'serif',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            DropTable Team
-                        </Typography>
-                    </Link>
+                    <AirplaneTicketIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="a"
+                        href="#app-bar-with-responsive-menu"
+                        sx={{
+                            mr: 2,
+                            display: { xs: 'none', md: 'flex' },
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        Travel Buddy
+                    </Typography>
 
-                    {/* 移动端汉堡按钮 */}
-                    <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
-                        <IconButton size="large" aria-label="open drawer" onClick={handleToggleDrawer} color="inherit">
-                            <MenuIcon/>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleOpenNavMenu}
+                            color="inherit"
+                        >
+                            <MenuIcon />
                         </IconButton>
-                    </Box>
-
-                    {/* 手机端 Logo */}
-                    <Link href="/" style={{textDecoration: 'none', color: 'inherit'}}>
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            sx={{
-                                mr: 2,
-                                display: {xs: 'flex', md: 'none'},
-                                flexGrow: 1,
-                                fontFamily: 'serif',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                cursor: 'pointer',
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
                             }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            open={Boolean(anchorElNav)}
+                            onClose={handleCloseNavMenu}
+                            sx={{ display: { xs: 'block', md: 'none' } }}
                         >
-                            DropTable Team
-                        </Typography>
-                    </Link>
-
-                    {/* 普通菜单 */}
-                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
+                            {pages.map((page) => (
+                                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                                    <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
+                    </Box>
+                    <AirplaneTicketIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+                    <Typography
+                        variant="h5"
+                        noWrap
+                        component="a"
+                        href="#app-bar-with-responsive-menu"
+                        sx={{
+                            mr: 2,
+                            display: { xs: 'flex', md: 'none' },
+                            flexGrow: 1,
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        Travel Buddy
+                    </Typography>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <Button
-                                key={page.key}
-                                sx={{my: 2, color: 'white', display: 'block'}}
-                                onClick={() => handleNavigation(page.route)}
+                                key={page}
+                                onClick={handleCloseNavMenu}
+                                sx={{ my: 2, color: 'white', display: 'block' }}
                             >
-                                {/*todo: 改这个*/}
-                                {/*{t(page.key)}*/}
-                                Item
+                                {page}
                             </Button>
                         ))}
                     </Box>
-
-                    {/* 语言切换 */}
-                    <Box sx={{flexGrow: 0}}>
-                        <Tooltip title="选择语言">
-                            <Button
-                                variant="outlined"
-                                color="inherit"
-                                onClick={handleOpenLanguageMenu}
-                                startIcon={<span>{currentLanguage.icon}</span>}
-                                sx={{display: {xs: 'flex'}, justifyContent: 'center', alignItems: 'center'}}
-                            >
-                                <Typography sx={{display: {xs: 'none', md: 'block'}}}>
-                                    {currentLanguage.name}
-                                </Typography>
-                            </Button>
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="Open settings">
+                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                            </IconButton>
                         </Tooltip>
-
                         <Menu
-                            sx={{mt: '45px'}}
-                            anchorEl={anchorElLang}
-                            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                            sx={{ mt: '45px' }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
                             keepMounted
-                            transformOrigin={{vertical: 'top', horizontal: 'right'}}
-                            open={Boolean(anchorElLang)}
-                            onClose={handleCloseLanguageMenu}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
                         >
-                            {languages.map((language) => (
-                                <MenuItem
-                                    key={language.code}
-                                    // onClick={() => handleLanguageChange(language)}
-                                >
-                                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                                        <span>{language.icon}</span>
-                                        <Typography>{language.name}</Typography>
-                                    </Box>
+                            {settings.map((setting) => (
+                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                    <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
                     </Box>
                 </Toolbar>
             </Container>
-
-            {/* Drawer 侧边栏 */}
-            <Drawer anchor="left" open={drawerOpen} onClose={handleToggleDrawer}>
-                <Box
-                    sx={{width: 250}}
-                    role="presentation"
-                    onClick={handleToggleDrawer}
-                    onKeyDown={handleToggleDrawer}
-                >
-                    <List>
-                        {pages.map((page) => (
-                            <ListItem key={page.key} disablePadding>
-                                <ListItemButton onClick={() => handleNavigation(page.route)}>
-                                    {/*<ListItemText primary={t(page.key)}/>*/}
-                                    {/*todo: 改这个*/}
-                                    <ListItemText primary={"item"}/>
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                </Box>
-            </Drawer>
         </AppBar>
     );
 }
-
-export default MyAppBar;
+export default ResponsiveAppBar;
