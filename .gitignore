@@ -12,6 +12,7 @@ bower_components/
 
 # IDEs and editors
 .idea/
+.vscode/
 
 # misc
 .sass-cache/
@@ -344,6 +345,7 @@ pyrightconfig.json
 logs
 **/*.backup.*
 **/*.back.*
+client/.next
 
 node_modules
 bower_components
