@@ -1,5 +1,6 @@
-package de.tum.server.auth;
+package de.tum.server.auth.config;
 
+import de.tum.server.auth.JwtService;
 import de.tum.server.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

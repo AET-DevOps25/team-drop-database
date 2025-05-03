@@ -1,0 +1,18 @@
+meta {
+  name: Log in
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/auth/signin
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "test_user@tum.de",
+    "password": "123456"
+  }
+}

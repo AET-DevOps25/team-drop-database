@@ -1,12 +1,16 @@
-package de.tum.server.auth;
+package de.tum.server.auth.entity;
 
-public class SignInRequest {
+public class SignUpRequest {
+    private String username;
     private String email;
     private String password;
 
-    public SignInRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
