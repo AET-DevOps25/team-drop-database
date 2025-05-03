@@ -1,5 +1,8 @@
 package de.tum.server.auth;
 
+import de.tum.server.auth.entity.JwtAuthenticationResponse;
+import de.tum.server.auth.entity.SignInRequest;
+import de.tum.server.auth.entity.SignUpRequest;
 import de.tum.server.user.UserEntity;
 import de.tum.server.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

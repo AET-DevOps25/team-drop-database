@@ -1,0 +1,19 @@
+meta {
+  name: Sign up
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/auth/signup
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "testUser",
+    "email": "test_user@tum.de",
+    "password": "123456"
+  }
+}

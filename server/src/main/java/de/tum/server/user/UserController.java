@@ -18,14 +18,14 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserEntity>> getAllUsers() {
-        List<UserEntity> users = userService.getAllUsers();
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity<UserEntity> getUserByEmail(@PathVariable String email) {
-        UserEntity user = userService.getUserByEmail(email);
+    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
+        UserDto user = userService.getUserByEmail(email);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {

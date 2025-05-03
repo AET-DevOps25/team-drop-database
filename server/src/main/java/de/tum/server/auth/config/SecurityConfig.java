@@ -1,4 +1,4 @@
-package de.tum.server.auth;
+package de.tum.server.auth.config;
 
 import de.tum.server.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/attractions/**").permitAll()
                         .requestMatchers("/users/**").authenticated()
                         .anyRequest().denyAll()

@@ -1,4 +1,4 @@
-package de.tum.server.auth;
+package de.tum.server.auth.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
