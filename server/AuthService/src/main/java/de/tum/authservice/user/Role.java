@@ -15,20 +15,20 @@ import static de.tum.authservice.user.Permission.*;
 public enum Role {
 
     USER(Collections.emptySet()),
-    ADMIN(
+    MANAGER(
             Set.of(
-                    ADMIN_READ,
-                    ADMIN_UPDATE,
-                    ADMIN_DELETE,
-                    ADMIN_CREATE,
                     MANAGER_READ,
                     MANAGER_UPDATE,
                     MANAGER_DELETE,
                     MANAGER_CREATE
             )
     ),
-    MANAGER(
+    ADMIN(
             Set.of(
+                    ADMIN_READ,
+                    ADMIN_UPDATE,
+                    ADMIN_DELETE,
+                    ADMIN_CREATE,
                     MANAGER_READ,
                     MANAGER_UPDATE,
                     MANAGER_DELETE,

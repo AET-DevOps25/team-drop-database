@@ -1,14 +1,14 @@
 package de.tum.authservice.config;
 
+import de.tum.authservice.user.Permission;
+import de.tum.authservice.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +35,18 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        if (!(userDetails instanceof User user)) {
+            throw new IllegalArgumentException("userDetails must be instance of User");
+        }
+
+        var extraClaims = new HashMap<String, Object>();
+        extraClaims.put("roles", List.of("ROLE_" + user.getRole().name()));
+        List<String> permissions = user.getRole().getPermissions()
+                .stream()
+                .map(Permission::getPermission)
+                .toList();
+        extraClaims.put("permissions", permissions);
+        return generateToken(extraClaims, userDetails);
     }
 
     public String generateToken(
