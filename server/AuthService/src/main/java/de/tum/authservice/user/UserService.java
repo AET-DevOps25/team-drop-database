@@ -13,6 +13,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -31,5 +32,9 @@ public class UserService {
 
         // save the new password
         repository.save(user);
+    }
+
+    public User findByEmail(String email) {
+        return repository.findByEmail(email).orElse(null);
     }
 }
