@@ -1,4 +1,4 @@
-package de.tum.attractionservice.connection;
+package de.tum.attractionservice.security.connection;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
