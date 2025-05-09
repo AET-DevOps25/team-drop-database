@@ -1,11 +1,13 @@
-package de.tum.attractionservice;
+package de.tum.attractionservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import de.tum.attractionservice.model.AttractionEntity;
+import de.tum.attractionservice.repository.AttractionRepository;
+
 
 @Service
 public class AttractionService {

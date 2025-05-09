@@ -1,4 +1,4 @@
-package de.tum.attractionservice;
+package de.tum.attractionservice.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

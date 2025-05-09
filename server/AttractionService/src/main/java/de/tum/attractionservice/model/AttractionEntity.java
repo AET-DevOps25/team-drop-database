@@ -1,4 +1,4 @@
-package de.tum.attractionservice;
+package de.tum.attractionservice.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,6 +24,10 @@ public class AttractionEntity {
 
     @Embedded
     private Location location;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
 
     @ElementCollection
     @CollectionTable(
