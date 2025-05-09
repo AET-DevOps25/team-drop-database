@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import de.tum.attractionservice.model.AttractionEntity;
@@ -54,12 +55,14 @@ public class AttractionController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> saveAttraction(@RequestBody AttractionEntity attraction) {
         attractionService.saveAttraction(attraction);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> deleteAttraction(@RequestBody AttractionEntity attraction) {
         attractionService.deleteAttraction(attraction);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

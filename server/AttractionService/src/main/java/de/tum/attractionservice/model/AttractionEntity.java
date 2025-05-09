@@ -27,7 +27,7 @@ public class AttractionEntity {
 
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
-    private City city;
+    private CityEntity city;
 
     @ElementCollection
     @CollectionTable(

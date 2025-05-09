@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "cities")
-public class City {
+public class CityEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,6 +28,6 @@ public class City {
     @Column
     private Double longitude;
 
-    public City() {
+    public CityEntity() {
     }
 } 
