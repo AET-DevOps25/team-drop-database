@@ -19,7 +19,11 @@ public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/connection/ping", "/api/v1/connection/user-ping", "/api/v1/connection/admin-ping", "/api/v1/connection/manager-ping"};
+    private static final String[] WHITE_LIST_URL = {
+        "/api/v1/connection/ping",
+        "/cities/**",
+        "/attractions/**"
+    };
 
     private static final String USER = "USER";
     private static final String ADMIN = "ADMIN";
