@@ -1,5 +1,7 @@
 package de.tum.authservice.auth;
 
+import de.tum.authservice.user.User;
+import de.tum.authservice.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,20 +18,25 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final AuthenticationService service;
+    private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ) {
-        return ResponseEntity.ok(service.register(request));
+        User user = userService.findByEmail(request.getEmail());
+        if (user != null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(authenticationService.register(request));
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
-        return ResponseEntity.ok(service.authenticate(request));
+        return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
     @PostMapping("/refresh-token")
@@ -37,7 +44,7 @@ public class AuthenticationController {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
-        service.refreshToken(request, response);
+        authenticationService.refreshToken(request, response);
     }
 
 }
