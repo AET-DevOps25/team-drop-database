@@ -1,4 +1,4 @@
-package de.tum.attractionservice;
+package de.tum.attractionservice.model;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
