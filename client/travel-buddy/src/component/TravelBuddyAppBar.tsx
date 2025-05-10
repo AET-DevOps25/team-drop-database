@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -18,7 +16,7 @@ import AirplaneTicketIcon from '@mui/icons-material/AirplaneTicket';
 const pages = ['Consult', 'Explore', 'About'];
 const settings = ['Profile', 'Logout'];
 
-function ResponsiveAppBar() {
+function TravelBuddyAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -158,4 +156,4 @@ function ResponsiveAppBar() {
         </AppBar>
     );
 }
-export default ResponsiveAppBar;
+export default TravelBuddyAppBar;
