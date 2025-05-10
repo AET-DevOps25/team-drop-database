@@ -1,10 +1,12 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import TravelBuddyAppBar from "./component/TravelBuddyAppBar";
 
 function App() {
   return (
     <div className="App">
+      <TravelBuddyAppBar/>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
