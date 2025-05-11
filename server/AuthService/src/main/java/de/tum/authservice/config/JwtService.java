@@ -52,7 +52,7 @@ public class JwtService {
         }
 
         var extraClaims = new HashMap<String, Object>();
-        extraClaims.put("roles", List.of("ROLE_" + user.getRole().name()));
+        extraClaims.put("roles", List.of(user.getRole().name()));
         List<String> permissions = user.getRole().getPermissions()
                 .stream()
                 .map(Permission::getPermission)
