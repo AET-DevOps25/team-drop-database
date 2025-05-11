@@ -1,4 +1,13 @@
-import {Alert, Box, Button, Container, Link, TextField, Typography} from "@mui/material";
+import {
+    Alert,
+    Box,
+    Button,
+    Container,
+    TextField,
+    Typography,
+    Checkbox,
+    FormControlLabel
+} from "@mui/material";
 import useAuth from "../../hooks/useAuth";
 import {useLocation, useNavigate} from "react-router-dom";
 import {FormEvent, useEffect, useRef, useState} from "react";
@@ -11,7 +20,7 @@ interface LoginResponse {
 }
 
 const Login: React.FC = () => {
-    const {setAuth} = useAuth();
+    const {setAuth, persist, setPersist} = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -31,6 +40,10 @@ const Login: React.FC = () => {
     useEffect(() => {
         setErrMsg('');
     }, [email, pwd]);
+
+    useEffect(() => {
+        localStorage.setItem("persist", JSON.stringify(persist));
+    }, [persist]);
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -57,8 +70,15 @@ const Login: React.FC = () => {
             setAuth({
                 user: decoded.sub,
                 roles: decoded.roles,
-                accessToken
-            })
+                accessToken,
+                refreshToken
+            });
+
+            if (persist) {
+                localStorage.setItem("refreshToken", refreshToken);
+            } else {
+                localStorage.removeItem("refreshToken");
+            }
 
             setEmail('');
             setPwd('');
@@ -119,6 +139,17 @@ const Login: React.FC = () => {
                     onChange={(e) => setPwd(e.target.value)}
                     required
                     fullWidth
+                />
+
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={persist}
+                            onChange={(e) => setPersist(e.target.checked)}
+                            color="primary"
+                        />
+                    }
+                    label="Keep me signed in"
                 />
 
                 <Button type="submit" variant="contained" size="large" fullWidth>

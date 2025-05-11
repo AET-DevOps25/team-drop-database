@@ -1,24 +1,33 @@
 import axios from '../api/axios';
 import useAuth from './useAuth';
+import {jwtDecode} from "jwt-decode";
 
 const useRefreshToken = () => {
-    const {setAuth} = useAuth();
+    const {auth, setAuth, persist} = useAuth();
 
     const refresh = async () => {
-        const response = await axios.get(
+        const rt = auth?.refreshToken || localStorage.getItem("refreshToken");
+        if (!rt) throw new Error("No refresh-token available");
+
+        const response = await axios.post(
             "/api/v1/auth/refresh-token",
-            {
-                withCredentials: true
-            });
+            {},
+            {headers: { Authorization: `Bearer ${rt}` }}
+        );
+
         setAuth(prev => {
             console.log(JSON.stringify(prev));
-            console.log(response.data.accessToken);
+            console.log(response.data.access_token);
+            const decoded: { sub: string; roles: string[] } = jwtDecode(response.data.access_token);
             return {
                 ...prev,
-                roles: response.data.roles,
-                accessToken: response.data.accessToken
+                roles: decoded.roles,
+                accessToken: response.data.access_token,
             }
         });
+
+        if (persist) localStorage.setItem("refreshToken", response.data.refresh_token);
+
         return response.data.accessToken;
     }
     return refresh;

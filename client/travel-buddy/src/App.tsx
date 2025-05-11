@@ -28,11 +28,11 @@ function App() {
                     <Route path="about" element={<About/>}/>
                     <Route path="explore" element={<Explore/>}/>
 
-                    {/*<Route element={<PersistLogin/>}>*/}
+                    <Route element={<PersistLogin/>}>
                         <Route element={<RequireAuth allowedRoles={[ROLES.USER]}/>}>
                             <Route path="consult" element={<Consult/>}/>
                         </Route>
-                    {/*</Route>*/}
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>
