@@ -1,0 +1,25 @@
+meta {
+  name: Create City
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/api/v1/cities
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiJ9.eyJwZXJtaXNzaW9ucyI6WyJtYW5hZ2VtZW50OnVwZGF0ZSIsIm1hbmFnZW1lbnQ6cmVhZCIsIm1hbmFnZW1lbnQ6Y3JlYXRlIiwibWFuYWdlbWVudDpkZWxldGUiXSwicm9sZXMiOlsiUk9MRV9NQU5BR0VSIl0sInN1YiI6InRlc3RfdXNlcjFAdHVtLmRlIiwiaWF0IjoxNzQ2OTcxNTg0LCJleHAiOjE3NDcwNTc5ODR9.JfclO-x2W3qWemK3Yj6ZDSsvA6CEJonZ-2B32OixoP_wFAqfaaH9Q7l-ERxVO-ev2BZKC3Dvr0MJ60Mhrxd79Og90UALdRlgKVbcwnqx-HwevVUtACMo7IjNBj1dTKkc-AqF0kLw3_9p0YUhA2M9z3bPju6mWIfhTFgX03N4BukmmEBs91Ln6Ide7tddNyr-YSchB_PHjysqxh-__9S_DUsUK9T-YjcmWjiMlcEz6enhzxXDzRCpNvO2qxOwWN2eJ9Yq-0znL41sd5DVsFde8H9oyYZJVF8NC53URps2c8c63wBaPUk3snMzYvU3ANdRnRINWhM8_NMVPmRpfg9Rfw
+}
+
+body:json {
+  {
+    "name": "München",
+    "country": "Germany",
+    "description": "A city in Germany",
+    "latitude": 48.1303,
+    "longitude": 11.5840
+  }
+}

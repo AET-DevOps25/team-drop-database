@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/attractions
+  url: http://localhost:8080/api/v1/attractions
   body: none
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiJ9.eyJwZXJtaXNzaW9ucyI6W10sInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJzdWIiOiJ0ZXN0X3VzZXJAdHVtLmRlIiwiaWF0IjoxNzQ2OTcxMjU0LCJleHAiOjE3NDcwNTc2NTR9.iC6jQK7EkMYuDNdpjBSXE-iCkHXhEIykG7L92puG-9m83wzdeMcUZJVRZ0rdXSwMWx_4tD8mOfu7yBT56bFL-KGBIhuWRGCCt6eek6DvWObwlmPe7ud8L7AyRmX1SAVLGij4GboeLVUxFtp_YVJKMoFp2Gw9HFXjdOd5Ueuhf6D5NTLy48WP5ifZf_Tf9SKnnACKjJ9c_FM5Uo2V02OCMM9iq7ZIIKY9_UTWk7MM4Iy5ai9P0S_iCxe9MOMNI99E9ZCH0ZWfSEd5DbFyLI7kn2V9K6c0H2Yvtgw3hgkMXVAbu8XRXgNrLu2gXBiE1IyiCIkhDjaubldajkFHkFvkmg
 }
