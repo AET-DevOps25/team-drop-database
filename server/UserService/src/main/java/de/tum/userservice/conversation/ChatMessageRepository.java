@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-     List<ChatMessage> findByUserId(Long userId);
-     List<ChatMessage> findByConversationId(Long conversationId);
+public interface ChatMessageRepository extends JpaRepository<ChatMessageEntity, Long> {
+     List<ChatMessageEntity> findByConversationIdOrderByTimestampAsc(Long conversationId); // Correctly queries by the foreign key
 }

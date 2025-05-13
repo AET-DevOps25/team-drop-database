@@ -9,7 +9,7 @@ import java.security.Principal;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class  UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;

@@ -1,4 +1,6 @@
 package de.tum.userservice.conversation;
 
-public class Conversation {
+public enum Role {
+    USER,
+    SYSTEM
 }

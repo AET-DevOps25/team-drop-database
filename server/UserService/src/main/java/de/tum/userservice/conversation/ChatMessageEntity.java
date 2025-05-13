@@ -7,23 +7,30 @@ import java.time.Instant;
 @Entity
 @Table(name = "chat_message")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class ChatMessage {
+public class ChatMessageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "conversation_id", nullable = false)
+    private ConversationEntity conversation;
 
     /**
-     * "USER" for prompts, "AI" for replies
+     * "USER" for prompts, "SYSTEM" for replies
      */
     @Column(nullable = false, length = 16)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(nullable = false)
     private Instant timestamp;
+
+    @PrePersist
+    protected void onCreate() {
+        timestamp = Instant.now();
+    }
 }
