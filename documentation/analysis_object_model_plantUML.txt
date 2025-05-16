@@ -1,0 +1,154 @@
+@startuml
+
+package AuthenticationMicroservice{
+class AuthService {
+    + void signIn(userId: Long)
+    + void signUp()
+    + void logout(userId: Long)
+    + void changePassword(userId: Long)
+    + Token generateToken(userId: Long)
+    + void assignJwtToken(userId: Long)
+    + void revokeToken(userId: Long)
+    + void refreshToken(userId: Long)
+}
+
+class Token {
+    - id: Long
+    - token: String
+    - tokenType: TokenType
+    - revoked: Boolean
+    - expired: Boolean
+    - user: User
+}
+
+class User {
+    - id: Long
+    - email: String
+    - password: String
+    - role: Role
+    - tokens: List<Token>
+    + List<GrantedAuthority> getAuthorities()
+}
+
+User "1" --o "2" Token : has
+AuthService <-- User : authenticates
+AuthService "1" <-- "n" Token : assigns
+}
+
+
+package AttractionMicroservice {
+class AttractionService {
+    + List<Attraction> listAllAttractions(cityId: Long)
+    + List<Attraction> searchAttraction(criteria)
+    + Attraction getAttractionByName(name: String)
+    + Attraction getAttractionById(id: Long)
+    + Attraction getAttractionByCity(cityId: Long)
+}
+
+class Attraction{
+    - id: Long
+    - name: String
+    - description: String
+    - location: Location
+    - openingHours: List<OpeningHours>
+    - photos: List<URL>
+    - website: String
+}
+
+class City {
+    - id: Long
+    - name: String
+    - description: String
+    - country: String
+    - latitude: Double
+    - longitude: Double
+}
+
+class Location {
+    - address: String
+    - city: String
+    - country: String
+    - latitude: Double
+    - longitude: Double
+}
+
+class OpeningHours {
+    - day: String
+    - from: LocalTime
+    - to: LocalTime
+}
+
+AttractionService "1" <-- "n" Attraction : manages
+OpeningHours "7" o-- "1" Attraction : contains
+Location "1" --* "1" Attraction : has
+City "1" --* "1" Attraction : locates in
+City "1" <-- "n" Attraction : has
+}
+
+
+package ProfileMicroservice {
+class ProfileService {
+    + void createProfile(profile)
+    + List<Profile> getAllProfiles()
+    + List<Profile> getProfileById(id: Long)
+    + List<Profile> getProfileByFirstname(firstname: String)
+    + List<Profile> getProfileByLastname(lastname: String)
+    + boolean updateProfile(profile)
+    + boolean deleteProfile(profile)
+}
+
+
+class Profile {
+    - id: Long
+    - email: String
+    - firstName: String
+    - lastName: string
+    - profilePicture: URL
+    - preference: String
+}
+
+ProfileService "1" <-- "n" Profile : manages
+}
+
+
+package ConversationMicroservice {
+class ConversationService {
+    - LLM: GenAI
+    + Conversation createNewConversation(userId: Long, prompt: String)
+    + String resumeConversation(userId: Long, conversationId: Long, prompt: String)
+    + List<ChatMessage> getConversationHistory(conversationId: Long)
+    + List<Conversation> getUserConversations(userId: Long)
+}
+
+
+enum Role {
+    USER
+    SYSTEM
+}
+
+
+class ChatMessage {
+    - id: Long
+    - conversationId: Long
+    - role: Role
+    - content: String
+    - timestamp: Instant
+}
+
+
+class Conversation {
+    - id: Long
+    - userId: Long
+    - title: String
+    - createdAt: Instant
+    - updatedAt: Instant
+}
+
+
+ConversationService "1" <-- "n" ChatMessage : stores
+ConversationService "1" <-- "n" Conversation : manages
+Conversation "1" *-- "n" ChatMessage : contains
+Role "1" --> "1" ChatMessage
+}
+
+@enduml
