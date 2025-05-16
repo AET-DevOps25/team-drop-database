@@ -1,0 +1,41 @@
+@startuml
+
+package "Client Layer" {
+  [Web Frontend] <<React>>
+}
+
+package "Microservices" {
+  [Auth Service] <<Spring Boot / JWT>>
+  [Conversation Service] <<Spring Boot>>
+  [Profile Service] <<Spring Boot>>
+  [Attraction Service] <<Spring Boot>>
+  [Route Recommendation Service] <<GenAI>>
+}
+
+package "Datastores" {
+  [Attraction DB] <<PostgreSQL>>
+  [User DB] <<PostgreSQL>>
+  [Conversation DB] <<PostgreSQL>>
+  [Profile DB] <<PostgreSQL>>
+}
+
+
+"Web Frontend" --> "Auth Service" : REST
+"Web Frontend" --> "Attraction Service" : REST
+"Web Frontend" --> "Conversation Service" : REST
+"Web Frontend" --> "Profile Service" : REST
+"Web Frontend" --> "Route Recommendation Service" : REST
+
+"Auth Service" --> "Web Frontend" : Assign JWT Tokens
+"Auth Service" --> "User DB" : CRUD User
+
+"Attraction Service" --> "Attraction DB" : Persist Attractions
+"Profile Service" --> "Profile DB" : CRUD Profile
+"Conversation Service" --> "Conversation DB" : Persist Chat Messages
+"Conversation Service" --> "Route Recommendation Service" : Calls LLM / RAG API
+
+"Route Recommendation Service" --> "Attraction Service" : Reads Attractions
+"Route Recommendation Service" --> "Conversation Service" : Reads Chat History
+"Route Recommendation Service" --> "Profile Service" : Reads Preferences
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+
+left to right direction
+actor "End User" as User
+
+rectangle "Travelroute Recommendation System" {
+  usecase "Sign Up" as UC1
+  usecase "Sign In" as UC2
+  usecase "View/Edit Profile" as UC3
+
+  usecase "View / Search Attractions" as UC4
+  usecase "Chat with AI" as UC5
+  usecase "Get Route Recommandation" as UC6
+  usecase "View Chat History" as UC7
+  
+}
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+
+UC5 --> UC6 : <<include>>
+UC5 <-- UC7 : <<extend>>
+@enduml
