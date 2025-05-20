@@ -23,13 +23,8 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    public Optional<ProfileEntity> getProfileById(Long id) {
-        return repository.findById(id);
-    }
-
-    @Override
-    public List<ProfileEntity> getAllProfiles() {
-        return repository.findAll();
+    public ProfileEntity getProfileById(Long id) {
+        return repository.findById(id).orElse(null);
     }
 
     @Override

@@ -32,21 +32,13 @@ public class ProfileController {
     */
     @GetMapping("/{id}")
     public ResponseEntity<ProfileEntity> getById(@PathVariable Long id) {
-        return service.getProfileById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        ProfileEntity profile = service.getProfileById(id);
+        if (profile == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(profile);
+        }
     }
-
-    /**
-     * GET /api/v1/profiles
-     * Retrieves all profiles.
-     */
-    @GetMapping
-    public ResponseEntity<List<ProfileEntity>> getAll() {
-        List<ProfileEntity> list = service.getAllProfiles();
-        return ResponseEntity.ok(list);
-    }
-
 
     /**
      * PUT /api/v1/profiles/{id}
