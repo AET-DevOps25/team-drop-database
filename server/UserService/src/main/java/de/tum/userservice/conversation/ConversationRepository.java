@@ -1,0 +1,24 @@
+package de.tum.userservice.conversation;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ConversationRepository extends JpaRepository<ConversationEntity, Long> {
+    @Query("""
+        SELECT new de.tum.userservice.conversation.ConversationDTO(
+                c.conversationId,
+                c.title,
+                c.createdAt
+        )
+        FROM ConversationEntity c
+        WHERE c.userId = :userId 
+        ORDER BY c.updatedAt DESC
+        """)
+    List<ConversationDTO> findByUserIdOrderByUpdatedAtDesc(@Param("userId") Long userId);
+}
