@@ -36,18 +36,18 @@ jobs:
     
     # - name: Build UserService
     #   run: |
-    #     cd UserService
+    #     cd server/UserService
     #     chmod +x ./gradlew
     #     ./gradlew build --no-daemon
     
     - name: Build AuthService
       run: |
-        cd AuthService
+        cd server/AuthService
         chmod +x ./gradlew
         ./gradlew build --no-daemon
     
     - name: Build AttractionService
       run: |
-        cd AttractionService
+        cd server/AttractionService
         chmod +x ./gradlew
         ./gradlew build --no-daemon 
