@@ -40,11 +40,15 @@ jobs:
     #     chmod +x ./gradlew
     #     ./gradlew build --no-daemon
     
-    - name: Build AuthService
-      run: |
-        cd server/AuthService
-        chmod +x ./gradlew
-        ./gradlew build --no-daemon
+    # - name: Build AuthService
+    #   run: |
+    #     cd server/AuthService
+    #     chmod +x ./gradlew
+    #     ./gradlew build --no-daemon
+
+    - name: Build and run AuthService in Docker
+      working-directory: server/AuthService
+      run: docker-compose up -d --build
     
     - name: Build AttractionService
       run: |
