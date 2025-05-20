@@ -34,11 +34,11 @@ jobs:
         distribution: 'temurin'
         cache: gradle
     
-    - name: Build UserService
-      run: |
-        cd UserService
-        chmod +x ./gradlew
-        ./gradlew build --no-daemon
+    # - name: Build UserService
+    #   run: |
+    #     cd UserService
+    #     chmod +x ./gradlew
+    #     ./gradlew build --no-daemon
     
     - name: Build AuthService
       run: |
