@@ -46,9 +46,9 @@ jobs:
     #     chmod +x ./gradlew
     #     ./gradlew build --no-daemon
 
-    - name: Build and run AuthService in Docker
+    - name: Start AuthService + DB in Docker
       working-directory: server/AuthService
-      run: docker-compose up -d --build
+      run: docker compose up -d --build
     
     - name: Build AttractionService
       run: |
