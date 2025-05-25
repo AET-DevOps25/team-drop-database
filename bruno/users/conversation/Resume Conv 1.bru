@@ -1,0 +1,15 @@
+meta {
+  name: Resume Conv 1
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:8080/api/v1/conversations/1
+  body: text
+  auth: inherit
+}
+
+body:text {
+  Hello World Again!
+}

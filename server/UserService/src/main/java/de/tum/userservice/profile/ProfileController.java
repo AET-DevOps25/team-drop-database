@@ -1,6 +1,7 @@
 package de.tum.userservice.profile;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +23,12 @@ public class ProfileController {
      */
     @PostMapping
     public ResponseEntity<ProfileEntity> create(@RequestBody ProfileEntity profile) {
-        ProfileEntity created = service.createProfile(profile);
-        return ResponseEntity.ok(created);
+        try {
+            ProfileEntity createdProfile = service.createProfile(profile);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdProfile);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**
@@ -32,11 +37,11 @@ public class ProfileController {
     */
     @GetMapping("/{id}")
     public ResponseEntity<ProfileEntity> getById(@PathVariable Long id) {
-        ProfileEntity profile = service.getProfileById(id);
-        if (profile == null) {
-            return ResponseEntity.notFound().build();
-        } else {
+        try {
+            ProfileEntity profile = service.getProfileById(id);
             return ResponseEntity.ok(profile);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -49,7 +54,7 @@ public class ProfileController {
         try {
             ProfileEntity updated = service.updateProfile(id, profile);
             return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -60,7 +65,10 @@ public class ProfileController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.deleteProfile(id);
-        return ResponseEntity.noContent().build();
+        if (service.deleteProfile(id)) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
