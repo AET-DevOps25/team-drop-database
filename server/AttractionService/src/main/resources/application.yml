@@ -2,18 +2,19 @@ spring:
   application:
     name: AttractionService
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/team-drop-database
-    username: user
-    password: password
-    driver-class-name: org.postgresql.Driver
-
   jpa:
-    hibernate:
-      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+application:
+  security:
+    jwt:
+      private-key-path: classpath:keys/private.pem
+      public-key-path: classpath:keys/public.pem
+      expiration: 86400000 # 1 day
+      refresh-token:
+        expiration: 604800000 # 7 days
