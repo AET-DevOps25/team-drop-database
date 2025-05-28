@@ -12,7 +12,7 @@ import useAuth from "../../hooks/useAuth";
 import {useLocation, useNavigate} from "react-router-dom";
 import {FormEvent, useEffect, useRef, useState} from "react";
 import { jwtDecode } from "jwt-decode";
-import {login} from "../../api/auth";
+import {sendLogin} from "../../api/auth";
 
 const Login: React.FC = () => {
     const {setAuth, persist, setPersist} = useAuth();
@@ -47,7 +47,7 @@ const Login: React.FC = () => {
             const {
                 access_token: accessToken,
                 refresh_token: refreshToken
-            } = await login({ email: email, password: pwd });
+            } = await sendLogin({ email: email, password: pwd });
 
             const decoded: { sub: string; roles: string[] } = jwtDecode(accessToken);
 
