@@ -1,4 +1,4 @@
-package de.tum.userservice.profile;
+package de.tum.userservice.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user_profile")
+@Table(name = "_user")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ProfileEntity {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

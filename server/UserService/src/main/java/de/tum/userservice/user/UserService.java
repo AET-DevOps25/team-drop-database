@@ -1,26 +1,26 @@
-package de.tum.userservice.profile;
+package de.tum.userservice.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProfileService {
-    private final ProfileRepository repository;
+public class UserService {
+    private final UserRepository repository;
 
-    public ProfileEntity createProfile(ProfileEntity profile) {
+    public UserEntity createProfile(UserEntity profile) {
         if (repository.findByEmail(profile.getEmail()) != null) {
             throw new IllegalArgumentException("Email already exists");
         }
         return repository.save(profile);
     }
 
-    public ProfileEntity getProfileById(Long id) {
+    public UserEntity getProfileById(Long id) {
         return repository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("Profile not found with id " + id));
     }
 
-    public ProfileEntity updateProfile(Long id, ProfileEntity profile) {
+    public UserEntity updateProfile(Long id, UserEntity profile) {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setFirstName(profile.getFirstName());
