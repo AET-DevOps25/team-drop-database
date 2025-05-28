@@ -4,7 +4,7 @@ import {sendLogout} from "../api/auth";
 const useLogout = (): (() => Promise<void>) => {
     const { setAuth } = useAuth();
 
-    const logout = async (): Promise<void> => {
+    return async (): Promise<void> => {
         setAuth({});
         try {
             await sendLogout();
@@ -12,8 +12,6 @@ const useLogout = (): (() => Promise<void>) => {
             console.error(err);
         }
     };
-
-    return logout;
 };
 
 export default useLogout;

@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
 import {useLocation, useNavigate} from "react-router-dom";
-import {FormEvent, useEffect, useRef, useState} from "react";
+import React, {FormEvent, useEffect, useRef, useState} from "react";
 import { jwtDecode } from "jwt-decode";
 import {sendLogin} from "../../api/auth";
 

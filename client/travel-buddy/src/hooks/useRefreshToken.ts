@@ -5,7 +5,7 @@ import {sendRefresh} from "../api/auth";
 const useRefreshToken = () => {
     const {auth, setAuth, persist} = useAuth();
 
-    const refresh = async () => {
+    return async () => {
         const rt = auth?.refreshToken || localStorage.getItem("refreshToken");
         if (!rt) throw new Error("No refresh-token available");
 
@@ -25,8 +25,7 @@ const useRefreshToken = () => {
         if (persist) localStorage.setItem("refreshToken", refresh_token);
 
         return access_token;
-    }
-    return refresh;
+    };
 };
 
 export default useRefreshToken;

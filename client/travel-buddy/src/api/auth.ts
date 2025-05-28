@@ -1,5 +1,4 @@
 import {axiosAuth} from "./axios";
-import exp from "node:constants";
 
 interface LoginRequest {
     email: string;
