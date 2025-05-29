@@ -40,7 +40,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [client, server]
+        include:
+          - name: authservice
+            context: ./server/AuthService
+            dockerfile: ./server/AuthService/Dockerfile
+          - name: attractionservice
+            context: ./server/AttractionService
+            dockerfile: ./server/AttractionService/Dockerfile
+          - name: userservice
+            context: ./server/UserService
+            dockerfile: ./server/UserService/Dockerfile
+#          - name: client
+#            context: ./client/travel-buddy
+#            dockerfile: ./client/travel-buddy/Dockerfile
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,18 +79,18 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/${{ matrix.service }}
+          images: ghcr.io/${{ github.repository }}/${{ matrix.name }}
           tags: |
             type=raw,value=latest,enabled={is_default_branch}
             type=ref,event=branch
             type=ref,event=pr
       
-      - name: Build and push AuthService
+      - name: Build & push ${{ matrix.name }}
         uses: docker/build-push-action@v5
         with:
           platforms: linux/amd64,linux/arm64
-          context: ./${{ matrix.service}}
-          file: ./${{ matrix.service }}/Dockerfile
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
