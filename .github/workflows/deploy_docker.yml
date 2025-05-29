@@ -1,0 +1,45 @@
+name: Deploy Docker Images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: AWS
+      url: 'https://client.${{ vars.EC2_PUBLIC_IP }}.nip.io' 
+    steps:      
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+
+      - name: Load SSH agent
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+            ssh-private-key: ${{ secrets.AWS_EC2_PRIVATE_KEY }}          
+
+      - name: Deploy via single SSH session
+        run: |
+            scp -o StrictHostKeyChecking=no compose.aws.yml \
+            ${{ secrets.AWS_EC2_USER }}@${{ secrets.EC2_PUBLIC_IP }}:~/
+            ssh -o StrictHostKeyChecking=no \
+            ${{ secrets.AWS_EC2_USER }}@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            cat > .env.prod <<EOL
+            CLIENT_HOST=client.${{ secrets.EC2_PUBLIC_IP }}.nip.io
+            SERVER_HOST=api.${{ secrets.EC2_PUBLIC_IP }}.nip.io
+            PUBLIC_API_URL=https://api.${{ secrets.EC2_PUBLIC_IP }}.nip.io/api
+            EOL
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+                -u "${{ github.actor }}" --password-stdin
+
+            docker compose -f compose.aws.yml --env-file=.env.prod \
+                up --pull=always -d
+            EOF
