@@ -4,21 +4,22 @@ FROM gradle:8.7-jdk21 AS builder
 WORKDIR /app
 
 COPY gradle gradle
-COPY build.gradle settings.gradle gradlew /app/
-RUN ./gradlew --no-daemon build || true
+COPY gradlew .
+COPY build.gradle settings.gradle ./
+
+RUN ./gradlew --no-daemon dependencies
 
 COPY . .
-RUN ./gradlew bootJar --no-daemon
+
+RUN ./gradlew --no-daemon bootJar -x test
 
 # Stage 2: Run the built JAR
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
-
 ENV SPRING_PROFILES_ACTIVE=docker
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
