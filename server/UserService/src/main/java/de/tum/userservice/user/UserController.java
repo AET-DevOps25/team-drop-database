@@ -1,19 +1,18 @@
-package de.tum.userservice.profile;
+package de.tum.userservice.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/profiles")
-public class ProfileController {
-    private final ProfileService service;
+public class UserController {
+    private final UserService service;
 
     @Autowired
-    public ProfileController(ProfileService service) {
+    public UserController(UserService service) {
         this.service = service;
     }
 
@@ -22,9 +21,9 @@ public class ProfileController {
      * Creates a new profile.
      */
     @PostMapping
-    public ResponseEntity<ProfileEntity> create(@RequestBody ProfileEntity profile) {
+    public ResponseEntity<UserEntity> create(@RequestBody UserEntity profile) {
         try {
-            ProfileEntity createdProfile = service.createProfile(profile);
+            UserEntity createdProfile = service.createProfile(profile);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProfile);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -36,9 +35,10 @@ public class ProfileController {
     * Retrieves a profile by ID.
     */
     @GetMapping("/{id}")
-    public ResponseEntity<ProfileEntity> getById(@PathVariable Long id) {
+    @PreAuthorize("@userSecurity.isSelf(#id, principal.username)")
+    public ResponseEntity<UserEntity> getById(@PathVariable Long id) {
         try {
-            ProfileEntity profile = service.getProfileById(id);
+            UserEntity profile = service.getProfileById(id);
             return ResponseEntity.ok(profile);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -50,9 +50,10 @@ public class ProfileController {
      * Updates a profile by ID.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ProfileEntity> update(@PathVariable Long id, @RequestBody ProfileEntity profile) {
+    @PreAuthorize("@userSecurity.isSelf(#id, principal.username)")
+    public ResponseEntity<UserEntity> update(@PathVariable Long id, @RequestBody UserEntity profile) {
         try {
-            ProfileEntity updated = service.updateProfile(id, profile);
+            UserEntity updated = service.updateProfile(id, profile);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -64,6 +65,7 @@ public class ProfileController {
      * Deletes a profile by ID.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("@userSecurity.isSelf(#id, principal.username)")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (service.deleteProfile(id)) {
             return ResponseEntity.noContent().build();

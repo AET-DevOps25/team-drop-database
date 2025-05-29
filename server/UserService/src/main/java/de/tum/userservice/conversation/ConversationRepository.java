@@ -21,4 +21,7 @@ public interface ConversationRepository extends JpaRepository<ConversationEntity
         ORDER BY c.updatedAt DESC
         """)
     List<ConversationDTO> findByUserIdOrderByUpdatedAtDesc(@Param("userId") Long userId);
+
+    @Query("select c.userId from ConversationEntity c where c.conversationId = :cid")
+    Long findUserIdByConversationId(@Param("cid") Long conversationId);
 }
