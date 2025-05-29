@@ -2,6 +2,7 @@ name: Build Docker Images
 
 on:
   push:
+    branches: [ '**' ]
 
 permissions:
   contents: read
@@ -40,6 +41,7 @@ jobs:
   build:
     name: Build Docker Image
     needs: test
+    if: github.ref == 'refs/heads/main' 
     runs-on: ubuntu-latest
     strategy:
       matrix:
