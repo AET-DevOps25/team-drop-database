@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: attraction-service
+  namespace: "team-drop-database"
+spec:
+  selector:
+    app: travel-buddy-attraction-selector
+  ports:
+    - port: {{ .Values.attractionservice.service.port }}
+      targetPort: {{ .Values.attractionservice.service.targetPort }}
+      protocol: TCP
+  type: {{ .Values.attractionservice.service.type }}
