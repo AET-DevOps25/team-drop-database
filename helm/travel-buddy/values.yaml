@@ -6,6 +6,7 @@ tumid: ge82kid
 namespace:
   create: false
 
+# todo: replace this with actual frontend image
 frontend:
   image:
     repository: ghcr.io/shuaiweiyu/dropdb/userservice:main
@@ -17,9 +18,6 @@ frontend:
     port: 3000
     targetPort: 3000
   replicaCount: 1
-  env:
-    - name: SPRING_PROFILES_ACTIVE
-      value: docker
 
 userservice:
   image:
