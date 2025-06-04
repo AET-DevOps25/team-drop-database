@@ -1,21 +1,17 @@
-import axios from "../api/axios";
 import useAuth from "./useAuth";
+import {sendLogout} from "../api/auth";
 
 const useLogout = (): (() => Promise<void>) => {
     const { setAuth } = useAuth();
 
-    const logout = async (): Promise<void> => {
+    return async (): Promise<void> => {
         setAuth({});
         try {
-            await axios('/api/v1/auth/logout', {
-                withCredentials: true,
-            });
+            await sendLogout();
         } catch (err) {
             console.error(err);
         }
     };
-
-    return logout;
 };
 
 export default useLogout;

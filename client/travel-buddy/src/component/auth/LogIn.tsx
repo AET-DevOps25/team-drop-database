@@ -10,14 +10,9 @@ import {
 } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
 import {useLocation, useNavigate} from "react-router-dom";
-import {FormEvent, useEffect, useRef, useState} from "react";
-import axios from "axios";
+import React, {FormEvent, useEffect, useRef, useState} from "react";
 import { jwtDecode } from "jwt-decode";
-
-interface LoginResponse {
-    access_token: string;
-    refresh_token: string;
-}
+import {sendLogin} from "../../api/auth";
 
 const Login: React.FC = () => {
     const {setAuth, persist, setPersist} = useAuth();
@@ -49,21 +44,10 @@ const Login: React.FC = () => {
         e.preventDefault();
 
         try {
-            const {data} = await axios.post<LoginResponse>(
-                "http://localhost:8080/api/v1/auth/authenticate",
-                JSON.stringify({
-                    email: email,
-                    password: pwd
-                }),
-                {
-                    headers: {'Content-Type': 'application/json'},
-                    withCredentials: true
-                }
-            );
             const {
                 access_token: accessToken,
                 refresh_token: refreshToken
-            } = data;
+            } = await sendLogin({ email: email, password: pwd });
 
             const decoded: { sub: string; roles: string[] } = jwtDecode(accessToken);
 
