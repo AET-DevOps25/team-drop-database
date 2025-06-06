@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attraction-service
+  namespace: "team-drop-database"
+spec:
+  replicas: {{ .Values.attractionservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: travel-buddy-attraction-selector
+  template:
+    metadata:
+      labels:
+        app: travel-buddy-attraction-selector
+    spec:
+      containers:
+        - name: attraction-service
+          image: "{{ .Values.attractionservice.image.repository }}:{{ .Values.attractionservice.image.tag }}"
+          imagePullPolicy: {{ .Values.attractionservice.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          ports:
+            - containerPort: {{ .Values.attractionservice.service.targetPort }}
+          env:
+            {{- range .Values.attractionservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}

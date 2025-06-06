@@ -1,0 +1,55 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "travel-buddy-ingress"
+  namespace: "team-drop-database"
+  {{- $annotations := .Values.ingress.annotations | default dict }}
+  {{- if $annotations }}
+  annotations:
+    {{- toYaml $annotations | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          # ---------- Front-end ----------
+{{/*          - path: /*/}}
+{{/*            pathType: Prefix*/}}
+{{/*            backend:*/}}
+{{/*              service:*/}}
+{{/*                name: {{ .Values.frontend.service.name }}*/}}
+{{/*                port:*/}}
+{{/*                  number: {{ .Values.frontend.service.port }}*/}}
+          # ---------- Auth-service ----------
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.authservice.service.name }}
+                port:
+                  number: {{ .Values.authservice.service.port }}
+          # ---------- Attraction-service ----------
+          - path: /attractions
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.attractionservice.service.name }}
+                port:
+                  number: {{ .Values.attractionservice.service.port }}
+          # ---------- User-service ----------
+          - path: /users
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.userservice.service.name }}
+                port:
+                  number: {{ .Values.userservice.service.port }}
+{{- end }}

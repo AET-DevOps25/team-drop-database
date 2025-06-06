@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: "team-drop-database"
+spec:
+  replicas: {{ .Values.authservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: travel-buddy-auth-selector
+  template:
+    metadata:
+      labels:
+        app: travel-buddy-auth-selector
+    spec:
+      containers:
+        - name: auth-service
+          image: "{{ .Values.authservice.image.repository }}:{{ .Values.authservice.image.tag }}"
+          imagePullPolicy: {{ .Values.authservice.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          ports:
+            - containerPort: {{ .Values.authservice.service.targetPort }}
+          env:
+            {{- range .Values.authservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}

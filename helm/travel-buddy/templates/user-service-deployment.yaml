@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: "team-drop-database"
+spec:
+  replicas: {{ .Values.userservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: travel-buddy-user-selector
+  template:
+    metadata:
+      labels:
+        app: travel-buddy-user-selector
+    spec:
+      containers:
+        - name: user-service
+          image: "{{ .Values.userservice.image.repository }}:{{ .Values.userservice.image.tag }}"
+          imagePullPolicy: {{ .Values.userservice.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          ports:
+            - containerPort: {{ .Values.userservice.service.targetPort }}
+          env:
+            {{- range .Values.userservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
