@@ -2,30 +2,40 @@ import React, { useState } from "react";
 import { IconButton, TextField, Paper, Box } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import {createConversation} from "../../api/consult";
 
-const ChatInput: React.FC = () => {
+interface ChatInputProps {
+    userId: number;
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({ userId }) => {
     const [inputValue, setInputValue] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (inputValue.trim()) {
-            console.log("发送消息:", inputValue);
-            setInputValue("");
+        const trimmedPrompt = inputValue.trim();
+        if (!trimmedPrompt) return;
+
+        setLoading(true);
+
+        try {
+            const newConversation = await createConversation(userId, trimmedPrompt);
+            console.log('创建成功：', newConversation);
+            setInputValue('');
+        } catch (error) {
+            console.error('发送失败:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <Box
-            sx={{
-                display: "flex",
-                justifyContent: "center",
-                mt: 2,
-            }}
-        >
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <Paper
                 component="form"
                 onSubmit={handleSubmit}
@@ -64,16 +74,13 @@ const ChatInput: React.FC = () => {
                     InputProps={{
                         disableUnderline: true,
                     }}
-                    sx={{
-                        ml: 1,
-                        flex: 1,
-                    }}
+                    sx={{ ml: 1, flex: 1 }}
                 />
 
                 <IconButton
                     type="submit"
                     color="primary"
-                    disabled={!inputValue.trim()}
+                    disabled={!inputValue.trim() || loading}
                 >
                     <SendIcon />
                 </IconButton>

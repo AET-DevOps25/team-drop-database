@@ -4,7 +4,7 @@ import InputBar from "../component/consult/InputBar";
 const Home = () => (
     <Container>
         <h1>Welcome to Home Page</h1>
-        <InputBar />
+        <InputBar userId={123} />
     </Container>
 );
 
