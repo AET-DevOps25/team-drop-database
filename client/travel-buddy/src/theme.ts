@@ -11,7 +11,7 @@ const colors = {
 
 const theme = createTheme({
     // use CSS theme variables
-    cssVariables: true,
+   
     typography: {
         fontFamily: 'var(--font-roboto)',
     },
