@@ -13,7 +13,6 @@ spring:
 application:
   security:
     jwt:
-      private-key-path: classpath:keys/private.pem
       public-key-path: classpath:keys/public.pem
       expiration: 86400000 # 1 day
       refresh-token:
