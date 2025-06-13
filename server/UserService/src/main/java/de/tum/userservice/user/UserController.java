@@ -7,7 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/profiles")
+@RequestMapping("/profiles")
 public class UserController {
     private final UserService service;
 
@@ -17,7 +17,7 @@ public class UserController {
     }
 
     /**
-     * POST /api/v1/profiles
+     * POST /user-service/api/v1/profiles
      * Creates a new profile.
      */
     @PostMapping
@@ -31,7 +31,7 @@ public class UserController {
     }
 
     /**
-    * GET /api/v1/profiles/{id}
+    * GET /user-service/api/v1/profiles/{id}
     * Retrieves a profile by ID.
     */
     @GetMapping("/{id}")
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     /**
-     * PUT /api/v1/profiles/{id}
+     * PUT /user-service/api/v1/profiles/{id}
      * Updates a profile by ID.
      */
     @PutMapping("/{id}")
@@ -61,7 +61,7 @@ public class UserController {
     }
 
     /**
-     * DELETE /api/v1/profiles/{id}
+     * DELETE /user-service/api/v1/profiles/{id}
      * Deletes a profile by ID.
      */
     @DeleteMapping("/{id}")
