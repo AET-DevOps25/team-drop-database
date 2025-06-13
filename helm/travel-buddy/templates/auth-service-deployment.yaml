@@ -13,6 +13,8 @@ spec:
       labels:
         app: travel-buddy-auth-selector
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: auth-service
           image: "{{ .Values.authservice.image.repository }}:{{ .Values.authservice.image.tag }}"

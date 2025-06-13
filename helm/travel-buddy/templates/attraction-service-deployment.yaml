@@ -13,6 +13,8 @@ spec:
       labels:
         app: travel-buddy-attraction-selector
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: attraction-service
           image: "{{ .Values.attractionservice.image.repository }}:{{ .Values.attractionservice.image.tag }}"

@@ -9,6 +9,8 @@ frontend:
     repository: ghcr.io/shuaiweiyu/dropdb/client
     tag: latest
     pullPolicy: Always
+    pullSecrets:
+      - ghcr-secret
   host: travel-buddy.student.k8s.aet.cit.tum.de
   service:
     name: frontend
@@ -26,9 +28,11 @@ frontend:
 
 userservice:
   image:
-    repository: ghcr.io/shuaiweiyu/dropdb/userservice:main
+    repository: ghcr.io/shuaiweiyu/dropdb/userservice
     tag: latest
     pullPolicy: Always
+    pullSecrets:
+      - ghcr-secret
   host: user-service.travel-buddy.student.k8s.aet.cit.tum.de
   service:
     name: user-service
@@ -49,9 +53,11 @@ userservice:
 
 authservice:
   image:
-    repository: ghcr.io/shuaiweiyu/dropdb/authservice:main
+    repository: ghcr.io/shuaiweiyu/dropdb/authservice
     tag: latest
     pullPolicy: Always
+    pullSecrets:
+      - ghcr-secret
   host: auth-service.travel-buddy.student.k8s.aet.cit.tum.de
   service:
     name: auth-service
@@ -72,9 +78,11 @@ authservice:
 
 attractionservice:
   image:
-    repository: ghcr.io/shuaiweiyu/dropdb/attractionservice:main
+    repository: ghcr.io/shuaiweiyu/dropdb/attractionservice
     tag: latest
     pullPolicy: Always
+    pullSecrets:
+      - ghcr-secret
   host: attraction-service.travel-buddy.student.k8s.aet.cit.tum.de
   service:
     name: attraction-service

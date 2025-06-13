@@ -13,6 +13,8 @@ spec:
       labels:
         app: travel-buddy-user-selector
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: user-service
           image: "{{ .Values.userservice.image.repository }}:{{ .Values.userservice.image.tag }}"
