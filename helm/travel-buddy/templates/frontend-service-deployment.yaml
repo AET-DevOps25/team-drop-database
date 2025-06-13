@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attraction-service
+  namespace: {{ .Values.namespace.name}}
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app: travel-buddy-attraction-selector
+  template:
+    metadata:
+      labels:
+        app: travel-buddy-attraction-selector
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: attraction-service
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: {{ .Values.frontend.resources.limits.cpu | quote }}
+              memory: {{ .Values.frontend.resources.limits.memory | quote }}
+            requests:
+              cpu: {{ .Values.frontend.resources.requests.cpu | quote }}
+              memory: {{ .Values.frontend.resources.requests.memory | quote }}
+          ports:
+            - containerPort: {{ .Values.frontend.service.targetPort }}
+          env:
+            {{- range .Values.frontend.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
