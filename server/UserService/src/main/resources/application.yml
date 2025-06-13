@@ -2,15 +2,7 @@ spring:
   application:
     name: UserService
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/team-drop-database
-    username: user
-    password: password
-    driver-class-name: org.postgresql.Driver
-
   jpa:
-    hibernate:
-      ddl-auto: create-drop
     show-sql: false
     properties:
       hibernate:
@@ -18,10 +10,13 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+server:
+  servlet:
+    context-path: /user-service/api/v1
+
 application:
   security:
     jwt:
-      private-key-path: classpath:keys/private.pem
       public-key-path: classpath:keys/public.pem
       expiration: 86400000 # 1 day
       refresh-token:

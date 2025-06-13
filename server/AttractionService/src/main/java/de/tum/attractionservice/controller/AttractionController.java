@@ -14,7 +14,7 @@ import de.tum.attractionservice.service.AttractionService;
 
 
 @RestController
-@RequestMapping("/api/v1/attractions")
+@RequestMapping("/attractions")
 public class AttractionController {
     private final AttractionService attractionService;
 

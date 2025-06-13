@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/team-drop-database
+    url: jdbc:postgresql://localhost:5444/team-drop-database
     username: user
     password: password
     driver-class-name: org.postgresql.Driver

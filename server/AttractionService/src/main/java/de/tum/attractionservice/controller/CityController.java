@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/cities")
+@RequestMapping("/cities")
 public class CityController {
 
     private final CityRepository cityRepository;

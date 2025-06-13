@@ -1,4 +1,4 @@
-package de.tum.authservice.config;
+package de.tum.attractionservice.security.config;
 
 
 import org.springframework.context.annotation.Bean;
