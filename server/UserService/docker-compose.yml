@@ -3,28 +3,37 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: teamdrop-db
+    container_name: teamdrop-db-user
     environment:
       POSTGRES_DB: team-drop-database
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "5444:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  authservice:
+  userservice:
     build: .
     container_name: userservice
     depends_on:
       - postgres
     ports:
-      - "8080:8080"
+      - "8083:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/team-drop-database
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8093:8080"
+    depends_on:
+      - postgres
 
 volumes:
   pgdata:
