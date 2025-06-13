@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: user-service
-  namespace: "team-drop-database"
+  namespace: {{ .Values.namespace.name}}
 spec:
   replicas: {{ .Values.userservice.replicaCount }}
   selector:
@@ -19,11 +19,11 @@ spec:
           imagePullPolicy: {{ .Values.userservice.image.pullPolicy }}
           resources:
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: {{ .Values.userservice.resources.limits.cpu | quote }}
+              memory: {{ .Values.userservice.resources.limits.memory | quote }}
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: {{ .Values.authservice.resources.requests.cpu | quote }}
+              memory: {{ .Values.authservice.resources.requests.memory | quote }}
           ports:
             - containerPort: {{ .Values.userservice.service.targetPort }}
           env:

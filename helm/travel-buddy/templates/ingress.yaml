@@ -3,53 +3,66 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: "travel-buddy-ingress"
-  namespace: "team-drop-database"
+  namespace: {{ .Values.namespace.name}}
   {{- $annotations := .Values.ingress.annotations | default dict }}
   {{- if $annotations }}
   annotations:
     {{- toYaml $annotations | nindent 4 }}
   {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
+
+
   {{- if .Values.ingress.tls }}
   tls:
     - hosts:
-        - {{ .Values.ingress.host }}
+        - {{ .Values.frontend.host }}
+        - {{ .Values.authservice.host }}
+        - {{ .Values.attractionservice.host }}
+        - {{ .Values.userservice.host }}
       secretName: {{ .Values.ingress.tls.secretName }}
   {{- end }}
+
   rules:
-    - host: {{ .Values.ingress.host }}
+    - host: {{ .Values.frontend.host }}
       http:
         paths:
-          # ---------- Front-end ----------
-{{/*          - path: /*/}}
-{{/*            pathType: Prefix*/}}
-{{/*            backend:*/}}
-{{/*              service:*/}}
-{{/*                name: {{ .Values.frontend.service.name }}*/}}
-{{/*                port:*/}}
-{{/*                  number: {{ .Values.frontend.service.port }}*/}}
-          # ---------- Auth-service ----------
-          - path: /auth
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.frontend.service.name }}
+                port:
+                  number: {{ .Values.frontend.service.port }}
+    - host: {{ .Values.authservice.host }}
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: {{ .Values.authservice.service.name }}
                 port:
                   number: {{ .Values.authservice.service.port }}
-          # ---------- Attraction-service ----------
-          - path: /attractions
+    - host: {{ .Values.attractionservice.host }}
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: {{ .Values.attractionservice.service.name }}
                 port:
                   number: {{ .Values.attractionservice.service.port }}
-          # ---------- User-service ----------
-          - path: /users
+    - host: {{ .Values.userservice.host }}
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: {{ .Values.userservice.service.name }}
                 port:
                   number: {{ .Values.userservice.service.port }}
+
 {{- end }}

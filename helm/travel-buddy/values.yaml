@@ -1,35 +1,48 @@
 # This file contains the default values for the Canteen App Helm chart.
 
-# Add your tumid here
-tumid: ge82kid
-
 namespace:
+  name: "travelbuddy"
   create: false
 
-# todo: replace this with actual frontend image
 frontend:
   image:
-    repository: ghcr.io/shuaiweiyu/dropdb/userservice:main
+    repository: ghcr.io/shuaiweiyu/dropdb/client
     tag: latest
     pullPolicy: Always
+  host: travel-buddy.student.k8s.aet.cit.tum.de
   service:
-    name: client-service
+    name: frontend
     type: ClusterIP
-    port: 3000
-    targetPort: 3000
+    port: 80
+    targetPort: 80
   replicaCount: 1
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
 
 userservice:
   image:
     repository: ghcr.io/shuaiweiyu/dropdb/userservice:main
     tag: latest
     pullPolicy: Always
+  host: user-service.travel-buddy.student.k8s.aet.cit.tum.de
   service:
     name: user-service
     type: ClusterIP
     port: 8080
     targetPort: 8080
   replicaCount: 1
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
@@ -39,12 +52,20 @@ authservice:
     repository: ghcr.io/shuaiweiyu/dropdb/authservice:main
     tag: latest
     pullPolicy: Always
+  host: auth-service.travel-buddy.student.k8s.aet.cit.tum.de
   service:
     name: auth-service
     type: ClusterIP
     port: 8080
     targetPort: 8080
   replicaCount: 1
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
@@ -54,34 +75,31 @@ attractionservice:
     repository: ghcr.io/shuaiweiyu/dropdb/attractionservice:main
     tag: latest
     pullPolicy: Always
+  host: attraction-service.travel-buddy.student.k8s.aet.cit.tum.de
   service:
     name: attraction-service
     type: ClusterIP
     port: 8080
     targetPort: 8080
   replicaCount: 1
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
 
-
-#client:
-#  image:
-#    repository: ghcr.io/aet-devops25/w05-template/client
-#    tag: latest
-#    pullPolicy: Always
-#  service:
-#    type: ClusterIP
-#    port: 3000
-#    targetPort: 3000
-#  replicaCount: 1
-
 ingress:
   enabled: true
-  host: team-drop-database.student.k8s.aet.cit.tum.de
   className: "nginx"
+
   tls:
     enabled: true
     secretName: travel-buddy-tls
+
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"

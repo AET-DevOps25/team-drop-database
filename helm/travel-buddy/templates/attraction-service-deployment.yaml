@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: attraction-service
-  namespace: "team-drop-database"
+  namespace: {{ .Values.namespace.name}}
 spec:
   replicas: {{ .Values.attractionservice.replicaCount }}
   selector:
@@ -19,11 +19,11 @@ spec:
           imagePullPolicy: {{ .Values.attractionservice.image.pullPolicy }}
           resources:
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: {{ .Values.attractionservice.resources.limits.cpu | quote }}
+              memory: {{ .Values.attractionservice.resources.limits.memory | quote }}
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: {{ .Values.attractionservice.resources.requests.cpu | quote }}
+              memory: {{ .Values.attractionservice.resources.requests.memory | quote }}
           ports:
             - containerPort: {{ .Values.attractionservice.service.targetPort }}
           env:
