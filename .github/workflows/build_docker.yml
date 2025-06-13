@@ -55,9 +55,9 @@ jobs:
           - name: userservice
             context: ./server/UserService
             dockerfile: ./server/UserService/Dockerfile
-#          - name: client
-#            context: ./client/travel-buddy
-#            dockerfile: ./client/travel-buddy/Dockerfile
+          - name: client
+            context: ./client/travel-buddy
+            dockerfile: ./client/travel-buddy/Dockerfile
     steps:
       - name: Checkout
         uses: actions/checkout@v4
