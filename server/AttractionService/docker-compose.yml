@@ -28,7 +28,7 @@ services:
 
   adminer:
     image: adminer
-    container_name: adminer
+    container_name: attraction-adminer
     restart: always
     ports:
       - "8092:8080"

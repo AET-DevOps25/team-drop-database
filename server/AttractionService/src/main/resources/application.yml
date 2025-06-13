@@ -10,6 +10,10 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+server:
+  servlet:
+    context-path: /attraction-service/api/v1
+
 application:
   security:
     jwt:
