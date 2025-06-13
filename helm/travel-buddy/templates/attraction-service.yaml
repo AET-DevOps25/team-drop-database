@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.namespace.name}}
-  namespace: "team-drop-database"
+  name: attraction-service
+  namespace: {{ .Values.namespace.name}}
 spec:
   selector:
     app: travel-buddy-attraction-selector

@@ -50,6 +50,12 @@ userservice:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
+    - name: SPRING_DATASOURCE_URL
+      value: jdbc:postgresql://user-postgres-postgresql:5432/user-db
+    - name: SPRING_DATASOURCE_USERNAME
+      value: user_user
+    - name: SPRING_DATASOURCE_PASSWORD
+      value: user_pwd
 
 authservice:
   image:
@@ -75,6 +81,12 @@ authservice:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
+    - name: SPRING_DATASOURCE_URL
+      value: jdbc:postgresql://auth-postgres-postgresql:5432/auth-db
+    - name: SPRING_DATASOURCE_USERNAME
+      value: auth_user
+    - name: SPRING_DATASOURCE_PASSWORD
+      value: auth_pwd
 
 attractionservice:
   image:
@@ -100,6 +112,31 @@ attractionservice:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
+    - name: SPRING_DATASOURCE_URL
+      value: jdbc:postgresql://attraction-postgres-postgresql:5432/attraction-db
+    - name: SPRING_DATASOURCE_USERNAME
+      value: attr_user
+    - name: SPRING_DATASOURCE_PASSWORD
+      value: attr_pwd
+
+auth-postgres:
+  auth:
+    username: auth_user
+    password: auth_pwd
+    database: auth-db
+
+user-postgres:
+  auth:
+    username: user_user
+    password: user_pwd
+    database: user-db
+
+attraction-postgres:
+  auth:
+    username: attr_user
+    password: attr_pwd
+    database: attraction-db
+
 
 ingress:
   enabled: true

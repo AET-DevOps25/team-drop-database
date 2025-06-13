@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: attraction-service
+  name: frontend
   namespace: {{ .Values.namespace.name}}
 spec:
   replicas: {{ .Values.frontend.replicaCount }}
   selector:
     matchLabels:
-      app: travel-buddy-attraction-selector
+      app: travel-buddy-frontend-selector
   template:
     metadata:
       labels:
-        app: travel-buddy-attraction-selector
+        app: travel-buddy-frontend-selector
     spec:
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-        - name: attraction-service
+        - name: frontend
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           resources:
