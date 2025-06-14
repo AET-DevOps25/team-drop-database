@@ -12,5 +12,5 @@ spring:
 application:
   security:
     jwt:
-      private-key-path: classpath:keys/private.pem
-      public-key-path: classpath:keys/public.pem
+      private-key-path: keys/private.pem
+      public-key-path: keys/public.pem

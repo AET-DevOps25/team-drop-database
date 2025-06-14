@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
@@ -124,41 +125,51 @@ public class JwtService {
     }
 
 
-    private RSAPrivateKey loadPrivateKey() {
+    public RSAPrivateKey loadPrivateKey() {
         try {
-            ResourceLoader resourceLoader = new DefaultResourceLoader();
-            Resource resource = resourceLoader.getResource(privateKeyPath);
-            try (InputStream inputStream = resource.getInputStream()) {
-                String key = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
-                        .replace("-----BEGIN PRIVATE KEY-----", "")
-                        .replace("-----END PRIVATE KEY-----", "")
-                        .replaceAll("\\s+", "");
+            String key = readKeyFromFileOrClasspath(privateKeyPath)
+                    .replace("-----BEGIN PRIVATE KEY-----", "")
+                    .replace("-----END PRIVATE KEY-----", "")
+                    .replaceAll("\\s+", "");
 
-                byte[] decoded = Base64.getDecoder().decode(key);
-                PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
-                return (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(keySpec);
-            }
+            byte[] decoded = Base64.getDecoder().decode(key);
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
+            return (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to load RSA private key from: " + privateKeyPath, e);
         }
     }
 
-    private RSAPublicKey loadPublicKey() {
+    public RSAPublicKey loadPublicKey() {
         try {
-            ResourceLoader resourceLoader = new DefaultResourceLoader();
-            Resource resource = resourceLoader.getResource(publicKeyPath);
-            try (InputStream inputStream = resource.getInputStream()) {
-                String key = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
-                        .replace("-----BEGIN PUBLIC KEY-----", "")
-                        .replace("-----END PUBLIC KEY-----", "")
-                        .replaceAll("\\s+", "");
+            String key = readKeyFromFileOrClasspath(publicKeyPath)
+                    .replace("-----BEGIN PUBLIC KEY-----", "")
+                    .replace("-----END PUBLIC KEY-----", "")
+                    .replaceAll("\\s+", "");
 
-                byte[] decoded = Base64.getDecoder().decode(key);
-                X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
-                return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(keySpec);
-            }
+            byte[] decoded = Base64.getDecoder().decode(key);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
+            return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(keySpec);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to load RSA public key from: " + publicKeyPath, e);
+        }
+    }
+
+    private String readKeyFromFileOrClasspath(String path) throws Exception {
+        if (path == null || path.isBlank()) {
+            throw new IllegalArgumentException("Key path must not be null or empty.");
+        }
+
+        Path filePath = Paths.get(path);
+        if (Files.exists(filePath)) {
+            return Files.readString(filePath, StandardCharsets.UTF_8);
+        }
+
+        Resource resource = new ClassPathResource(path);
+        try (InputStream inputStream = resource.getInputStream()) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 }

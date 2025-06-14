@@ -47,6 +47,9 @@ userservice:
     requests:
       cpu: "200m"
       memory: "256Mi"
+  keyMount:
+    enabled: true
+    usePrivate: false
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
@@ -78,6 +81,9 @@ authservice:
     requests:
       cpu: "200m"
       memory: "256Mi"
+  keyMount:
+    enabled: true
+    usePrivate: true
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
@@ -109,6 +115,9 @@ attractionservice:
     requests:
       cpu: "200m"
       memory: "256Mi"
+  keyMount:
+    enabled: true
+    usePrivate: false
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
@@ -136,6 +145,12 @@ attraction-postgres:
     username: attr_user
     password: attr_pwd
     database: attraction-db
+
+sharedKeys:
+  secretName: auth-keys
+  mountPath: /app/config
+  publicKeyFile: public.pem
+  privateKeyFile: private.pem
 
 
 ingress:
