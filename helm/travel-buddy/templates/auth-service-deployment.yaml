@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: {{ .Values.namespace.name}}
+spec:
+  replicas: {{ .Values.authservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: travel-buddy-auth-selector
+  template:
+    metadata:
+      labels:
+        app: travel-buddy-auth-selector
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: auth-service
+          image: "{{ .Values.authservice.image.repository }}:{{ .Values.authservice.image.tag }}"
+          imagePullPolicy: {{ .Values.authservice.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: {{ .Values.authservice.resources.limits.cpu | quote }}
+              memory: {{ .Values.authservice.resources.limits.memory | quote }}
+            requests:
+              cpu: {{ .Values.authservice.resources.requests.cpu | quote }}
+              memory: {{ .Values.authservice.resources.requests.memory | quote }}
+          ports:
+            - containerPort: {{ .Values.authservice.service.targetPort }}
+          env:
+            {{- range .Values.authservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}

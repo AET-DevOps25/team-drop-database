@@ -20,11 +20,16 @@ services:
       - postgres
     ports:
       - "8082:8080"
+    volumes:
+      - ./secrets/private.pem:/app/config/private.pem:ro
+      - ./secrets/public.pem:/app/config/public.pem:ro
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/team-drop-database
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      PRIVATE_KEY_PATH: /app/config/private.pem
+      PUBLIC_KEY_PATH: /app/config/public.pem
 
   adminer:
     image: adminer

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: {{ .Values.namespace.name}}
+spec:
+  selector:
+    app: travel-buddy-auth-selector
+  ports:
+    - port: {{ .Values.authservice.service.port }}
+      targetPort: {{ .Values.authservice.service.targetPort }}
+      protocol: TCP
+  type: {{ .Values.authservice.service.type }}

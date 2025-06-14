@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5443/team-drop-database
+    url: jdbc:postgresql://localhost:5432/team-drop-database
     username: user
     password: password
     driver-class-name: org.postgresql.Driver
@@ -8,3 +8,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+application:
+  security:
+    jwt:
+      private-key-path: classpath:keys/private.pem
+      public-key-path: classpath:keys/public.pem

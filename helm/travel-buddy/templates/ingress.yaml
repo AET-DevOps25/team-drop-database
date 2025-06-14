@@ -1,0 +1,68 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "travel-buddy-ingress"
+  namespace: {{ .Values.namespace.name}}
+  {{- $annotations := .Values.ingress.annotations | default dict }}
+  {{- if $annotations }}
+  annotations:
+    {{- toYaml $annotations | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+
+
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.frontend.host }}
+        - {{ .Values.authservice.host }}
+        - {{ .Values.attractionservice.host }}
+        - {{ .Values.userservice.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+
+  rules:
+    - host: {{ .Values.frontend.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.frontend.service.name }}
+                port:
+                  number: {{ .Values.frontend.service.port }}
+    - host: {{ .Values.authservice.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.authservice.service.name }}
+                port:
+                  number: {{ .Values.authservice.service.port }}
+    - host: {{ .Values.attractionservice.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.attractionservice.service.name }}
+                port:
+                  number: {{ .Values.attractionservice.service.port }}
+    - host: {{ .Values.userservice.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.userservice.service.name }}
+                port:
+                  number: {{ .Values.userservice.service.port }}
+
+{{- end }}
