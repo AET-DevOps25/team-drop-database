@@ -51,7 +51,7 @@ userservice:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
     - name: SPRING_DATASOURCE_URL
-      value: jdbc:postgresql://user-postgres-postgresql:5432/user-db
+      value: jdbc:postgresql://travelbuddy-user-postgres:5432/user-db
     - name: SPRING_DATASOURCE_USERNAME
       value: user_user
     - name: SPRING_DATASOURCE_PASSWORD
@@ -82,7 +82,7 @@ authservice:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
     - name: SPRING_DATASOURCE_URL
-      value: jdbc:postgresql://auth-postgres-postgresql:5432/auth-db
+      value: jdbc:postgresql://travelbuddy-auth-postgres:5432/auth-db
     - name: SPRING_DATASOURCE_USERNAME
       value: auth_user
     - name: SPRING_DATASOURCE_PASSWORD
@@ -113,7 +113,7 @@ attractionservice:
     - name: SPRING_PROFILES_ACTIVE
       value: docker
     - name: SPRING_DATASOURCE_URL
-      value: jdbc:postgresql://attraction-postgres-postgresql:5432/attraction-db
+      value: jdbc:postgresql://travelbuddy-attraction-postgres:5432/attraction-db
     - name: SPRING_DATASOURCE_USERNAME
       value: attr_user
     - name: SPRING_DATASOURCE_PASSWORD
