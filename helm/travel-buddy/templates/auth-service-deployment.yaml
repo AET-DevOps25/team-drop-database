@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-service
-  namespace: {{ .Values.namespace.name}}
+  namespace: {{ .Values.namespace.name }}
 spec:
   replicas: {{ .Values.authservice.replicaCount }}
   selector:
@@ -15,10 +15,29 @@ spec:
     spec:
       imagePullSecrets:
         - name: ghcr-secret
+
+      {{- if .Values.authservice.keyMount.enabled }}
+      volumes:
+        - name: auth-keys
+          secret:
+            secretName: {{ .Values.sharedKeys.secretName }}
+      {{- end }}
+
       containers:
         - name: auth-service
           image: "{{ .Values.authservice.image.repository }}:{{ .Values.authservice.image.tag }}"
           imagePullPolicy: {{ .Values.authservice.image.pullPolicy }}
+
+          {{- if .Values.authservice.keyMount.enabled }}
+          volumeMounts:
+            - name: auth-keys
+              mountPath: {{ .Values.sharedKeys.mountPath }}
+              readOnly: true
+          {{- end }}
+
+          ports:
+            - containerPort: {{ .Values.authservice.service.targetPort }}
+
           resources:
             limits:
               cpu: {{ .Values.authservice.resources.limits.cpu | quote }}
@@ -26,10 +45,18 @@ spec:
             requests:
               cpu: {{ .Values.authservice.resources.requests.cpu | quote }}
               memory: {{ .Values.authservice.resources.requests.memory | quote }}
-          ports:
-            - containerPort: {{ .Values.authservice.service.targetPort }}
+
           env:
             {{- range .Values.authservice.env }}
             - name: {{ .name }}
               value: "{{ .value }}"
+            {{- end }}
+
+            {{- if .Values.authservice.keyMount.enabled }}
+            - name: PUBLIC_KEY_PATH
+              value: "{{ printf "%s/%s" .Values.sharedKeys.mountPath .Values.sharedKeys.publicKeyFile }}"
+              {{- if .Values.authservice.keyMount.usePrivate }}
+            - name: PRIVATE_KEY_PATH
+              value: "{{ printf "%s/%s" .Values.sharedKeys.mountPath .Values.sharedKeys.privateKeyFile }}"
+              {{- end }}
             {{- end }}
