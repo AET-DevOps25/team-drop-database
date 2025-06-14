@@ -2,7 +2,11 @@ package de.tum.attractionservice.security.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.springframework.core.io.ClassPathResource;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +21,13 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final RSAPublicKey publicKey;
+    private RSAPublicKey publicKey;
 
-    public JwtService() {
+    @Value("${application.security.jwt.public-key-path}")
+    private String publicKeyPath;
+
+    @PostConstruct
+    private void initKeys() {
         this.publicKey = loadPublicKey();
     }
 
@@ -56,17 +64,21 @@ public class JwtService {
     }
 
     private RSAPublicKey loadPublicKey() {
-        try (InputStream inputStream = new ClassPathResource("keys/public.pem").getInputStream()) {
-            String key = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
-                    .replace("-----BEGIN PUBLIC KEY-----", "")
-                    .replace("-----END PUBLIC KEY-----", "")
-                    .replaceAll("\\s+", "");
+        try {
+            ResourceLoader resourceLoader = new DefaultResourceLoader();
+            Resource resource = resourceLoader.getResource(publicKeyPath);
+            try (InputStream inputStream = resource.getInputStream()) {
+                String key = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
+                        .replace("-----BEGIN PUBLIC KEY-----", "")
+                        .replace("-----END PUBLIC KEY-----", "")
+                        .replaceAll("\\s+", "");
 
-            byte[] decoded = Base64.getDecoder().decode(key);
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
-            return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(keySpec);
+                byte[] decoded = Base64.getDecoder().decode(key);
+                X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
+                return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(keySpec);
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load RSA public key", e);
+            throw new RuntimeException("Failed to load RSA public key from: " + publicKeyPath, e);
         }
     }
 }
