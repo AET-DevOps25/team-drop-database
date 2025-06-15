@@ -11,6 +11,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -95,9 +96,14 @@ public class JwtService {
             return Files.readString(filePath, StandardCharsets.UTF_8);
         }
 
-        Resource resource = new ClassPathResource(path);
-        try (InputStream inputStream = resource.getInputStream()) {
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        // Only try classpath resource if it's a relative path, not absolute
+        if (!path.startsWith("/")) {
+            Resource resource = new ClassPathResource(path);
+            try (InputStream inputStream = resource.getInputStream()) {
+                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
         }
+
+        throw new FileNotFoundException("Key file not found at path: " + path);
     }
 }
