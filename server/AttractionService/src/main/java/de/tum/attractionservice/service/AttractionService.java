@@ -28,7 +28,7 @@ public class AttractionService {
     }
 
     public Page<AttractionEntity> getAttractionsByCity(String city, Pageable pageable) {
-        return attractionRepository.findByLocationCity(city, pageable);
+        return attractionRepository.findByCity_Name(city, pageable);
     }
 
     public AttractionEntity getAttractionById(Long id) {

@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import de.tum.attractionservice.model.AttractionEntity;
@@ -65,10 +64,17 @@ public class AttractionController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveAttraction(@RequestBody AttractionEntity attraction) {
+    public ResponseEntity<?> saveAttraction(@RequestBody AttractionEntity attraction) {
+        if (attraction.getId() != null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("New attraction must not contain an id.");
+        }
+
         attractionService.saveAttraction(attraction);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
 
     @DeleteMapping
     public ResponseEntity<Void> deleteAttraction(@RequestBody AttractionEntity attraction) {
