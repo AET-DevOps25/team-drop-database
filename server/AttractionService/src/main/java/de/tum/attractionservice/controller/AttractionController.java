@@ -55,14 +55,12 @@ public class AttractionController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> saveAttraction(@RequestBody AttractionEntity attraction) {
         attractionService.saveAttraction(attraction);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> deleteAttraction(@RequestBody AttractionEntity attraction) {
         attractionService.deleteAttraction(attraction);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
