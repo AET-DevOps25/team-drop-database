@@ -4,7 +4,7 @@
 base_dir="$(pwd)/server"
 
 # Subfolders under 'server'
-subfolders=("attractionService" "userService" "authService")
+subfolders=("AttractionService" "UserService" "AuthService")
 
 # Iterate through each subfolder and run docker compose
 for dir in "${subfolders[@]}"; do
