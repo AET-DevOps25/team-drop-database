@@ -1,11 +1,10 @@
 package de.tum.attractionservice.controller;
 
 import de.tum.attractionservice.model.CityEntity;
-import de.tum.attractionservice.repository.CityRepository;
+import de.tum.attractionservice.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,23 +14,23 @@ import java.util.Optional;
 @RequestMapping("/cities")
 public class CityController {
 
-    private final CityRepository cityRepository;
+    private final CityService cityService;
 
     @Autowired
-    public CityController(CityRepository cityRepository) {
-        this.cityRepository = cityRepository;
+    public CityController(CityService cityService) {
+        this.cityService = cityService;
     }
 
     
     @GetMapping
     public ResponseEntity<List<CityEntity>> getAllCities() {
-        return ResponseEntity.ok(cityRepository.findAll());
+        return ResponseEntity.ok(cityService.getAllCities());
     }
 
     
     @GetMapping("/{id}")
     public ResponseEntity<CityEntity> getCityById(@PathVariable Long id) {
-        Optional<CityEntity> city = cityRepository.findById(id);
+        Optional<CityEntity> city = cityService.getCityById(id);
         return city.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -39,15 +38,15 @@ public class CityController {
     
     @PostMapping
     public ResponseEntity<CityEntity> createCity(@RequestBody CityEntity city) {
-        CityEntity saved = cityRepository.save(city);
+        CityEntity saved = cityService.createCity(city);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCity(@PathVariable Long id) {
-        if (cityRepository.existsById(id)) {
-            cityRepository.deleteById(id);
+        if (cityService.existsById(id)) {
+            cityService.deleteCity(id);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
