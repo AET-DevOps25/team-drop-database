@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface AttractionRepository extends JpaRepository<AttractionEntity, Long> {
     Optional<AttractionEntity> findByName(String name);
     Page<AttractionEntity> findByLocationCity(String city, Pageable pageable);
+    Optional<AttractionEntity> findById(Long id);
 }

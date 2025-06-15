@@ -54,6 +54,16 @@ public class AttractionController {
         }
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<AttractionEntity> getAttractionById(@PathVariable Long id) {
+        AttractionEntity attraction = attractionService.getAttractionById(id);
+        if (attraction != null) {
+            return new ResponseEntity<>(attraction, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> saveAttraction(@RequestBody AttractionEntity attraction) {
