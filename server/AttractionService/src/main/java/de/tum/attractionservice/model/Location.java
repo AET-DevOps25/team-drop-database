@@ -13,9 +13,6 @@ public class Location {
     private String address;
 
     @Column(nullable = false)
-    private String city;
-
-    @Column(nullable = false)
     private String country;
 
     @Column(nullable = false)
