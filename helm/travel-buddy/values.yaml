@@ -6,7 +6,7 @@ namespace:
 
 frontend:
   image:
-    repository: ghcr.io/shuaiweiyu/dropdb/client
+    repository: ghcr.io/aet-devops25/team-drop-database/client
     tag: latest
     pullPolicy: Always
     pullSecrets:
@@ -28,7 +28,7 @@ frontend:
 
 userservice:
   image:
-    repository: ghcr.io/shuaiweiyu/dropdb/userservice
+    repository: ghcr.io/aet-devops25/team-drop-database/userservice
     tag: latest
     pullPolicy: Always
     pullSecrets:
@@ -62,7 +62,7 @@ userservice:
 
 authservice:
   image:
-    repository: ghcr.io/shuaiweiyu/dropdb/authservice
+    repository: ghcr.io/aet-devops25/team-drop-database/authservice
     tag: latest
     pullPolicy: Always
     pullSecrets:
@@ -96,7 +96,7 @@ authservice:
 
 attractionservice:
   image:
-    repository: ghcr.io/shuaiweiyu/dropdb/attractionservice
+    repository: ghcr.io/aet-devops25/team-drop-database/attractionservice
     tag: latest
     pullPolicy: Always
     pullSecrets:
@@ -151,7 +151,6 @@ sharedKeys:
   mountPath: /app/config
   publicKeyFile: public.pem
   privateKeyFile: private.pem
-
 
 ingress:
   enabled: true
