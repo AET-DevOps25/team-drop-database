@@ -1,0 +1,15 @@
+meta {
+  name: Connection (User)
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://{{attraction-service}}/connection/user-ping
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0X3VzZXJAdHVtLmRlIiwiaWF0IjoxNzQ2Mjk0MzkyLCJleHAiOjE3NDYzODA3OTJ9.IjBd-iwrRc6LNvBwib23Y4-ZQ8nV-ceTCq4weaMHBJs
+}

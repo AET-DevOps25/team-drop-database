@@ -1,0 +1,11 @@
+meta {
+  name: Connection (Manager)
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://{{user-service}}/connection/manager-ping
+  body: json
+  auth: inherit
+}
