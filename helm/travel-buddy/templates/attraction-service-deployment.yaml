@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attraction-service
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.attractionservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: travel-buddy-attraction-selector
+  template:
+    metadata:
+      labels:
+        app: travel-buddy-attraction-selector
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+
+      {{- if .Values.attractionservice.keyMount.enabled }}
+      volumes:
+        - name: auth-keys
+          secret:
+            secretName: {{ .Values.sharedKeys.secretName }}
+      {{- end }}
+
+      containers:
+        - name: attraction-service
+          image: "{{ .Values.attractionservice.image.repository }}:{{ .Values.attractionservice.image.tag }}"
+          imagePullPolicy: {{ .Values.attractionservice.image.pullPolicy }}
+
+          {{- if .Values.attractionservice.keyMount.enabled }}
+          volumeMounts:
+            - name: auth-keys
+              mountPath: {{ .Values.sharedKeys.mountPath }}
+              readOnly: true
+          {{- end }}
+
+          resources:
+            limits:
+              cpu: {{ .Values.attractionservice.resources.limits.cpu | quote }}
+              memory: {{ .Values.attractionservice.resources.limits.memory | quote }}
+            requests:
+              cpu: {{ .Values.attractionservice.resources.requests.cpu | quote }}
+              memory: {{ .Values.attractionservice.resources.requests.memory | quote }}
+
+          ports:
+            - containerPort: {{ .Values.attractionservice.service.targetPort }}
+
+          env:
+            {{- range .Values.attractionservice.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+
+            {{- if .Values.attractionservice.keyMount.enabled }}
+            - name: PUBLIC_KEY_PATH
+              value: "{{ printf "%s/%s" .Values.sharedKeys.mountPath .Values.sharedKeys.publicKeyFile }}"
+            {{- end }}

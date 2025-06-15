@@ -3,18 +3,20 @@ package de.tum.userservice.conversation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/conversations")
+@RequestMapping("/conversations")
 @RequiredArgsConstructor
 public class ConversationController {
 
     private final ConversationService service;
 
     @PostMapping("/{userId}")
+    @PreAuthorize("@userSecurity.isSelf(#userId, principal.username)")
     public ResponseEntity<ConversationEntity> createNewConversation(
             @RequestBody String prompt,
             @PathVariable Long userId
@@ -29,6 +31,7 @@ public class ConversationController {
     }
 
     @GetMapping("/{conversationId}")
+    @PreAuthorize("@userSecurity.canAccessConversation(#conversationId, principal.username)")
     public ResponseEntity<ConversationEntity> getConversationContext(
             @PathVariable Long conversationId
     ) {
@@ -42,6 +45,7 @@ public class ConversationController {
     }
 
     @PutMapping("/{conversationId}")
+    @PreAuthorize("@userSecurity.canAccessConversation(#conversationId, principal.username)")
     public ResponseEntity<ConversationEntity> resumeConversation(
             @RequestBody String prompt,
             @PathVariable Long conversationId
@@ -56,6 +60,7 @@ public class ConversationController {
     }
 
     @DeleteMapping("/{conversationId}")
+    @PreAuthorize("@userSecurity.canAccessConversation(#conversationId, principal.username)")
     public ResponseEntity<Void> deleteConversation(@PathVariable Long conversationId) {
         if (service.deleteConversation(conversationId)) {
             return ResponseEntity.noContent().build();
@@ -65,6 +70,7 @@ public class ConversationController {
     }
 
     @GetMapping("/h/{userId}")
+    @PreAuthorize("@userSecurity.isSelf(#userId, principal.username)")
     public ResponseEntity<List<ConversationDTO>> getConversationHistory(
             @PathVariable Long userId
     ) {

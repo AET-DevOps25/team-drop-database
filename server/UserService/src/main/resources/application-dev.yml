@@ -8,3 +8,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+application:
+  security:
+    jwt:
+      private-key-path: keys/private.pem
+      public-key-path: keys/public.pem

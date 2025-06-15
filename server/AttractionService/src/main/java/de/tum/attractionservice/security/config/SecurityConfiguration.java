@@ -20,8 +20,8 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] WHITE_LIST_URL = {
-        "/api/v1/cities/**",
-        "/api/v1/attractions/**"
+        "/cities/**",
+        "/attractions/**"
     };
 
     private static final String USER = "USER";
@@ -35,10 +35,10 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/api/v1/connection/ping").permitAll()
-                                .requestMatchers("/api/v1/connection/user-ping").hasAnyRole(USER)
-                                .requestMatchers("/api/v1/connection/admin-ping").hasAnyRole(ADMIN)
-                                .requestMatchers("/api/v1/connection/manager-ping").hasAnyRole(MANAGER)
+                                .requestMatchers("/connection/ping").permitAll()
+                                .requestMatchers("/connection/user-ping").hasAnyRole(USER)
+                                .requestMatchers("/connection/admin-ping").hasAnyRole(ADMIN)
+                                .requestMatchers("/connection/manager-ping").hasAnyRole(MANAGER)
                                 .anyRequest()
                                 .authenticated()
                 )

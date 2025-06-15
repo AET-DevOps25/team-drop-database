@@ -1,6 +1,6 @@
 package de.tum.userservice.conversation;
 
-import de.tum.userservice.profile.ProfileRepository;
+import de.tum.userservice.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +12,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ConversationService {
-    private final ProfileRepository profileRepository;
+    private final UserRepository userRepository;
     private final ConversationRepository conversationRepository;
 
     @Transactional
     public ConversationEntity createNewConversation(Long userId, String prompt) {
-        if (profileRepository.findById(userId).isEmpty()) {
+        if (userRepository.findById(userId).isEmpty()) {
             throw new IllegalArgumentException("User not found");
         }
         ChatMessageEntity userMessage = ChatMessageEntity.builder()
@@ -65,7 +65,7 @@ public class ConversationService {
 
     @Transactional(readOnly = true)
     public List<ConversationDTO> getConversationHistory(Long userId) {
-        if (!profileRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("User not found");
         }
         List<ConversationDTO> conversationDTOList = conversationRepository

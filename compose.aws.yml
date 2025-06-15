@@ -1,0 +1,74 @@
+services:
+  reverse-proxy:
+    image: traefik:v3.4
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@tum.de"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+
+  userservice:
+    image: ghcr.io/shuaiweiyu/dropdb/userservice:main
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.userservice.rule=Host(`${USERSERVICE_HOST}`)"
+      - "traefik.http.services.userservice.loadbalancer.server.port=8080"
+      - "traefik.http.routers.userservice.entrypoints=websecure"
+      - "traefik.http.routers.userservice.tls.certresolver=letsencrypt"
+
+  attractionservice:
+    image: ghcr.io/shuaiweiyu/dropdb/attractionservice:main
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.attractionservice.rule=Host(`${ATTRACTIONSERVICE_HOST}`)"
+      - "traefik.http.services.attractionservice.loadbalancer.server.port=8080"
+      - "traefik.http.routers.attractionservice.entrypoints=websecure"
+      - "traefik.http.routers.attractionservice.tls.certresolver=letsencrypt"
+  
+  authservice:
+    image: ghcr.io/shuaiweiyu/dropdb/authservice:main
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authservice.rule=Host(`${AUTH_HOST}`)"
+      - "traefik.http.services.authservice.loadbalancer.server.port=8080"
+      - "traefik.http.routers.authservice.entrypoints=websecure"
+      - "traefik.http.routers.authservice.tls.certresolver=letsencrypt"
+  
+  # client:
+  #   image: ghcr.io/aet-devops25/w05-template/client:latest
+  #   environment:
+  #     - PUBLIC_API_URL=${PUBLIC_API_URL}
+  #   depends_on:
+  #     - server
+  #   restart: unless-stopped
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.client.rule=Host(`${CLIENT_HOST}`)"
+  #     - "traefik.http.services.client.loadbalancer.server.port=3000"
+  #     - "traefik.http.routers.client.entrypoints=websecure"
+  #     - "traefik.http.routers.client.tls.certresolver=letsencrypt"
+  #     - "traefik.http.middlewares.client-compress.compress=true"
+  #     - "traefik.http.routers.client.middlewares=client-compress"
+  #     - "traefik.http.routers.client.priority=1"
