@@ -1,7 +1,5 @@
 package de.tum.attractionservice.service;
 
-import de.tum.attractionservice.model.CityEntity;
-import de.tum.attractionservice.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,12 +13,10 @@ import de.tum.attractionservice.repository.AttractionRepository;
 public class AttractionService {
 
     private final AttractionRepository attractionRepository;
-    private final CityRepository cityRepository;
 
     @Autowired
-    public AttractionService(AttractionRepository attractionRepository, CityRepository cityRepository) {
+    public AttractionService(AttractionRepository attractionRepository) {
         this.attractionRepository = attractionRepository;
-        this.cityRepository = cityRepository;
     }
 
     public AttractionEntity getAttractionByName(String name) {
@@ -36,11 +32,6 @@ public class AttractionService {
     }
 
     public void saveAttraction(AttractionEntity attraction) {
-        Long cityId = attraction.getCity().getId();
-        CityEntity managedCity = cityRepository.findById(cityId)
-                .orElseThrow(() -> new IllegalArgumentException("City with ID " + cityId + " not found"));
-
-        attraction.setCity(managedCity);
         attractionRepository.save(attraction);
     }
 
