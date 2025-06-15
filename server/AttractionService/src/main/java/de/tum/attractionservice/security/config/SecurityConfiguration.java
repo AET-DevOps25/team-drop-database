@@ -3,6 +3,7 @@ package de.tum.attractionservice.security.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,6 +36,10 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
+                                .requestMatchers(HttpMethod.POST, "/cities").hasAnyRole(ADMIN, MANAGER)
+                                .requestMatchers(HttpMethod.DELETE, "/cities/**").hasAnyRole(ADMIN, MANAGER)
+                                .requestMatchers(HttpMethod.POST, "/attractions").hasAnyRole(ADMIN, MANAGER)
+                                .requestMatchers(HttpMethod.DELETE, "/attractions/**").hasAnyRole(ADMIN, MANAGER)
                                 .requestMatchers("/connection/ping").permitAll()
                                 .requestMatchers("/connection/user-ping").hasAnyRole(USER)
                                 .requestMatchers("/connection/admin-ping").hasAnyRole(ADMIN)

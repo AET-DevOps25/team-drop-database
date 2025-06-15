@@ -38,7 +38,6 @@ public class CityController {
 
     
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<CityEntity> createCity(@RequestBody CityEntity city) {
         CityEntity saved = cityRepository.save(city);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
@@ -46,7 +45,6 @@ public class CityController {
 
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> deleteCity(@PathVariable Long id) {
         if (cityRepository.existsById(id)) {
             cityRepository.deleteById(id);

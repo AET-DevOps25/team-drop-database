@@ -1,0 +1,11 @@
+meta {
+  name: Connection
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://{{user-service}}/connection/ping
+  body: json
+  auth: none
+}

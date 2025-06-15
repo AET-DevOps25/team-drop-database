@@ -1,0 +1,11 @@
+meta {
+  name: Connection (Admin)
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://{{attraction-service}}/connection/admin-ping
+  body: json
+  auth: inherit
+}
