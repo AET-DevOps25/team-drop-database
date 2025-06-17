@@ -36,7 +36,7 @@ export const sendLogout = async (): Promise<void> => {
 
 export const sendRefresh = async (refreshToken: string): Promise<LoginResponse> => {
     const {data} = await axiosAuth.post(
-        '/api/v1/auth/refresh-token',
+        '/auth/refresh-token',
         {},
         {
             headers: {Authorization: `Bearer ${refreshToken}`}
