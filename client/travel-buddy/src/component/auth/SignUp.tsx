@@ -86,6 +86,9 @@ const Signup: React.FC = () => {
                 refreshToken
             });
 
+            localStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem("persist", "true");
+
             setEmail('');
             setPwd('');
             setConfirmPwd('');
