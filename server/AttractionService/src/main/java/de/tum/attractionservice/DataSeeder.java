@@ -37,10 +37,8 @@ public class DataSeeder implements CommandLineRunner {
             return;
         }
 
-        // 1) 准备 6 个城市
         List<CityEntity> cities = seedCities();
 
-        // 2) 每城 20 条景点
         int perCity = 5;
         for (CityEntity city : cities) {
             for (int i = 0; i < perCity; i++) {
@@ -116,7 +114,6 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private URL unsplash(String keyword) throws MalformedURLException {
-        // Unsplash source URL，方便做假图
         return new URL("https://source.unsplash.com/random/800x600?" + keyword);
     }
 }
