@@ -80,6 +80,7 @@ public class DataSeeder implements CommandLineRunner {
 
         // Location
         Location loc = new Location();
+        loc.setCountry(faker.country().name());
         loc.setLatitude(randomInRange(-90, 90));
         loc.setLongitude(randomInRange(-180, 180));
         loc.setAddress(faker.address().streetAddress());
