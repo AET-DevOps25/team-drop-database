@@ -12,11 +12,18 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AirplaneTicketIcon from '@mui/icons-material/AirplaneTicket';
+import {useNavigate} from "react-router-dom";
 
-const pages = ['Consult', 'Explore', 'About'];
+const pages = [
+    { label: 'Consult', path: '/consult' },
+    { label: 'Explore', path: '/explore' },
+    { label: 'About', path: '/about' }
+];
 const settings = ['Profile', 'Logout'];
 
 function TravelBuddyAppBar() {
+    const navigate = useNavigate();
+
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -43,8 +50,8 @@ function TravelBuddyAppBar() {
                     <Typography
                         variant="h6"
                         noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
+                        component="div"
+                        onClick={() => navigate('/')}
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
@@ -53,6 +60,7 @@ function TravelBuddyAppBar() {
                             letterSpacing: '.3rem',
                             color: 'inherit',
                             textDecoration: 'none',
+                            cursor: 'pointer',
                         }}
                     >
                         Travel Buddy
@@ -85,9 +93,15 @@ function TravelBuddyAppBar() {
                             onClose={handleCloseNavMenu}
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                            {pages.map(({ label, path }) => (
+                                <MenuItem
+                                    key={label}
+                                    onClick={() => {
+                                        navigate(path);
+                                        handleCloseNavMenu();
+                                    }}
+                                >
+                                    <Typography sx={{ textAlign: 'center' }}>{label}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
@@ -96,8 +110,8 @@ function TravelBuddyAppBar() {
                     <Typography
                         variant="h5"
                         noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
+                        component="div"
+                        onClick={() => navigate('/')}
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },
@@ -107,18 +121,22 @@ function TravelBuddyAppBar() {
                             letterSpacing: '.3rem',
                             color: 'inherit',
                             textDecoration: 'none',
+                            cursor: 'pointer',
                         }}
                     >
                         Travel Buddy
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
+                        {pages.map(({ label, path }) => (
                             <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
+                                key={label}
+                                onClick={() => {
+                                    navigate(path);
+                                    handleCloseNavMenu();
+                                }}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
-                                {page}
+                                {label}
                             </Button>
                         ))}
                     </Box>
