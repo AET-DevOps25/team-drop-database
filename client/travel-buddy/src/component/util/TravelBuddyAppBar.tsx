@@ -211,15 +211,6 @@ function TravelBuddyAppBar() {
                                             </Typography>
                                         </MenuItem>
                                     ))}
-                                    <MenuItem
-                                        onClick={() => {
-                                            localStorage.removeItem('accessToken'); // 或 sessionStorage
-                                            setIsLoggedIn(false);
-                                            handleCloseUserMenu();
-                                        }}
-                                    >
-                                        <Typography textAlign="center">Logout</Typography>
-                                    </MenuItem>
                                 </Menu>
                             </>
                         ) : (

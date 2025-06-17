@@ -1,9 +1,4 @@
-export interface ChatMessageEntity {
-    messageId: number;
-    content: string;
-    sender: string;
-    createdAt: string;
-}
+import {ChatMessageEntity} from "./ChatMessageEntity";
 
 export interface ConversationEntity {
     conversationId: number;

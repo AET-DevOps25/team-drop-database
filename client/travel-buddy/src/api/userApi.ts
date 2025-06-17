@@ -1,5 +1,6 @@
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import { ConversationEntity } from '../component/consult/ConversationEntity';
+import { ConversationEntity } from '../dto/ConversationEntity';
+import {UserEntity} from "../dto/UserEntity";
 
 export const useUserApi = () => {
     const { axiosUser } = useAxiosPrivate();
@@ -12,6 +13,17 @@ export const useUserApi = () => {
             return false;
         }
     };
+
+    const createUserProfile = async (user: UserEntity): Promise<UserEntity> => {
+        const { data } = await axiosUser.post<UserEntity>(
+            '/profiles',
+            JSON.stringify(user),
+            {
+                headers: {'Content-Type': 'application/json'},
+            }
+        )
+        return data;
+    }
 
     const createConversation = async (
         userId: number,
@@ -31,6 +43,7 @@ export const useUserApi = () => {
 
     return {
         createConversation,
+        createUserProfile,
         pingUserServer
     };
 };
