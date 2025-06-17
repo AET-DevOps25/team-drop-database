@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-const BASE_AUTH_URL = 'http://localhost:8081/auth-service/api/v1';
-
-const BASE_ATTR_URL = 'http://localhost:8082/attraction-service/api/v1';
-
-const BASE_USER_URL = 'http://localhost:8083/user-service/api/v1';
+const BASE_AUTH_URL = process.env.REACT_APP_BASE_AUTH_URL!;
+const BASE_ATTR_URL = process.env.REACT_APP_BASE_ATTR_URL!;
+const BASE_USER_URL = process.env.REACT_APP_BASE_USER_URL!;
 
 export const axiosAuth = axios.create({
     baseURL: BASE_AUTH_URL,
