@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,8 @@ public class UserController {
      * Creates a new profile.
      */
     @PostMapping
-    public ResponseEntity<UserEntity> create(@RequestBody UserEntity profile) {
+    @PreAuthorize("@userSecurity.canCreateProfile(#profile.email, principal.username)")
+    public ResponseEntity<UserEntity> create(@P("profile") @RequestBody UserEntity profile) {
         try {
             UserEntity createdProfile = service.createProfile(profile);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProfile);
