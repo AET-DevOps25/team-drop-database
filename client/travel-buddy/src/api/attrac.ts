@@ -70,6 +70,8 @@ export interface PaginationParams {
     sortBy?: string; // default 'name'
 }
 
+const END_POINT = '/attractions';
+
 /**
  * Generic paginated GET helper.
  * @param relativePath Path appended to axiosAttr.baseURL.
@@ -90,13 +92,13 @@ const getPaginated = async <T>(
  * An empty string means axiosAttr.baseURL itself (already includes /attractions).
  */
 export const getAllAttractions = (params?: PaginationParams) =>
-    getPaginated<Attraction>('', params);
+    getPaginated<Attraction>(END_POINT, params);
 
 /**
  * Fetch attractions in a specific city.
  */
 export const getAttractionsByCity = (city: string, params?: PaginationParams) =>
-    getPaginated<Attraction>(`/city/${encodeURIComponent(city)}`, params);
+    getPaginated<Attraction>(`${END_POINT}/city/${encodeURIComponent(city)}`, params);
 
 /**
  * Fetch a single attraction by name.
@@ -104,7 +106,7 @@ export const getAttractionsByCity = (city: string, params?: PaginationParams) =>
 export const getAttractionByName = async (
     name: string
 ): Promise<Attraction> => {
-    const res = await axiosAttr.get<Attraction>(`/${encodeURIComponent(name)}`);
+    const res = await axiosAttr.get<Attraction>(`${END_POINT}/${encodeURIComponent(name)}`);
     return res.data;
 };
 
@@ -114,7 +116,7 @@ export const getAttractionByName = async (
 export const getAttractionById = async (
     id: number
 ): Promise<Attraction> => {
-    const res = await axiosAttr.get<Attraction>(`/id/${id}`);
+    const res = await axiosAttr.get<Attraction>(`${END_POINT}/id/${id}`);
     return res.data;
 };
 
@@ -124,7 +126,7 @@ export const getAttractionById = async (
 export const createAttraction = async (
     attraction: Omit<Attraction, 'id'>
 ): Promise<void> => {
-    await axiosAttr.post('', attraction);
+    await axiosAttr.post(END_POINT, attraction);
 };
 
 /**
@@ -134,5 +136,5 @@ export const createAttraction = async (
 export const deleteAttraction = async (
     attraction: Attraction
 ): Promise<void> => {
-    await axiosAttr.delete('', { data: attraction });
+    await axiosAttr.delete(END_POINT, { data: attraction });
 };
