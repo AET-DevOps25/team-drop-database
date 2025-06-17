@@ -3,7 +3,9 @@ package de.tum.authservice.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,16 +34,17 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .permitAll()
-                                .requestMatchers("/connection/ping").permitAll()
-                                .requestMatchers("/connection/user-ping").hasAnyRole(USER.name())
-                                .requestMatchers("/connection/admin-ping").hasAnyRole(ADMIN.name())
-                                .requestMatchers("/connection/manager-ping").hasAnyRole(MANAGER.name())
-                                .anyRequest()
-                                .authenticated()
+                        req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                            .requestMatchers(WHITE_LIST_URL).permitAll()
+                            .requestMatchers("/connection/ping").permitAll()
+                            .requestMatchers("/connection/user-ping").hasAnyRole(USER.name())
+                            .requestMatchers("/connection/admin-ping").hasAnyRole(ADMIN.name())
+                            .requestMatchers("/connection/manager-ping").hasAnyRole(MANAGER.name())
+                            .anyRequest()
+                            .authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

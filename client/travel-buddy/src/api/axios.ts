@@ -15,9 +15,3 @@ export const axiosAttr = axios.create({
 export const axiosUser = axios.create({
     baseURL: BASE_USER_URL,
 });
-
-export const axiosPrivate = axios.create({
-    baseURL: BASE_AUTH_URL,
-    headers: { 'Content-Type': 'application/json' },
-    withCredentials: true
-});
