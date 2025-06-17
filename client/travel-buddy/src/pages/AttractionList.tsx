@@ -129,6 +129,7 @@ const AttractionList: React.FC = () => {
                     overflowX: 'auto',
                     pb: 2,
                     mb: 4,
+                    justifyContent: 'center',
                 }}
             >
                 {derivedCities.map((c) => (
