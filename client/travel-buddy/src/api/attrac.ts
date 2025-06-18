@@ -119,22 +119,3 @@ export const getAttractionById = async (
     const res = await axiosAttr.get<Attraction>(`${END_POINT}/id/${id}`);
     return res.data;
 };
-
-/**
- * Create a new attraction.
- */
-export const createAttraction = async (
-    attraction: Omit<Attraction, 'id'>
-): Promise<void> => {
-    await axiosAttr.post(END_POINT, attraction);
-};
-
-/**
- * Delete an attraction (DELETE /attractions).
- * The backend expects the entity in the request body.
- */
-export const deleteAttraction = async (
-    attraction: Attraction
-): Promise<void> => {
-    await axiosAttr.delete(END_POINT, { data: attraction });
-};
