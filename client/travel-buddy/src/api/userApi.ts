@@ -2,6 +2,7 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { ConversationEntity } from '../dto/ConversationEntity';
 import {UserEntity} from "../dto/UserEntity";
 import {ConversationDTO} from "../dto/ConversationDTO";
+import {PromptDTO} from "../dto/PromptDTO";
 
 export const useUserApi = () => {
     const { axiosUser } = useAxiosPrivate();
@@ -36,25 +37,23 @@ export const useUserApi = () => {
         return data;
     }
 
-    const createConversation = async (
-        userId: number,
-        prompt: string
+    const createConversationByEmail = async (
+        email: string,
+        prompt: PromptDTO
     ): Promise<ConversationEntity> => {
         const { data } = await axiosUser.post<ConversationEntity>(
-            `/conversation/${userId}`,
+            `/conversations/email/${email}`,
             prompt,
             {
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
+                headers: { 'Content-Type': 'application/json' },
             }
         );
         return data;
     };
 
-    const getConversationHistory = async (userId: number): Promise<ConversationDTO[]> => {
+    const getConversationHistoryByEmail = async (email: string): Promise<ConversationDTO[]> => {
         const { data } = await axiosUser.get<ConversationDTO[]>(
-            `/conversation/h/${userId}`,
+            `/conversations/h/email/${email}`,
             {
                 headers: { 'Content-Type': 'application/json' },
             }
@@ -63,10 +62,10 @@ export const useUserApi = () => {
     };
 
     return {
-        createConversation,
+        createConversationByEmail,
         createUserProfile,
         pingUserServer,
         getUserProfileByEmail,
-        getConversationHistory
+        getConversationHistoryByEmail
     };
 };

@@ -14,9 +14,10 @@ const useRefreshToken = () => {
         setAuth(prev => {
             const decoded: { sub: string; roles: string[] } = jwtDecode(access_token);
             return {
-                ...prev,
+                user: decoded.sub,
                 roles: decoded.roles,
                 accessToken: access_token,
+                refreshToken: refresh_token
             }
         });
 

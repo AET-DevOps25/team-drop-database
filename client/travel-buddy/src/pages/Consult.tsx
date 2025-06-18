@@ -5,36 +5,20 @@ import Sidebar from '../component/consult/Sidebar';
 import InputBar from '../component/consult/InputBar';
 import useAuth from "../hooks/useAuth";
 import {useUserApi} from "../api/userApi";
-import {UserEntity} from "../dto/UserEntity";
 import {ConversationDTO} from "../dto/ConversationDTO";
 
 const Consult: React.FC = () => {
     const { auth } = useAuth();
-    const { getUserProfileByEmail, getConversationHistory } = useUserApi();
+    const { getConversationHistoryByEmail } = useUserApi();
 
-    const [userProfile, setUserProfile] = useState<UserEntity | null>(null);
     const [conversations, setConversations] = useState<ConversationDTO[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchUserProfile = async () => {
-            if (auth?.user) {
-                try {
-                    const profile = await getUserProfileByEmail(auth.user);
-                    setUserProfile(profile);
-                } catch (error) {
-                    console.error('Failed to fetch user profile:', error);
-                }
-            }
-        };
-        fetchUserProfile();
-    }, [auth]);
-
-    useEffect(() => {
         const fetchConversations = async () => {
-            if (userProfile?.id != null) {
+            if (auth?.user != null) {
                 try {
-                    const history = await getConversationHistory(userProfile.id);
+                    const history = await getConversationHistoryByEmail(auth.user);
                     const sorted = history.sort(
                         (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
                     );
@@ -48,7 +32,7 @@ const Consult: React.FC = () => {
             }
         };
         fetchConversations();
-    }, [userProfile]);
+    }, []);
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -66,7 +50,7 @@ const Consult: React.FC = () => {
                 <Toolbar />
 
                 {/* 你原本的页面内容 */}
-                <InputBar userId={userProfile?.id!} />
+                <InputBar email={auth?.user || ""} />
             </Box>
         </Box>
     );
