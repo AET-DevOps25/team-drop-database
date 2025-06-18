@@ -33,10 +33,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ userId }) => {
         setLoading(true);
         try {
             const newConversation = await createConversation(userId, trimmedPrompt);
-            console.log("创建成功：", newConversation);
             setInputValue("");
         } catch (error) {
-            console.error("发送失败:", error);
             setErrorOpen(true); // 显示错误提示
         } finally {
             setLoading(false);

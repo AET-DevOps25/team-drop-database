@@ -11,7 +11,7 @@ public class UserSecurity {
     private final UserRepository userRepository;
     private final ConversationRepository conversationRepository;
 
-    public boolean canCreateProfile(String InputEmail, String tokenEmail) {
+    public boolean emailsAreSame(String InputEmail, String tokenEmail) {
         return InputEmail.equals(tokenEmail);
     }
 

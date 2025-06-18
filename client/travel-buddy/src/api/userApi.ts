@@ -1,6 +1,7 @@
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { ConversationEntity } from '../dto/ConversationEntity';
 import {UserEntity} from "../dto/UserEntity";
+import {ConversationDTO} from "../dto/ConversationDTO";
 
 export const useUserApi = () => {
     const { axiosUser } = useAxiosPrivate();
@@ -13,6 +14,16 @@ export const useUserApi = () => {
             return false;
         }
     };
+
+    const getUserProfileByEmail = async (email: string): Promise<UserEntity> => {
+        const { data } = await axiosUser.get<UserEntity>(
+            `/profiles/email/${email}`,
+            {
+                headers: {'Content-Type': 'application/json'},
+            }
+        );
+        return data;
+    }
 
     const createUserProfile = async (user: UserEntity): Promise<UserEntity> => {
         const { data } = await axiosUser.post<UserEntity>(
@@ -41,9 +52,21 @@ export const useUserApi = () => {
         return data;
     };
 
+    const getConversationHistory = async (userId: number): Promise<ConversationDTO[]> => {
+        const { data } = await axiosUser.get<ConversationDTO[]>(
+            `/conversation/h/${userId}`,
+            {
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
+        return data;
+    };
+
     return {
         createConversation,
         createUserProfile,
-        pingUserServer
+        pingUserServer,
+        getUserProfileByEmail,
+        getConversationHistory
     };
 };

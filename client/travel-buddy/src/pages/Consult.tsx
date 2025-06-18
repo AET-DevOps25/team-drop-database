@@ -1,5 +1,75 @@
-const Consult = () => {
-    return <h1>Consult GPT</h1>;
+// pages/Consult.tsx
+import React, {useEffect, useState} from 'react';
+import { Box, Toolbar } from '@mui/material';
+import Sidebar from '../component/consult/Sidebar';
+import InputBar from '../component/consult/InputBar';
+import useAuth from "../hooks/useAuth";
+import {useUserApi} from "../api/userApi";
+import {UserEntity} from "../dto/UserEntity";
+import {ConversationDTO} from "../dto/ConversationDTO";
+
+const Consult: React.FC = () => {
+    const { auth } = useAuth();
+    const { getUserProfileByEmail, getConversationHistory } = useUserApi();
+
+    const [userProfile, setUserProfile] = useState<UserEntity | null>(null);
+    const [conversations, setConversations] = useState<ConversationDTO[]>([]);
+    const [activeId, setActiveId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            if (auth?.user) {
+                try {
+                    const profile = await getUserProfileByEmail(auth.user);
+                    setUserProfile(profile);
+                } catch (error) {
+                    console.error('Failed to fetch user profile:', error);
+                }
+            }
+        };
+        fetchUserProfile();
+    }, [auth]);
+
+    useEffect(() => {
+        const fetchConversations = async () => {
+            if (userProfile?.id != null) {
+                try {
+                    const history = await getConversationHistory(userProfile.id);
+                    const sorted = history.sort(
+                        (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+                    );
+                    setConversations(sorted);
+                    if (sorted.length > 0) {
+                        setActiveId(sorted[0].id.toString());
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch conversation history:', error);
+                }
+            }
+        };
+        fetchConversations();
+    }, [userProfile]);
+
+    return (
+        <Box sx={{ display: 'flex' }}>
+            {/* 左侧会话列表 */}
+            <Sidebar
+                conversations={conversations.map(c => ({ id: c.id.toString(), title: c.title }))}
+                activeId={activeId ?? ''}
+                onSelect={setActiveId}
+                appBarOffset={64}
+            />
+
+            {/* 主内容区 */}
+            <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
+                {/* 这行 Toolbar 把所有内容整体推到 AppBar 下方 */}
+                <Toolbar />
+
+                {/* 你原本的页面内容 */}
+                <InputBar userId={userProfile?.id!} />
+            </Box>
+        </Box>
+    );
 };
 
 export default Consult;

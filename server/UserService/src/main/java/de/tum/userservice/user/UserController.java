@@ -22,7 +22,7 @@ public class UserController {
      * Creates a new profile.
      */
     @PostMapping
-    @PreAuthorize("@userSecurity.canCreateProfile(#profile.email, principal.username)")
+    @PreAuthorize("@userSecurity.emailsAreSame(#profile.email, principal.username)")
     public ResponseEntity<UserEntity> create(@P("profile") @RequestBody UserEntity profile) {
         try {
             UserEntity createdProfile = service.createProfile(profile);
@@ -41,6 +41,17 @@ public class UserController {
     public ResponseEntity<UserEntity> getById(@PathVariable Long id) {
         try {
             UserEntity profile = service.getProfileById(id);
+            return ResponseEntity.ok(profile);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/email/{email}")
+    @PreAuthorize("@userSecurity.emailsAreSame(#email, principal.username)")
+    public ResponseEntity<UserEntity> getByEmail(@PathVariable String email) {
+        try {
+            UserEntity profile = service.getProfileByEmail(email);
             return ResponseEntity.ok(profile);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
