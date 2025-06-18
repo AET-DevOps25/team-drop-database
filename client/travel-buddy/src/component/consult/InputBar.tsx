@@ -59,7 +59,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ email }) => {
                         padding: "8px",
                         borderRadius: "24px",
                         bgcolor: "#f5f5f5",
-                        width: "600px",
+                        width: "100%",
+                        maxWidth: 600,
                     }}
                 >
                     <Box

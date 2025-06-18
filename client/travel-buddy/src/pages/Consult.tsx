@@ -1,18 +1,29 @@
-// pages/Consult.tsx
-import React, {useEffect, useState} from 'react';
-import { Box, Toolbar } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+    Box,
+    IconButton,
+    Toolbar,
+    useMediaQuery,
+    useTheme
+} from '@mui/material';
 import Sidebar from '../component/consult/Sidebar';
 import InputBar from '../component/consult/InputBar';
-import useAuth from "../hooks/useAuth";
-import {useUserApi} from "../api/userApi";
-import {ConversationDTO} from "../dto/ConversationDTO";
+import useAuth from '../hooks/useAuth';
+import { useUserApi } from '../api/userApi';
+import { ConversationDTO } from '../dto/ConversationDTO';
+import HistoryIcon from '@mui/icons-material/History';
 
 const Consult: React.FC = () => {
     const { auth } = useAuth();
     const { getConversationHistoryByEmail } = useUserApi();
-
     const [conversations, setConversations] = useState<ConversationDTO[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+    const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
     useEffect(() => {
         const fetchConversations = async () => {
@@ -36,21 +47,46 @@ const Consult: React.FC = () => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            {/* 左侧会话列表 */}
+            {/* Sidebar */}
             <Sidebar
                 conversations={conversations.map(c => ({ id: c.id.toString(), title: c.title }))}
                 activeId={activeId ?? ''}
                 onSelect={setActiveId}
-                appBarOffset={64}
+                mobileOpen={sidebarOpen}
+                onCloseMobile={() => setSidebarOpen(false)}
             />
 
-            {/* 主内容区 */}
+            {/* Main Content */}
             <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
-                {/* 这行 Toolbar 把所有内容整体推到 AppBar 下方 */}
                 <Toolbar />
 
-                {/* 你原本的页面内容 */}
-                <InputBar email={auth?.user || ""} />
+                {/* Input row */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        width: '100%',
+                        mt: 2,
+                        px: isMobile ? 1 : 0,
+                    }}
+                >
+                    {isMobile && (
+                        <IconButton
+                            onClick={toggleSidebar}
+                            sx={{
+                                height: 48,
+                                width: 48,
+                                mt: '20px'
+                            }}
+                        >
+                            <HistoryIcon />
+                        </IconButton>
+                    )}
+                    <Box sx={{ flexGrow: 1 }}>
+                        <InputBar email={auth?.user || ''} />
+                    </Box>
+                </Box>
             </Box>
         </Box>
     );
