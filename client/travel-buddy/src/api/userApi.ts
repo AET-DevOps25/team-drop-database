@@ -1,6 +1,8 @@
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { ConversationEntity } from '../dto/ConversationEntity';
 import {UserEntity} from "../dto/UserEntity";
+import {ConversationDTO} from "../dto/ConversationDTO";
+import {PromptDTO} from "../dto/PromptDTO";
 
 export const useUserApi = () => {
     const { axiosUser } = useAxiosPrivate();
@@ -14,6 +16,16 @@ export const useUserApi = () => {
         }
     };
 
+    const getUserProfileByEmail = async (email: string): Promise<UserEntity> => {
+        const { data } = await axiosUser.get<UserEntity>(
+            `/profiles/email/${email}`,
+            {
+                headers: {'Content-Type': 'application/json'},
+            }
+        );
+        return data;
+    }
+
     const createUserProfile = async (user: UserEntity): Promise<UserEntity> => {
         const { data } = await axiosUser.post<UserEntity>(
             '/profiles',
@@ -25,25 +37,35 @@ export const useUserApi = () => {
         return data;
     }
 
-    const createConversation = async (
-        userId: number,
-        prompt: string
+    const createConversationByEmail = async (
+        email: string,
+        prompt: PromptDTO
     ): Promise<ConversationEntity> => {
         const { data } = await axiosUser.post<ConversationEntity>(
-            `/conversation/${userId}`,
+            `/conversations/email/${email}`,
             prompt,
             {
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
+        return data;
+    };
+
+    const getConversationHistoryByEmail = async (email: string): Promise<ConversationDTO[]> => {
+        const { data } = await axiosUser.get<ConversationDTO[]>(
+            `/conversations/h/email/${email}`,
+            {
+                headers: { 'Content-Type': 'application/json' },
             }
         );
         return data;
     };
 
     return {
-        createConversation,
+        createConversationByEmail,
         createUserProfile,
-        pingUserServer
+        pingUserServer,
+        getUserProfileByEmail,
+        getConversationHistoryByEmail
     };
 };

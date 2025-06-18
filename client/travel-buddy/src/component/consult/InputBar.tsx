@@ -10,13 +10,14 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import { useUserApi } from "../../api/userApi";
+import {PromptDTO} from "../../dto/PromptDTO";
 
 interface ChatInputProps {
-    userId: number;
+    email: string;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ userId }) => {
-    const { createConversation } = useUserApi();
+const ChatInput: React.FC<ChatInputProps> = ({ email }) => {
+    const { createConversationByEmail } = useUserApi();
     const [inputValue, setInputValue] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [errorOpen, setErrorOpen] = useState<boolean>(false);
@@ -30,14 +31,16 @@ const ChatInput: React.FC<ChatInputProps> = ({ userId }) => {
         const trimmedPrompt = inputValue.trim();
         if (!trimmedPrompt) return;
 
+        const prompt: PromptDTO = {
+            prompt: trimmedPrompt
+        };
+
         setLoading(true);
         try {
-            const newConversation = await createConversation(userId, trimmedPrompt);
-            console.log("创建成功：", newConversation);
+            const newConversation = await createConversationByEmail(email, prompt);
             setInputValue("");
         } catch (error) {
-            console.error("发送失败:", error);
-            setErrorOpen(true); // 显示错误提示
+            setErrorOpen(true);
         } finally {
             setLoading(false);
         }

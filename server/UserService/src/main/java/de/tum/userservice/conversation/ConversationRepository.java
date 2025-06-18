@@ -1,17 +1,17 @@
 package de.tum.userservice.conversation;
 
+import de.tum.userservice.conversation.dto.ConversationDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ConversationRepository extends JpaRepository<ConversationEntity, Long> {
     @Query("""
-        SELECT new de.tum.userservice.conversation.ConversationDTO(
+        SELECT new de.tum.userservice.conversation.dto.ConversationDTO(
                 c.conversationId,
                 c.title,
                 c.createdAt

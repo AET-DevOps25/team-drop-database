@@ -20,6 +20,14 @@ public class UserService {
                 () -> new IllegalArgumentException("Profile not found with id " + id));
     }
 
+    public UserEntity getProfileByEmail(String email) {
+        UserEntity profile = repository.findByEmail(email);
+        if (profile == null) {
+            throw new IllegalArgumentException("Profile not found with email " + email);
+        }
+        return profile;
+    }
+
     public UserEntity updateProfile(Long id, UserEntity profile) {
         return repository.findById(id)
                 .map(existing -> {
