@@ -32,7 +32,7 @@ import {
  */
 const getAttractionImage = (a: Attraction) =>
     a.photos?.[0] ??
-    `https://source.unsplash.com/featured/?travel,${encodeURIComponent(a.name)}`;
+    `https://placehold.co/800x600`;
 
 const PAGE_SIZE = 12; // number of attractions per page
 
