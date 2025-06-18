@@ -22,14 +22,9 @@ public class AttractionEntity {
     @Column(nullable = false)
     private String description;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "address", column = @Column(name = "location_address", nullable = false)),
-            @AttributeOverride(name = "city", column = @Column(name = "location_city", nullable = false)),
-            @AttributeOverride(name = "country", column = @Column(name = "location_country", nullable = false)),
-            @AttributeOverride(name = "latitude", column = @Column(name = "location_latitude", nullable = false)),
-            @AttributeOverride(name = "longitude", column = @Column(name = "location_longitude", nullable = false))
-    })
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
     @ManyToOne
@@ -37,17 +32,11 @@ public class AttractionEntity {
     private CityEntity city;
 
     @ElementCollection
-    @CollectionTable(
-            name = "opening_hours",
-            joinColumns = @JoinColumn(name = "id")
-    )
+    @CollectionTable(name = "opening_hours", joinColumns = @JoinColumn(name = "id"))
     private List<OpeningHours> openingHours;
 
     @ElementCollection
-    @CollectionTable(
-            name = "photos",
-            joinColumns = @JoinColumn(name = "id")
-    )
+    @CollectionTable(name = "photos", joinColumns = @JoinColumn(name = "id"))
     private List<URL> photos;
 
     private String website;
