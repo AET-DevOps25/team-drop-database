@@ -100,7 +100,7 @@ public class DataSeeder implements CommandLineRunner {
 
         // Photos
         a.setPhotos(List.of(
-                unsplash("attraction"), unsplash("travel"), unsplash(city.getName())
+                randomPic(), randomPic(), randomPic()
         ));
 
         // Website
@@ -113,7 +113,7 @@ public class DataSeeder implements CommandLineRunner {
         return Double.toString(ThreadLocalRandom.current().nextDouble(min, max));
     }
 
-    private URL unsplash(String keyword) throws MalformedURLException {
-        return new URL("https://source.unsplash.com/random/800x600?" + keyword);
+    private URL randomPic() throws MalformedURLException {
+        return new URL("https://picsum.photos/800/600");
     }
 }
