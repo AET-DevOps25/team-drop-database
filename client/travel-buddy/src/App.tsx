@@ -27,8 +27,7 @@ function App() {
                     <Route path="/" element={<Home/>}/>
                     <Route path="login" element={<LogIn/>}/>
                     <Route path="about" element={<About/>}/>
-                    <Route path="explore" element={<Explore/>}/>
-                    <Route path="attractions" element={<Attractions/>}/>
+                    <Route path="explore" element={<Attractions/>}/>
 
                     <Route element={<PersistLogin/>}>
                         <Route element={<RequireAuth allowedRoles={[ROLES.USER]}/>}>
