@@ -129,7 +129,9 @@ const AttractionList: React.FC = () => {
                     overflowX: 'auto',
                     pb: 2,
                     mb: 4,
-                    justifyContent: 'center',
+                    // Left‑align items on small screens so the first card is fully visible.
+                    justifyContent: { xs: 'flex-start', md: 'center' },
+                    pl: { xs: 1 }, // slight padding so the first card isn't flush with the edge
                 }}
             >
                 {derivedCities.map((c) => (
