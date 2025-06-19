@@ -25,7 +25,6 @@ public class AttractionEntity {
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "address", column = @Column(name = "location_address", nullable = false)),
-            @AttributeOverride(name = "city", column = @Column(name = "location_city", nullable = false)),
             @AttributeOverride(name = "country", column = @Column(name = "location_country", nullable = false)),
             @AttributeOverride(name = "latitude", column = @Column(name = "location_latitude", nullable = false)),
             @AttributeOverride(name = "longitude", column = @Column(name = "location_longitude", nullable = false))
