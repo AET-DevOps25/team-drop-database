@@ -5,6 +5,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
 import Explore from './pages/Explore';
+import Attractions from "./pages/AttractionList";
 import Layout from "./component/auth/Layout";
 import RequireAuth from "./component/auth/RequireAuth";
 import PersistLogin from "./component/auth/PersistLogin";
@@ -27,8 +28,8 @@ function App() {
                     <Route path="/" element={<Home/>}/>
                     <Route path="login" element={<LogIn/>}/>
                     <Route path="register" element={<Signup/>}/>
-                    <Route path="explore" element={<Explore/>}/>
                     <Route path="about" element={<About/>}/>
+                    <Route path="explore" element={<Attractions/>}/>
 
                     {/* Protected Routes */}
                     <Route element={<PersistLogin/>}>
