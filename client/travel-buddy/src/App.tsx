@@ -4,14 +4,14 @@ import TravelBuddyAppBar from "./component/util/TravelBuddyAppBar";
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
-import Explore from './pages/Explore';
 import Attractions from "./pages/AttractionList";
 import Layout from "./component/auth/Layout";
 import RequireAuth from "./component/auth/RequireAuth";
 import PersistLogin from "./component/auth/PersistLogin";
 import LogIn from "./component/auth/LogIn";
 import Consult from "./pages/Consult";
-import AttractionDetails from './pages/AttracionDetails';
+import AttractionDetails from './pages/AttractionDetails';
+import Signup from "./component/auth/SignUp";
 
 const ROLES = {
     USER: 'USER',
