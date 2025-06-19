@@ -12,6 +12,7 @@ import useAuth from '../hooks/useAuth';
 import { useUserApi } from '../api/userApi';
 import { ConversationDTO } from '../dto/ConversationDTO';
 import HistoryIcon from '@mui/icons-material/History';
+import ChatMessage from "../component/consult/ChatMessage";
 
 const Consult: React.FC = () => {
     const { auth } = useAuth();
@@ -24,6 +25,29 @@ const Consult: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
     const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+
+    const messages = [
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+        { sender: 'user', content: '我想去意大利旅游5天' },
+        { sender: 'system', content: '推荐你参观罗马、佛罗伦萨和威尼斯。' },
+    ];
 
     useEffect(() => {
         const fetchConversations = async () => {
@@ -57,34 +81,60 @@ const Consult: React.FC = () => {
             />
 
             {/* Main Content */}
-            <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
-                <Toolbar />
+            <Box
+                component="main"
+                sx={{
+                    flexGrow: 1,
+                    p: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100vh',
+                    maxWidth: '900px',
+                    margin: '0 auto',
+                    width: '100%'
+                }}
+            >
+
+                <Box
+                    sx={{
+                        flexGrow: 1,
+                        overflowY: 'auto',
+                        px: 2,
+                        pt: 2,
+                    }}
+                >
+                    {messages.map((msg, idx) => (
+                        <ChatMessage key={idx} sender={msg.sender as 'user' | 'system'} content={msg.content} />
+                    ))}
+                </Box>
 
                 {/* Input row */}
                 <Box
                     sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        width: '100%',
-                        mt: 2,
-                        px: isMobile ? 1 : 0,
+                        borderTop: '1px solid #ccc',
+                        px: isMobile ? 1 : 2,
+                        py: 1,
+                        bgcolor: 'background.paper',
+                        position: 'sticky',
+                        bottom: 20,
                     }}
                 >
-                    {isMobile && (
-                        <IconButton
-                            onClick={toggleSidebar}
-                            sx={{
-                                height: 48,
-                                width: 48,
-                                mt: '20px'
-                            }}
-                        >
-                            <HistoryIcon />
-                        </IconButton>
-                    )}
-                    <Box sx={{ flexGrow: 1 }}>
-                        <InputBar email={auth?.user || ''} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {isMobile && (
+                            <IconButton
+                                onClick={toggleSidebar}
+                                sx={{
+                                    height: 48,
+                                    width: 48,
+                                    mt: '20px'
+                                }}
+                            >
+                                <HistoryIcon />
+                            </IconButton>
+                        )}
+                        <Box sx={{ flexGrow: 1 }}>
+                            <InputBar email={auth?.user || ''} />
+                        </Box>
                     </Box>
                 </Box>
             </Box>
