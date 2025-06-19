@@ -111,7 +111,7 @@ const Consult: React.FC = () => {
                 const latest = conv.messages[conv.messages.length - 1];
 
                 // 找到系统回复 → 停止轮询
-                if (latest.sender !== "USER" && latest.messageId > userMsgId) {
+                if (latest.role !== "USER" && latest.messageId > userMsgId) {
                     clearInterval(timerRef.current!);
                     timerRef.current = null;
                     setMessages(conv.messages);
@@ -192,7 +192,7 @@ const Consult: React.FC = () => {
                     {messages.map(m => (
                         <ChatMessageRow
                             key={m.messageId}
-                            sender={m.sender}
+                            sender={m.role}
                             content={m.content}
                         />
                     ))}
