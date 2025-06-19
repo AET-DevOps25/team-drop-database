@@ -2,8 +2,6 @@ import React from 'react';
 import './App.css';
 import TravelBuddyAppBar from "./component/util/TravelBuddyAppBar";
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
-import Home from './pages/Home';
-import About from './pages/About';
 import Attractions from "./pages/AttractionList";
 import Layout from "./component/auth/Layout";
 import RequireAuth from "./component/auth/RequireAuth";
@@ -27,12 +25,11 @@ function App() {
             <Toolbar sx={{ minHeight: 64 }} />
             <Routes>
                 <Route path="/" element={<Layout/>}>
-                    <Route path="/" element={<Home/>}/>
+                    <Route path="/" element={<Attractions/>}/>
                     <Route path="login" element={<LogIn/>}/>
                     <Route path="register" element={<Signup/>}/>
-                    <Route path="about" element={<About/>}/>
-                    <Route path="explore" element={<Attractions/>}/>
-                    <Route path="attractions/:id" element={<AttractionDetails/>}/>
+                    <Route path="explore/:id" element={<AttractionDetails/>}/>
+
                     {/* Protected Routes */}
                     <Route element={<PersistLogin/>}>
                         <Route element={<RequireAuth allowedRoles={[ROLES.USER]}/>}>

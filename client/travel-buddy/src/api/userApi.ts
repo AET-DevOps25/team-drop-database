@@ -1,5 +1,5 @@
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import {User} from "../dto/User";
+import {User} from "../dto/user/User";
 
 export const useUserApi = () => {
     const { axiosUser } = useAxiosPrivate();

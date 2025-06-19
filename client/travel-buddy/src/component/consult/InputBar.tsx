@@ -10,7 +10,7 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import { useConversationApi } from "../../api/conversationApi";
-import {Prompt} from "../../dto/Prompt";
+import {Prompt} from "../../dto/conversation/Prompt";
 
 interface ChatInputProps {
     onSend: (text: string) => void;

@@ -1,10 +1,3 @@
-// src/pages/AttractionList.tsx
-// A Material-UI page that consumes the attraction API.
-// Added full pagination support (page selector at the bottom) so the user can
-// browse page 1, 2, 3 … in their entirety.
-// NEW: Clicking a city card now filters the attraction grid right on this page
-// using `getAttractionsByCity`. Click "Clear city filter" to revert.
-
 import React, {useEffect, useMemo, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {
@@ -28,9 +21,10 @@ import ClearIcon from '@mui/icons-material/Clear';
 import {
     getAllAttractions,
     getAttractionsByCity,
-    Attraction,
-    Page as PageResponse,
 } from '../api/attrac';
+
+import {Attraction} from "../dto/attraction/Attraction";
+import {Page as PageResponse,} from "../dto/utils/Page";
 
 /**
  * Helper that returns the first photo of an attraction or a placeholder.
