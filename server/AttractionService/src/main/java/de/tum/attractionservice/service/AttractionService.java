@@ -31,6 +31,10 @@ public class AttractionService {
         return attractionRepository.findByCity_Name(city, pageable);
     }
 
+    public AttractionEntity getAttractionById(Long id) {
+        return attractionRepository.findById(id).orElse(null);
+    }
+
     public void saveAttraction(AttractionEntity attraction) {
         attractionRepository.save(attraction);
     }
