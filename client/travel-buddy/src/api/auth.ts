@@ -1,20 +1,7 @@
 import {axiosAuth} from "./axios";
-
-interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-interface SignUpRequest {
-    email: string;
-    password: string;
-    role: string;
-}
-
-interface LoginResponse {
-    access_token: string;
-    refresh_token: string;
-}
+import {LoginRequest} from "../dto/auth/LoginRequest";
+import {LoginResponse} from "../dto/auth/LoginResponse";
+import {SignUpRequest} from "../dto/auth/SignUpRequest";
 
 export const sendLogin = async (
     credentials: LoginRequest,

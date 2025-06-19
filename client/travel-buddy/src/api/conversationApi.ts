@@ -1,7 +1,7 @@
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import { Conversation } from '../dto/Conversation';
-import {ConversationHistory} from "../dto/ConversationHistory";
-import {Prompt} from "../dto/Prompt";
+import { Conversation } from '../dto/conversation/Conversation';
+import {ConversationHistory} from "../dto/conversation/ConversationHistory";
+import {Prompt} from "../dto/conversation/Prompt";
 
 export const useConversationApi = () => {
     const { axiosUser } = useAxiosPrivate();

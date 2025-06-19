@@ -22,8 +22,6 @@ import useAuth from "../../hooks/useAuth";
 
 const pages = [
     {label: 'Consult', path: '/consult'},
-    {label: 'Explore', path: '/explore'},
-    {label: 'About', path: '/about'}
 ];
 
 const settings = [

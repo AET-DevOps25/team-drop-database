@@ -39,7 +39,7 @@ public class DataSeeder implements CommandLineRunner {
 
         List<CityEntity> cities = seedCities();
 
-        int perCity = 5;
+        int perCity = 50;
         for (CityEntity city : cities) {
             for (int i = 0; i < perCity; i++) {
                 AttractionEntity attr = buildRandomAttraction(city, i);

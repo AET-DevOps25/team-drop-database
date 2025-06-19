@@ -1,70 +1,12 @@
 import {axiosAttr} from "./axios";
+import {Attraction} from "../dto/attraction/Attraction";
+import {Page} from "../dto/utils/Page";
 
-export interface Location {
-    latitude: number;
-    longitude: number;
-    address?: string;
-}
-
-export interface City {
-    id: number;
-    name: string;
-    country?: string;
-}
-
-export interface OpeningHours {
-    day: string;
-    fromTime: string;
-    toTime: string;
-}
-
-export interface Attraction {
-    id?: number; // Present when the entity already exists
-    name: string;
-    description: string;
-    location: Location;
-    city: City;
-    openingHours: OpeningHours[];
-    photos: string[];
-    website?: string;
-}
-
-export interface Page<T> {
-    content: T[];
-    pageable: {
-        pageNumber: number;
-        pageSize: number;
-        offset: number;
-        paged: boolean;
-        unpaged: boolean;
-        sort: {
-            sorted: boolean;
-            unsorted: boolean;
-            empty: boolean;
-        };
-    };
-    totalPages: number;
-    totalElements: number;
-    last: boolean;
-    first: boolean;
-    size: number;
-    number: number;
-    sort: {
-        sorted: boolean;
-        unsorted: boolean;
-        empty: boolean;
-    };
-    numberOfElements: number;
-    empty: boolean;
-}
-
-export interface PaginationParams {
+interface PaginationParams {
     page?: number; // default 0
     size?: number; // default 10
     sortBy?: string; // default 'name'
 }
-
-const END_POINT = '/attractions';
 
 /**
  * Generic paginated GET helper.
@@ -86,13 +28,13 @@ const getPaginated = async <T>(
  * An empty string means axiosAttr.baseURL itself (already includes /attractions).
  */
 export const getAllAttractions = (params?: PaginationParams) =>
-    getPaginated<Attraction>(END_POINT, params);
+    getPaginated<Attraction>("/attractions", params);
 
 /**
  * Fetch attractions in a specific city.
  */
 export const getAttractionsByCity = (city: string, params?: PaginationParams) =>
-    getPaginated<Attraction>(`${END_POINT}/city/${encodeURIComponent(city)}`, params);
+    getPaginated<Attraction>(`/attractions/city/${encodeURIComponent(city)}`, params);
 
 /**
  * Fetch a single attraction by name.
@@ -100,7 +42,7 @@ export const getAttractionsByCity = (city: string, params?: PaginationParams) =>
 export const getAttractionByName = async (
     name: string
 ): Promise<Attraction> => {
-    const res = await axiosAttr.get<Attraction>(`${END_POINT}/${encodeURIComponent(name)}`);
+    const res = await axiosAttr.get<Attraction>(`/attractions/${encodeURIComponent(name)}`);
     return res.data;
 };
 
@@ -110,6 +52,6 @@ export const getAttractionByName = async (
 export const getAttractionById = async (
     id: number
 ): Promise<Attraction> => {
-    const res = await axiosAttr.get<Attraction>(`${END_POINT}/id/${id}`);
+    const res = await axiosAttr.get<Attraction>(`/attractions/id/${id}`);
     return res.data;
 };

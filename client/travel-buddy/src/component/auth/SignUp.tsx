@@ -9,7 +9,7 @@ import {
 import { useState, useRef, useEffect, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendSignUp } from "../../api/auth";
-import {User} from "../../dto/User";
+import {User} from "../../dto/user/User";
 import {useUserApi} from "../../api/userApi";
 import {jwtDecode} from "jwt-decode";
 import useAuth from "../../hooks/useAuth";

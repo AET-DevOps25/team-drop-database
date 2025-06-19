@@ -9,12 +9,12 @@ import Sidebar from '../component/consult/Sidebar';
 import InputBar from '../component/consult/InputBar';
 import useAuth from '../hooks/useAuth';
 import {useConversationApi} from '../api/conversationApi';
-import {ConversationHistory} from '../dto/ConversationHistory';
+import {ConversationHistory} from '../dto/conversation/ConversationHistory';
 import HistoryIcon from '@mui/icons-material/History';
 import {useNavigate, useParams} from "react-router-dom";
-import {ChatMessage} from "../dto/ChatMessage";
+import {ChatMessage} from "../dto/conversation/ChatMessage";
 import ChatMessageRow from "../component/consult/ChatMessageRow";
-import {Conversation} from "../dto/Conversation";
+import {Conversation} from "../dto/conversation/Conversation";
 
 const Consult: React.FC = () => {
     const {conversationId} = useParams<{ conversationId?: string }>();
