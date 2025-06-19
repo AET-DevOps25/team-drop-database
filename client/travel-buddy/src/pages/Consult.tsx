@@ -185,6 +185,8 @@ const Consult: React.FC = () => {
             >
                 <Box
                     sx={{
+                        flexGrow: 1,
+                        overflowY: 'auto',
                         px: 2,
                         pt: 2,
                     }}
