@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
     Box,
     Divider,
@@ -10,8 +10,10 @@ import {
     ListItemIcon,
     ListItemText,
     Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
-import { styled, Theme, CSSObject, useTheme } from "@mui/material/styles";
+import { styled, Theme, CSSObject } from "@mui/material/styles";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 
@@ -61,32 +63,26 @@ interface SidebarProps {
     conversations: Conversation[];
     activeId?: string;
     onSelect?: (id: string) => void;
-    appBarOffset?: number; // 默认 64(px)，与固定 AppBar 保持一致
+
+    mobileOpen?: boolean;
+    onCloseMobile?: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
                                              conversations,
                                              activeId,
                                              onSelect,
-                                             appBarOffset = 64,
+                                             mobileOpen = false,
+                                             onCloseMobile,
                                          }) => {
-    const [open, setOpen] = React.useState<boolean>(true);
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const [open, setOpen] = React.useState<boolean>(true);
 
     const handleToggle = () => setOpen((prev) => !prev);
 
-    return (
-        <Drawer
-            variant="permanent"
-            open={open}
-            sx={{
-                "& .MuiDrawer-paper": {
-                    top: appBarOffset,
-                    height: `calc(100% - ${appBarOffset}px)`,
-                    borderRight: `1px solid ${theme.palette.divider}`,
-                },
-            }}
-        >
+    const drawerContent = (
+        <>
             {/* Header */}
             <Box
                 sx={{
@@ -113,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </Box>
             <Divider />
 
-            {/* Conversation list */}
+            {/* Conversation List */}
             <List disablePadding sx={{ px: open ? 0 : 0.5 }}>
                 {conversations.map((c) => {
                     const selected = c.id === activeId;
@@ -121,7 +117,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <ListItem key={c.id} disablePadding>
                             <ListItemButton
                                 selected={selected}
-                                onClick={() => onSelect?.(c.id)}
+                                onClick={() => {
+                                    onSelect?.(c.id);
+                                    if (isMobile) onCloseMobile?.();
+                                }}
                                 sx={{
                                     minHeight: 44,
                                     justifyContent: open ? "initial" : "center",
@@ -147,6 +146,38 @@ const Sidebar: React.FC<SidebarProps> = ({
                     );
                 })}
             </List>
+        </>
+    );
+
+    return isMobile ? (
+        <MuiDrawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={onCloseMobile}
+            ModalProps={{ keepMounted: true }}
+            sx={{
+                "& .MuiDrawer-paper": {
+                    width: DRAWER_WIDTH,
+                    top: 0,
+                    height: "100%",
+                },
+            }}
+        >
+            {drawerContent}
+        </MuiDrawer>
+    ) : (
+        <Drawer
+            variant="permanent"
+            open={open}
+            sx={{
+                "& .MuiDrawer-paper": {
+                    top: 64,
+                    height: "calc(100% - 64px)",
+                    borderRight: `1px solid ${theme.palette.divider}`,
+                },
+            }}
+        >
+            {drawerContent}
         </Drawer>
     );
 };
