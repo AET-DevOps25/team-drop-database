@@ -11,6 +11,10 @@ public class UserSecurity {
     private final UserRepository userRepository;
     private final ConversationRepository conversationRepository;
 
+    public boolean emailsAreSame(String InputEmail, String tokenEmail) {
+        return InputEmail.equals(tokenEmail);
+    }
+
     public boolean isSelf(Long pathId, String email) {
         Long idOfEmail = userRepository.findByEmail(email).getId();
         return pathId.equals(idOfEmail);

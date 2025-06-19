@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,8 @@ public class UserController {
      * Creates a new profile.
      */
     @PostMapping
-    public ResponseEntity<UserEntity> create(@RequestBody UserEntity profile) {
+    @PreAuthorize("@userSecurity.emailsAreSame(#profile.email, principal.username)")
+    public ResponseEntity<UserEntity> create(@P("profile") @RequestBody UserEntity profile) {
         try {
             UserEntity createdProfile = service.createProfile(profile);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProfile);
@@ -39,6 +41,17 @@ public class UserController {
     public ResponseEntity<UserEntity> getById(@PathVariable Long id) {
         try {
             UserEntity profile = service.getProfileById(id);
+            return ResponseEntity.ok(profile);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/email/{email}")
+    @PreAuthorize("@userSecurity.emailsAreSame(#email, principal.username)")
+    public ResponseEntity<UserEntity> getByEmail(@PathVariable String email) {
+        try {
+            UserEntity profile = service.getProfileByEmail(email);
             return ResponseEntity.ok(profile);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

@@ -16,16 +16,19 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useUserApi} from "../../api/userApi";
 import {ButtonGroup} from "@mui/material";
+import LoginIcon from '@mui/icons-material/Login';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import useAuth from "../../hooks/useAuth";
 
 const pages = [
-    { label: 'Consult', path: '/consult' },
-    { label: 'Explore', path: '/explore' },
-    { label: 'About', path: '/about' }
+    {label: 'Consult', path: '/consult'},
+    {label: 'Explore', path: '/explore'},
+    {label: 'About', path: '/about'}
 ];
 
 const settings = [
-    { key: 'profile', label: 'Profile', path: '/profile' },
-    { key: 'logout', label: 'Logout', path: '/logout' },
+    {key: 'profile', label: 'Profile', path: '/profile'},
+    {key: 'logout', label: 'Logout', path: '/logout'},
 ];
 
 function TravelBuddyAppBar() {
@@ -33,7 +36,8 @@ function TravelBuddyAppBar() {
 
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-    const { pingUserServer } = useUserApi();
+    const {pingUserServer} = useUserApi();
+    const {auth, setAuth} = useAuth()
 
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -61,6 +65,7 @@ function TravelBuddyAppBar() {
             case 'logout':
                 localStorage.removeItem('refreshToken');
                 localStorage.removeItem('persist');
+                setAuth(null);
                 setIsLoggedIn(false);
                 navigate('/login');
                 break;
@@ -77,13 +82,19 @@ function TravelBuddyAppBar() {
             setIsLoggedIn(success);
         };
         checkLogin();
-    }, []);
+    }, [auth]);
 
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    <AirplaneTicketIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                <Toolbar
+                    disableGutters
+                    sx={{
+                        minHeight: 64,
+                        maxHeight: 64,
+                    }}
+                >
+                    <AirplaneTicketIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
                     <Typography
                         variant="h6"
                         noWrap
@@ -91,7 +102,7 @@ function TravelBuddyAppBar() {
                         onClick={() => navigate('/')}
                         sx={{
                             mr: 2,
-                            display: { xs: 'none', md: 'flex' },
+                            display: {xs: 'none', md: 'flex'},
                             fontFamily: 'monospace',
                             fontWeight: 700,
                             letterSpacing: '.3rem',
@@ -103,7 +114,7 @@ function TravelBuddyAppBar() {
                         Travel Buddy
                     </Typography>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -112,7 +123,7 @@ function TravelBuddyAppBar() {
                             onClick={handleOpenNavMenu}
                             color="inherit"
                         >
-                            <MenuIcon />
+                            <MenuIcon/>
                         </IconButton>
                         <Menu
                             id="menu-appbar"
@@ -128,9 +139,9 @@ function TravelBuddyAppBar() {
                             }}
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
-                            sx={{ display: { xs: 'block', md: 'none' } }}
+                            sx={{display: {xs: 'block', md: 'none'}}}
                         >
-                            {pages.map(({ label, path }) => (
+                            {pages.map(({label, path}) => (
                                 <MenuItem
                                     key={label}
                                     onClick={() => {
@@ -138,12 +149,12 @@ function TravelBuddyAppBar() {
                                         handleCloseNavMenu();
                                     }}
                                 >
-                                    <Typography sx={{ textAlign: 'center' }}>{label}</Typography>
+                                    <Typography sx={{textAlign: 'center'}}>{label}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
                     </Box>
-                    <AirplaneTicketIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+                    <AirplaneTicketIcon sx={{display: {xs: 'flex', md: 'none'}, mr: 1}}/>
                     <Typography
                         variant="h5"
                         noWrap
@@ -151,7 +162,7 @@ function TravelBuddyAppBar() {
                         onClick={() => navigate('/')}
                         sx={{
                             mr: 2,
-                            display: { xs: 'flex', md: 'none' },
+                            display: {xs: 'flex', md: 'none'},
                             flexGrow: 1,
                             fontFamily: 'monospace',
                             fontWeight: 700,
@@ -163,30 +174,30 @@ function TravelBuddyAppBar() {
                     >
                         Travel Buddy
                     </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map(({ label, path }) => (
+                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
+                        {pages.map(({label, path}) => (
                             <Button
                                 key={label}
                                 onClick={() => {
                                     navigate(path);
                                     handleCloseNavMenu();
                                 }}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{my: 2, color: 'white', display: 'block'}}
                             >
                                 {label}
                             </Button>
                         ))}
                     </Box>
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box sx={{flexGrow: 0}}>
                         {isLoggedIn ? (
                             <>
                                 <Tooltip title="Open settings">
-                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                        <Avatar alt="User" src="/static/images/avatar/2.jpg" />
+                                    <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
+                                        <Avatar alt="User" src="/static/images/avatar/2.jpg"/>
                                     </IconButton>
                                 </Tooltip>
                                 <Menu
-                                    sx={{ mt: '45px' }}
+                                    sx={{mt: '45px'}}
                                     id="menu-appbar"
                                     anchorEl={anchorElUser}
                                     anchorOrigin={{
@@ -206,37 +217,43 @@ function TravelBuddyAppBar() {
                                             key={setting.key}
                                             onClick={() => handleSettingsClick(setting)}
                                         >
-                                            <Typography sx={{ textAlign: 'center' }}>
+                                            <Typography sx={{textAlign: 'center'}}>
                                                 {setting.label}
                                             </Typography>
                                         </MenuItem>
                                     ))}
-                                    <MenuItem
-                                        onClick={() => {
-                                            localStorage.removeItem('accessToken'); // 或 sessionStorage
-                                            setIsLoggedIn(false);
-                                            handleCloseUserMenu();
-                                        }}
-                                    >
-                                        <Typography textAlign="center">Logout</Typography>
-                                    </MenuItem>
                                 </Menu>
                             </>
                         ) : (
-                            <ButtonGroup variant="outlined" aria-label="Basic button group">
-                                <Button color="inherit" onClick={() => navigate('/login')}>
-                                    Login
-                                </Button>
-                                <Button color="inherit" onClick={() => navigate('/register')}>
-                                    Register
-                                </Button>
-                            </ButtonGroup>
+                            <>
+                                <Box sx={{flexGrow: 0, display: {xs: 'none', sm: 'flex'}}}>
+                                    <ButtonGroup variant="outlined">
+                                        <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
+                                        <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
+                                    </ButtonGroup>
+                                </Box>
+
+                                <Box sx={{flexGrow: 0, display: {xs: 'flex', sm: 'none'}}}>
+                                    <Tooltip title="Login">
+                                        <IconButton color="inherit" onClick={() => navigate('/login')}>
+                                            <LoginIcon fontSize="small"/>
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Register">
+                                        <IconButton color="inherit" onClick={() => navigate('/register')}>
+                                            <AppRegistrationIcon fontSize="small"/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                            </>
                         )}
                     </Box>
 
                 </Toolbar>
             </Container>
         </AppBar>
-    );
+    )
+        ;
 }
+
 export default TravelBuddyAppBar;

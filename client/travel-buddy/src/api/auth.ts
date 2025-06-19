@@ -5,6 +5,12 @@ interface LoginRequest {
     password: string;
 }
 
+interface SignUpRequest {
+    email: string;
+    password: string;
+    role: string;
+}
+
 interface LoginResponse {
     access_token: string;
     refresh_token: string;
@@ -15,6 +21,20 @@ export const sendLogin = async (
 ): Promise<LoginResponse> => {
     const {data} = await axiosAuth.post<LoginResponse>(
         '/auth/authenticate',
+        JSON.stringify(credentials),
+        {
+            headers: {'Content-Type': 'application/json'},
+            withCredentials: true
+        }
+    );
+    return data;
+};
+
+export const sendSignUp = async (
+    credentials: SignUpRequest,
+): Promise<LoginResponse> => {
+    const {data} = await axiosAuth.post<LoginResponse>(
+        '/auth/register',
         JSON.stringify(credentials),
         {
             headers: {'Content-Type': 'application/json'},

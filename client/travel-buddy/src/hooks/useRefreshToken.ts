@@ -12,13 +12,12 @@ const useRefreshToken = () => {
         const {access_token, refresh_token} = await sendRefresh(rt);
 
         setAuth(prev => {
-            console.log(JSON.stringify(prev));
-            console.log(access_token);
             const decoded: { sub: string; roles: string[] } = jwtDecode(access_token);
             return {
-                ...prev,
+                user: decoded.sub,
                 roles: decoded.roles,
                 accessToken: access_token,
+                refreshToken: refresh_token
             }
         });
 

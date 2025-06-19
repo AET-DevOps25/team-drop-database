@@ -14,4 +14,5 @@ export const axiosAttr = axios.create({
 
 export const axiosUser = axios.create({
     baseURL: BASE_USER_URL,
+    withCredentials: true,
 });

@@ -1,5 +1,7 @@
 package de.tum.userservice.conversation;
 
+import de.tum.userservice.conversation.dto.ConversationDTO;
+import de.tum.userservice.user.UserEntity;
 import de.tum.userservice.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,26 @@ public class ConversationService {
         if (userRepository.findById(userId).isEmpty()) {
             throw new IllegalArgumentException("User not found");
         }
+        ChatMessageEntity userMessage = ChatMessageEntity.builder()
+                .role(Role.USER)
+                .content(prompt)
+                .build();
+        ConversationEntity conversation = ConversationEntity.builder()
+                .userId(userId)
+                .title("New Conversation")
+                .build();
+        userMessage.setConversation(conversation);
+        conversation.getMessages().add(userMessage);
+        return conversationRepository.save(conversation);
+    }
+
+    @Transactional
+    public ConversationEntity createNewConversationByEmail(String email, String prompt) {
+        UserEntity user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        Long userId = user.getId();
         ChatMessageEntity userMessage = ChatMessageEntity.builder()
                 .role(Role.USER)
                 .content(prompt)
@@ -76,42 +98,14 @@ public class ConversationService {
         return conversationDTOList;
     }
 
-    //    @Transactional
-//    public ChatResponse converse(Long userId, ChatRequest request) {
-//        ConversationEntity conversation;
-//        // Start a new conversation
-//        if (request.getConversationId() == null) {
-//            String title = request.getPrompt().length() > 50 ? request.getPrompt().substring(0, 50) + "..." : request.getPrompt();
-//            conversation = createNewConversation(userId, title);
-//        } else {
-//            // Add to existing conversation
-//            conversation = conversationRepository.findByConversationId(request.getConversationId());
-//            conversation.setUpdatedAt(Instant.now()); // Update timestamp
-//            conversation = conversationRepository.save(conversation);
-//        }
-//
-//        // Save user message
-//        ChatMessageEntity userMessage = ChatMessageEntity.builder()
-//                .conversation(conversation)
-//                .role(Role.USER)
-//                .content(request.getPrompt())
-//                .build();
-//        chatMessageRepository.save(userMessage);
-//
-//        // Get history for GenAI (for this specific conversation)
-//        List<ChatMessageEntity> history = chatMessageRepository.findByChatMessageId(conversation.getConversationId());
-//
-//        // Get AI reply
-//        String aiReplyContent = genAIClient.sendPromptAndGetReply(history, request.getPrompt());
-//
-//        // Save AI message
-//        ChatMessageEntity aiMessage = ChatMessageEntity.builder()
-//                .conversation(conversation)
-//                .role(Role.SYSTEM)
-//                .content(aiReplyContent)
-//                .build();
-//        chatMessageRepository.save(aiMessage);
-//
-//        return new ChatResponse(aiReplyContent);
-//    }
+    @Transactional(readOnly = true)
+    public List<ConversationDTO> getConversationHistoryByEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        Long userId = user.getId();
+        return conversationRepository
+                .findByUserIdOrderByUpdatedAtDesc(userId);
+    }
 }

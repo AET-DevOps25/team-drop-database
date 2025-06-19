@@ -11,6 +11,7 @@ import RequireAuth from "./component/auth/RequireAuth";
 import PersistLogin from "./component/auth/PersistLogin";
 import LogIn from "./component/auth/LogIn";
 import Consult from "./pages/Consult";
+import Signup from "./component/auth/SignUp";
 
 const ROLES = {
     USER: 'USER',
@@ -26,9 +27,11 @@ function App() {
                 <Route path="/" element={<Layout/>}>
                     <Route path="/" element={<Home/>}/>
                     <Route path="login" element={<LogIn/>}/>
+                    <Route path="register" element={<Signup/>}/>
                     <Route path="about" element={<About/>}/>
                     <Route path="explore" element={<Attractions/>}/>
 
+                    {/* Protected Routes */}
                     <Route element={<PersistLogin/>}>
                         <Route element={<RequireAuth allowedRoles={[ROLES.USER]}/>}>
                             <Route path="consult" element={<Consult/>}/>
