@@ -2,12 +2,12 @@ import React from 'react';
 import { Box, Avatar, Typography, Paper } from '@mui/material';
 
 interface ChatMessageProps {
-    sender: 'user' | 'system';
+    sender: 'USER' | 'SYSTEM';
     content: string;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ sender, content }) => {
-    const isUser = sender === 'user';
+const ChatMessageRow: React.FC<ChatMessageProps> = ({ sender, content }) => {
+    const isUser = sender === 'USER';
 
     return (
         <Box
@@ -37,4 +37,4 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ sender, content }) => {
     );
 };
 
-export default ChatMessage;
+export default ChatMessageRow;

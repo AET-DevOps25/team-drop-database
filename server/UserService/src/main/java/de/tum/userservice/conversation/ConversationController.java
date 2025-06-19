@@ -64,12 +64,12 @@ public class ConversationController {
     @PutMapping("/{conversationId}")
     @PreAuthorize("@userSecurity.canAccessConversation(#conversationId, principal.username)")
     public ResponseEntity<ConversationEntity> resumeConversation(
-            @RequestBody String prompt,
+            @RequestBody PromptDTO prompt,
             @PathVariable Long conversationId
     ) {
         ConversationEntity conversation;
         try {
-            conversation = service.resumeConversation(conversationId, prompt);
+            conversation = service.resumeConversation(conversationId, prompt.getPrompt());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }

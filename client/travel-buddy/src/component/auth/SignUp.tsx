@@ -9,7 +9,7 @@ import {
 import { useState, useRef, useEffect, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendSignUp } from "../../api/auth";
-import {UserEntity} from "../../dto/UserEntity";
+import {User} from "../../dto/User";
 import {useUserApi} from "../../api/userApi";
 import {jwtDecode} from "jwt-decode";
 import useAuth from "../../hooks/useAuth";
@@ -28,7 +28,7 @@ const Signup: React.FC = () => {
     const [confirmPwd, setConfirmPwd] = useState('');
     const [errMsg, setErrMsg] = useState('');
 
-    const [pendingProfile, setPendingProfile] = useState<UserEntity | null>(null);
+    const [pendingProfile, setPendingProfile] = useState<User | null>(null);
 
     useEffect(() => {
         emailRef.current?.focus();
@@ -103,7 +103,7 @@ const Signup: React.FC = () => {
             errRef.current?.focus();
         }
 
-        const user: UserEntity = {
+        const user: User = {
             id: null,
             email: email,
             firstName: "",

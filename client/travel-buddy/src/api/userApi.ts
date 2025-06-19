@@ -1,8 +1,5 @@
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import { ConversationEntity } from '../dto/ConversationEntity';
-import {UserEntity} from "../dto/UserEntity";
-import {ConversationDTO} from "../dto/ConversationDTO";
-import {PromptDTO} from "../dto/PromptDTO";
+import {User} from "../dto/User";
 
 export const useUserApi = () => {
     const { axiosUser } = useAxiosPrivate();
@@ -16,8 +13,8 @@ export const useUserApi = () => {
         }
     };
 
-    const getUserProfileByEmail = async (email: string): Promise<UserEntity> => {
-        const { data } = await axiosUser.get<UserEntity>(
+    const getUserProfileByEmail = async (email: string): Promise<User> => {
+        const { data } = await axiosUser.get<User>(
             `/profiles/email/${email}`,
             {
                 headers: {'Content-Type': 'application/json'},
@@ -26,8 +23,8 @@ export const useUserApi = () => {
         return data;
     }
 
-    const createUserProfile = async (user: UserEntity): Promise<UserEntity> => {
-        const { data } = await axiosUser.post<UserEntity>(
+    const createUserProfile = async (user: User): Promise<User> => {
+        const { data } = await axiosUser.post<User>(
             '/profiles',
             JSON.stringify(user),
             {
@@ -37,35 +34,9 @@ export const useUserApi = () => {
         return data;
     }
 
-    const createConversationByEmail = async (
-        email: string,
-        prompt: PromptDTO
-    ): Promise<ConversationEntity> => {
-        const { data } = await axiosUser.post<ConversationEntity>(
-            `/conversations/email/${email}`,
-            prompt,
-            {
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
-        return data;
-    };
-
-    const getConversationHistoryByEmail = async (email: string): Promise<ConversationDTO[]> => {
-        const { data } = await axiosUser.get<ConversationDTO[]>(
-            `/conversations/h/email/${email}`,
-            {
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
-        return data;
-    };
-
     return {
-        createConversationByEmail,
         createUserProfile,
         pingUserServer,
         getUserProfileByEmail,
-        getConversationHistoryByEmail
     };
 };

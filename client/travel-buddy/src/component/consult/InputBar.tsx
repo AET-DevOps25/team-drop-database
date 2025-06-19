@@ -9,17 +9,16 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import { useUserApi } from "../../api/userApi";
-import {PromptDTO} from "../../dto/PromptDTO";
+import { useConversationApi } from "../../api/conversationApi";
+import {Prompt} from "../../dto/Prompt";
 
 interface ChatInputProps {
-    email: string;
+    onSend: (text: string) => void;
+    loading?: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ email }) => {
-    const { createConversationByEmail } = useUserApi();
+const ChatInput: React.FC<ChatInputProps> = ({ onSend, loading = false }) => {
     const [inputValue, setInputValue] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
     const [errorOpen, setErrorOpen] = useState<boolean>(false);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,22 +27,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ email }) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const trimmedPrompt = inputValue.trim();
-        if (!trimmedPrompt) return;
-
-        const prompt: PromptDTO = {
-            prompt: trimmedPrompt
-        };
-
-        setLoading(true);
-        try {
-            const newConversation = await createConversationByEmail(email, prompt);
-            setInputValue("");
-        } catch (error) {
-            setErrorOpen(true);
-        } finally {
-            setLoading(false);
-        }
+        const message = inputValue.trim();
+        if (!message) return;
+        onSend(message);
+        setInputValue("");
     };
 
     return (
@@ -100,17 +87,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ email }) => {
                     </IconButton>
                 </Paper>
             </Box>
-
-            <Snackbar
-                open={errorOpen}
-                autoHideDuration={3000}
-                onClose={() => setErrorOpen(false)}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-                <Alert onClose={() => setErrorOpen(false)} severity="error" sx={{ width: "100%" }}>
-                    发送失败，请稍后再试！
-                </Alert>
-            </Snackbar>
         </>
     );
 };

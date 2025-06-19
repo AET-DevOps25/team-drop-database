@@ -1,6 +1,6 @@
-export interface ChatMessageEntity {
+export interface ChatMessage {
     messageId: number;
     content: string;
-    sender: string;
+    sender: 'USER' | 'SYSTEM';
     createdAt: string;
 }

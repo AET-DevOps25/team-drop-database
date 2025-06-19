@@ -11,6 +11,7 @@ import PersistLogin from "./component/auth/PersistLogin";
 import LogIn from "./component/auth/LogIn";
 import Consult from "./pages/Consult";
 import Signup from "./component/auth/SignUp";
+import Toolbar from "@mui/material/Toolbar";
 
 const ROLES = {
     USER: 'USER',
@@ -22,6 +23,7 @@ function App() {
     return (
         <BrowserRouter>
             <TravelBuddyAppBar/>
+            <Toolbar sx={{ minHeight: 64 }} />
             <Routes>
                 <Route path="/" element={<Layout/>}>
                     <Route path="/" element={<Home/>}/>
@@ -33,7 +35,9 @@ function App() {
                     {/* Protected Routes */}
                     <Route element={<PersistLogin/>}>
                         <Route element={<RequireAuth allowedRoles={[ROLES.USER]}/>}>
-                            <Route path="consult" element={<Consult/>}/>
+                            <Route path="/consult" element={<Consult />} />
+                            <Route path="/consult/:conversationId" element={<Consult />} />
+
                         </Route>
                     </Route>
                 </Route>
