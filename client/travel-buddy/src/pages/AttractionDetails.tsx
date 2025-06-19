@@ -14,7 +14,7 @@ interface AttractionDetail {
   name: string;
   image: string;
   description: string;
-  openingHours?: string;
+  openingHours?: string[];
   location?: string;
   website?: string;
 }
@@ -34,16 +34,14 @@ const AttractionDetails: React.FC = () => {
         const data = await getAttractionById(Number(id));
 
         const transformed: AttractionDetail = {
-          name: data.name,
+          name: data.name ?? 'Unnamed Attraction',
           image: data.photos?.[0] ?? '',
-          description: data.description,
+          description: data.description ?? 'No description available.',
           openingHours: Array.isArray(data.openingHours)
-            ? data.openingHours
-              .map((h: any) => `${h.dayOfWeek} ${h.open}–${h.close}`)
-              .join(', ')
-            : '',
-          location: data.location?.address ?? '',
-          website: data.website,
+            ? data.openingHours.map((h: any) => `${h.day} ${h.fromTime}-${h.toTime}`)
+            : [],
+          location: data.location?.address ?? 'Location not available.',
+          website: data.website ?? 'No website available.',
         };
 
         setDetail(transformed);
@@ -85,20 +83,33 @@ const AttractionDetails: React.FC = () => {
           {detail.name}
         </Typography>
 
-        {/* <Rating value={detail.rating} precision={0.1} readOnly />
-        <Typography variant="body1" color="text.secondary" gutterBottom style={{ marginTop: 8 }}>
-          {detail.description}
-        </Typography>
-
-        <Typography variant="body2" style={{ marginTop: 16, lineHeight: 1.7 }}>
-          {detail.details}
-        </Typography> */}
-
+        {detail.description && (
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            gutterBottom
+            style={{ marginTop: 16 }}
+          >
+            {detail.description}
+          </Typography>
+        )}
         <div style={{ marginTop: 24 }}>
-          {detail.openingHours && (
-            <Typography variant="body2" color="text.secondary">
-              <strong>Openning Hours: </strong> {detail.openingHours}
-            </Typography>
+          {Array.isArray(detail.openingHours) && detail.openingHours.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                <strong>Opening Hours:</strong>
+              </Typography>
+              {detail.openingHours.map((line, idx) => (
+                <Typography
+                  key={idx}
+                  variant="body2"
+                  color="text.secondary"
+                  style={{ marginLeft: 12 }}
+                >
+                  {line}
+                </Typography>
+              ))}
+            </div>
           )}
           {detail.location && (
             <Typography variant="body2" color="text.secondary">
