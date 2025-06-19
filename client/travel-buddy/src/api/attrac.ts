@@ -13,9 +13,9 @@ export interface City {
 }
 
 export interface OpeningHours {
-    dayOfWeek: string;
-    open: string;
-    close: string;
+    day: string;
+    fromTime: string;
+    toTime: string;
 }
 
 export interface Attraction {
@@ -27,12 +27,6 @@ export interface Attraction {
     openingHours: OpeningHours[];
     photos: string[];
     website?: string;
-}
-export interface CreateAttractionRequest {
-    name: string;
-    description: string;
-    location: string;
-    imageUrl?: string;
 }
 
 export interface Page<T> {
