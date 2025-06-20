@@ -96,18 +96,15 @@ class AuthenticationAndConnectionIntegrationTest {
     void userRoleAccess() throws Exception {
         String token = registerAndLogin("user@tum.de", "123456", "USER");
 
-        // USER endpoint ✅
         mockMvc.perform(get("/connection/user-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().string("User Pong"));
 
-        // ADMIN endpoint ❌
         mockMvc.perform(get("/connection/admin-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
 
-        // MANAGER endpoint ❌
         mockMvc.perform(get("/connection/manager-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
@@ -118,18 +115,15 @@ class AuthenticationAndConnectionIntegrationTest {
     void adminRoleAccess() throws Exception {
         String token = registerAndLogin("admin@tum.de", "123456", "ADMIN");
 
-        // ADMIN endpoint ✅
         mockMvc.perform(get("/connection/admin-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Admin Pong"));
 
-        // USER endpoint ✅ (we assume ADMIN is a superset)
         mockMvc.perform(get("/connection/user-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
 
-        // MANAGER endpoint ❌
         mockMvc.perform(get("/connection/manager-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
@@ -140,18 +134,15 @@ class AuthenticationAndConnectionIntegrationTest {
     void managerRoleAccess() throws Exception {
         String token = registerAndLogin("manager@tum.de", "123456", "MANAGER");
 
-        // MANAGER endpoint ✅
         mockMvc.perform(get("/connection/manager-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Manager Pong"));
 
-        // USER endpoint ✅
         mockMvc.perform(get("/connection/user-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
 
-        // ADMIN endpoint ❌
         mockMvc.perform(get("/connection/admin-ping")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
