@@ -28,7 +28,7 @@ function App() {
                     <Route path="/" element={<Attractions/>}/>
                     <Route path="login" element={<LogIn/>}/>
                     <Route path="register" element={<Signup/>}/>
-                    <Route path="explore/:id" element={<AttractionDetails/>}/>
+                    <Route path="attractions/:id" element={<AttractionDetails/>}/>
 
                     {/* Protected Routes */}
                     <Route element={<PersistLogin/>}>
