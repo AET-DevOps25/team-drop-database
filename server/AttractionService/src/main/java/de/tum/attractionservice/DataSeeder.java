@@ -78,7 +78,6 @@ public class DataSeeder implements CommandLineRunner {
 
         // Location
         Location loc = new Location();
-        loc.setCountry(faker.country().name());
         loc.setLatitude(randomInRange(-90, 90));
         loc.setLongitude(randomInRange(-180, 180));
         loc.setAddress(faker.address().streetAddress());
@@ -91,7 +90,7 @@ public class DataSeeder implements CommandLineRunner {
         List<OpeningHours> hoursList = new ArrayList<>();
         for (DayOfWeek dow : DayOfWeek.values()) {
             OpeningHours oh = new OpeningHours();
-            oh.setDay(dow.name());
+            oh.setDay(dow);
             oh.setFromTime("09:00");
             oh.setToTime("18:00");
             hoursList.add(oh);

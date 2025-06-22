@@ -4,11 +4,13 @@ import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
+
 @Setter
 @Getter
 @Embeddable
 public class OpeningHours {
-    private String day;
+    private DayOfWeek day;
 
     private String fromTime;
 

@@ -2,11 +2,13 @@ package de.tum.attractionservice.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "cities")
 public class CityEntity {
     @Id
@@ -27,7 +29,4 @@ public class CityEntity {
 
     @Column
     private Double longitude;
-
-    public CityEntity() {
-    }
 } 

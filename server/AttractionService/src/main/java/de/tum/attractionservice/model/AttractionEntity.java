@@ -2,6 +2,7 @@ package de.tum.attractionservice.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.net.URL;
@@ -10,6 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "attractions")
 public class AttractionEntity {
     @Id
@@ -22,6 +24,7 @@ public class AttractionEntity {
     @Column(nullable = false)
     private String description;
 
+    private String website;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "location_id", nullable = false)
@@ -39,9 +42,8 @@ public class AttractionEntity {
     @CollectionTable(name = "photos", joinColumns = @JoinColumn(name = "id"))
     private List<URL> photos;
 
-    private String website;
-
-    public AttractionEntity() {
-    }
-
+    @ElementCollection
+    @CollectionTable(name = "attraction_tags", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "tag")
+    private List<String> tags;
 }
