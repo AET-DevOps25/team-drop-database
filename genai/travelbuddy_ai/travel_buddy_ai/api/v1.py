@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from travel_buddy_ai.pipelines.parser import get_parser
-from travel_buddy_ai.pipelines.retriever import semantic_search
+# from travel_buddy_ai.pipelines.retriever import semantic_search
 
 router = APIRouter()
 
@@ -20,7 +20,7 @@ async def recommend(req: RecommendRequest):
     if not req.query.strip():
         raise HTTPException(400, "query cannot be empty")
 
-    parser = get_parser("keyword")
+    parser = get_parser("llm")
     parsed = parser.parse(req.query)
     print("解析结果 ->", parsed)
 

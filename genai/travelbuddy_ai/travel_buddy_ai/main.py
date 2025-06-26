@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from uvicorn import run as uvicorn_run
 from travel_buddy_ai.api.v1 import router as v1_router
 from travel_buddy_ai.config import settings
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def create_app() -> FastAPI:
     """
