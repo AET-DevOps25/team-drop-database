@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Any, Dict
 from pydantic import ValidationError
@@ -62,7 +63,9 @@ class LLMParser(InputParser):
             )
             data: Dict[str, Any] = resp.model_dump()
 
-            return ParsedQuery(raw=text, **data)
+            json_str = resp.content.strip()
+            parsed_dict: Dict[str, Any] = json.loads(json_str)
+            return ParsedQuery(raw=text, **parsed_dict)
         except (ValidationError, KeyError, TypeError, ValueError) as e:
             print(f"[LLMParser] Invalid response: {e}")
             return ParsedQuery(raw=text)

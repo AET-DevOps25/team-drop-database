@@ -24,7 +24,7 @@ async def recommend(req: RecommendRequest):
     parsed = parser.parse(req.query)
     print("解析结果 ->", parsed)
 
-    docs = semantic_search(req.query, parsed, top_k=6)
+    # docs = semantic_search(req.query, parsed, top_k=6)
 
     # TODO: 调用 MCP Pipeline
     return RecommendResponse(

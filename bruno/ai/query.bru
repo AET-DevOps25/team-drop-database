@@ -1,0 +1,23 @@
+meta {
+  name: query
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/api/v1/recommend
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "query": "I want to visit Munich for 3 days. I love architecture and museums and I also enjoys hiking."
+  }
+}
+
+body:text {
+  {
+    "query": "I want to visit Munich for 3 days. I love architecture and museums and I also enjoys hiking."
+  }
+}
