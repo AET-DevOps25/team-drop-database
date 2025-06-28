@@ -1,0 +1,7 @@
+# src/test/resources/application-test.yml
+application:
+  security:
+    jwt:
+      public-key-path: keys/test-public.pem
+      private-key-path: keys/test-private.pem
+      expiration: 15m
