@@ -24,7 +24,7 @@ public class CityControllerIntegrationTest extends BaseIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("获取所有城市 - 匿名用户可以访问")
+    @DisplayName("Get all cities - Anonymous user can access")
     void getAllCities_AsAnonymousUser_ShouldReturnSuccess() throws Exception {
         mockMvc.perform(get("/cities"))
                 .andExpect(status().isOk());
@@ -32,7 +32,7 @@ public class CityControllerIntegrationTest extends BaseIntegrationTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
-    @DisplayName("创建城市 - 需要管理员权限")
+    @DisplayName("Create city - Requires admin privileges")
     void createCity_AsAdmin_ShouldReturnCreated() throws Exception {
         String cityJson = """
             {
@@ -50,7 +50,7 @@ public class CityControllerIntegrationTest extends BaseIntegrationTest {
 
     @WithMockUser(username = "user", roles = {"USER"})
     @Test
-    @DisplayName("创建城市 - 普通用户应该被拒绝")
+    @DisplayName("Create city - Regular user should be forbidden")
     void createCity_AsUser_ShouldReturnForbidden() throws Exception {
         String cityJson = """
             {
@@ -67,7 +67,7 @@ public class CityControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @DisplayName("创建城市 - 匿名用户应该被拒绝")
+    @DisplayName("Create city - Anonymous user should be unauthorized")
     void createCity_AsAnonymous_ShouldReturnUnauthorized() throws Exception {
         String cityJson = """
             {

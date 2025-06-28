@@ -22,7 +22,7 @@ public class AuthenticationIntegrationTest extends BaseIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("连接测试 - 匿名用户可以访问")
+    @DisplayName("Ping test - Anonymous user can access")
     void connectionPing_AsAnonymous_ShouldReturnSuccess() throws Exception {
         mockMvc.perform(get("/connection/ping"))
                 .andExpect(status().isOk());
@@ -30,14 +30,14 @@ public class AuthenticationIntegrationTest extends BaseIntegrationTest {
 
     @WithMockUser(username = "user", roles = {"USER"})
     @Test
-    @DisplayName("用户连接测试 - 需要用户权限")
+    @DisplayName("User connection test - As user should return success")
     void userPing_AsUser_ShouldReturnSuccess() throws Exception {
         mockMvc.perform(get("/connection/user-ping"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("用户连接测试 - 匿名用户应该被拒绝")
+    @DisplayName("User connection test - Anonymous user should be unauthorized")
     void userPing_AsAnonymous_ShouldReturnUnauthorized() throws Exception {
         mockMvc.perform(get("/connection/user-ping"))
                 .andExpect(status().isUnauthorized());
@@ -45,7 +45,7 @@ public class AuthenticationIntegrationTest extends BaseIntegrationTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
-    @DisplayName("管理员连接测试 - 需要管理员权限")
+    @DisplayName("Admin connection test - As admin should return success")
     void adminPing_AsAdmin_ShouldReturnSuccess() throws Exception {
         mockMvc.perform(get("/connection/admin-ping"))
                 .andExpect(status().isOk());
@@ -53,14 +53,14 @@ public class AuthenticationIntegrationTest extends BaseIntegrationTest {
 
     @WithMockUser(username = "user", roles = {"USER"})
     @Test
-    @DisplayName("管理员连接测试 - 普通用户应该被拒绝")
+    @DisplayName("Admin connection test - As user should return forbidden")
     void adminPing_AsUser_ShouldReturnForbidden() throws Exception {
         mockMvc.perform(get("/connection/admin-ping"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("管理员连接测试 - 匿名用户应该被拒绝")
+    @DisplayName("Admin connection test - Anonymous user should be unauthorized")
     void adminPing_AsAnonymous_ShouldReturnUnauthorized() throws Exception {
         mockMvc.perform(get("/connection/admin-ping"))
                 .andExpect(status().isUnauthorized());
@@ -68,7 +68,7 @@ public class AuthenticationIntegrationTest extends BaseIntegrationTest {
 
     @WithMockUser(username = "manager", roles = {"MANAGER"})
     @Test
-    @DisplayName("经理连接测试 - 需要经理权限")
+    @DisplayName("Manager connection test - As manager should return success")
     void managerPing_AsManager_ShouldReturnSuccess() throws Exception {
         mockMvc.perform(get("/connection/manager-ping"))
                 .andExpect(status().isOk());
