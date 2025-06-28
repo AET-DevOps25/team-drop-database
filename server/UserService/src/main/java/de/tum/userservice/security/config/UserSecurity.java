@@ -1,5 +1,6 @@
 package de.tum.userservice.security.config;
 
+import de.tum.userservice.conversation.ConversationEntity;
 import de.tum.userservice.conversation.ConversationRepository;
 import de.tum.userservice.user.UserEntity;
 import de.tum.userservice.user.UserRepository;
@@ -33,17 +34,18 @@ public class UserSecurity {
     }
 
     public boolean canAccessConversation(Long conversationId, String email) {
+        ConversationEntity conv = conversationRepository.findById(conversationId)
+                .orElse(null);
 
-        Long selfId = userRepository.findByEmail(email).getId();
-        if (selfId == null) {
+        if (conv == null) {
+            return true;
+        }
+
+        UserEntity caller = userRepository.findByEmail(email);
+        if (caller == null) {
             return false;
         }
 
-        Long ownerId = conversationRepository.findUserIdByConversationId(conversationId);
-        if (ownerId == null) {
-            return false;
-        }
-
-        return selfId.equals(ownerId);
+        return conv.getUserId().equals(caller.getId());
     }
 }
