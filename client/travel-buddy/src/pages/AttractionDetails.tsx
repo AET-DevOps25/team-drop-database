@@ -5,23 +5,15 @@ import {
   CardMedia,
   CardContent,
   Typography,
-  Rating,
   CircularProgress,
 } from '@mui/material';
 import { getAttractionById } from '../api/attrac';
-
-interface AttractionDetail {
-  name: string;
-  image: string;
-  description: string;
-  openingHours?: string[];
-  location?: string;
-  website?: string;
-}
+import {Attraction} from "../dto/attraction/Attraction";
+import AttractionMap from "../component/attraction/AttractionMap";
 
 const AttractionDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [detail, setDetail] = useState<AttractionDetail | null>(null);
+  const [attraction, setAttraction] = useState<Attraction | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,18 +25,18 @@ const AttractionDetails: React.FC = () => {
         setLoading(true);
         const data = await getAttractionById(Number(id));
 
-        const transformed: AttractionDetail = {
-          name: data.name ?? 'Unnamed Attraction',
-          image: data.photos?.[0] ?? '',
-          description: data.description ?? 'No description available.',
-          openingHours: Array.isArray(data.openingHours)
-            ? data.openingHours.map((h: any) => `${h.day} ${h.fromTime}-${h.toTime}`)
-            : [],
-          location: data.location?.address ?? 'Location not available.',
-          website: data.website ?? 'No website available.',
+        const transformed: Attraction = {
+          id: data.id,
+          name: data.name,
+          description: data.description,
+          location: data.location,
+          city: data.city,
+          photos: data.photos,
+          openingHours: data.openingHours,
+          website: data.website,
         };
 
-        setDetail(transformed);
+        setAttraction(transformed);
       } catch (err: any) {
         console.error(err);
         setError(err?.message ?? 'Loading attraction failed');
@@ -63,7 +55,7 @@ const AttractionDetails: React.FC = () => {
       </div>
     );
 
-  if (error || !detail)
+  if (error || !attraction)
     return (
       <div style={{ textAlign: 'center', marginTop: 40 }}>
         {error || 'Attraction not found'}
@@ -74,56 +66,65 @@ const AttractionDetails: React.FC = () => {
       <CardMedia
         component="img"
         height="300"
-        image={detail.image}
-        alt={detail.name}
+        image={attraction.photos[0]}
+        alt={attraction.name}
         style={{ objectFit: 'cover' }}
       />
       <CardContent>
         <Typography variant="h4" gutterBottom fontWeight="bold">
-          {detail.name}
+          {attraction.name}
         </Typography>
 
-        {detail.description && (
+        {attraction.description && (
           <Typography
             variant="body1"
             color="text.secondary"
             gutterBottom
             style={{ marginTop: 16 }}
           >
-            {detail.description}
+            {attraction.description}
           </Typography>
         )}
         <div style={{ marginTop: 24 }}>
-          {Array.isArray(detail.openingHours) && detail.openingHours.length > 0 && (
+          {Array.isArray(attraction.openingHours) && attraction.openingHours.length > 0 && (
             <div style={{ marginTop: 16 }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
                 <strong>Opening Hours:</strong>
               </Typography>
-              {detail.openingHours.map((line, idx) => (
+              {attraction.openingHours.map((line, idx) => (
                 <Typography
                   key={idx}
                   variant="body2"
                   color="text.secondary"
                   style={{ marginLeft: 12 }}
                 >
-                  {line}
+                  {line.day + "- from:" + line.fromTime + " to:" + line.toTime}
                 </Typography>
               ))}
             </div>
           )}
-          {detail.location && (
+          {attraction.location && (
             <Typography variant="body2" color="text.secondary">
-              <strong>Location: </strong> {detail.location}
+              <strong>Location: </strong> {attraction.location.address}
             </Typography>
           )}
-          {detail.website && (
+          {attraction.website && (
             <Typography variant="body2" color="text.secondary">
               <strong>Website: </strong>{' '}
-              <a href={detail.website} target="_blank" rel="noopener noreferrer">
-                {detail.website}
+              <a href={attraction.website} target="_blank" rel="noopener noreferrer">
+                {attraction.website}
               </a>
             </Typography>
           )}
+
+          {attraction.location && (
+              <AttractionMap
+                  lat={Number(attraction.location.latitude)}
+                  lng={Number(attraction.location.longitude)}
+                  name={attraction.name}
+              />
+          )}
+
         </div>
       </CardContent>
     </Card>
