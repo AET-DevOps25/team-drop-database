@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: AttractionService
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: false
+
+server:
+  servlet:
+    context-path: /attraction-service/api/v1
+
+application:
+  security:
+    jwt:
+      public-key-path: keys/public.pem
+      expiration: 86400000 # 1 day
+      refresh-token:
+        expiration: 604800000 # 7 days
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    de.tum.attractionservice: DEBUG
