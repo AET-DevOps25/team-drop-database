@@ -1,5 +1,6 @@
 package de.tum.attractionservice.security.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +22,6 @@ public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String[] WHITE_LIST_URL = {
-        "/cities/**",
-        "/attractions/**"
-    };
-
     private static final String USER = "USER";
     private static final String ADMIN = "ADMIN";
     private static final String MANAGER = "MANAGER";
@@ -35,17 +31,26 @@ public class SecurityConfiguration {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        })
+                )
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                            .requestMatchers(WHITE_LIST_URL).permitAll()
+                            //  configure role-based access control
                             .requestMatchers(HttpMethod.POST, "/cities").hasAnyRole(ADMIN, MANAGER)
                             .requestMatchers(HttpMethod.DELETE, "/cities/**").hasAnyRole(ADMIN, MANAGER)
                             .requestMatchers(HttpMethod.POST, "/attractions").hasAnyRole(ADMIN, MANAGER)
                             .requestMatchers(HttpMethod.DELETE, "/attractions/**").hasAnyRole(ADMIN, MANAGER)
+                            // configure access to connection endpoints
                             .requestMatchers("/connection/ping").permitAll()
                             .requestMatchers("/connection/user-ping").hasAnyRole(USER)
                             .requestMatchers("/connection/admin-ping").hasAnyRole(ADMIN)
                             .requestMatchers("/connection/manager-ping").hasAnyRole(MANAGER)
+                            // configure access to public endpoints
+                            .requestMatchers(HttpMethod.GET, "/cities/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/attractions/**").permitAll()
                             .anyRequest()
                             .authenticated()
                 )

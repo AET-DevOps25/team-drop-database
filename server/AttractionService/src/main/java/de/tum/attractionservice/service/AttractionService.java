@@ -39,7 +39,7 @@ public class AttractionService {
         attractionRepository.save(attraction);
     }
 
-    public void deleteAttraction(AttractionEntity attraction) {
-        attractionRepository.delete(attraction);
+    public void deleteById(Long id) {
+        attractionRepository.deleteById(id);
     }
 }

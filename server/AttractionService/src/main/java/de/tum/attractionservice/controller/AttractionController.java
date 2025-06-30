@@ -76,9 +76,14 @@ public class AttractionController {
     }
 
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteAttraction(@RequestBody AttractionEntity attraction) {
-        attractionService.deleteAttraction(attraction);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAttraction(@PathVariable Long id) {
+        AttractionEntity attraction = attractionService.getAttractionById(id);
+        if (attraction != null) {
+            attractionService.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
