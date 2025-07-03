@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     
     # Qdrant 向量数据库配置
     qdrant_host: str = "localhost"
-    qdrant_port: int = 6333
+    qdrant_port: int = 6334
     qdrant_api_key: Optional[str] = None
     qdrant_url: Optional[str] = None
     
@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     # 数据库配置 (连接到旅游景点数据库)
     attraction_db_host: str = "localhost"
     attraction_db_port: int = 5432
-    attraction_db_name: str = "attractions_db"
-    attraction_db_user: str = "postgres"
+    attraction_db_name: str = "team-drop-database"
+    attraction_db_user: str = "user"
     attraction_db_password: str = "password"
     
     # RAG 配置

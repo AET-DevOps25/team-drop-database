@@ -2,26 +2,36 @@ from typing import List, Optional
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qm
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import Qdrant
-from langchain.schema import Document
+from langchain_openai import OpenAIEmbeddings
+from langchain_qdrant import QdrantVectorStore
+from langchain_core.documents import Document
 
-from travel_buddy_ai.config import settings
+from travel_buddy_ai.core.config import settings
 from travel_buddy_ai.pipelines.parser.schema import ParsedQuery
 
 # ---------- 1. 初始化向量库 ----------
-_embeddings = OpenAIEmbeddings()
+_embeddings = None
+_qdrant_client = None
+VECTOR_STORE = None
 
-_qdrant_client = QdrantClient(
-    url=settings.qdrant_url,  # e.g. "http://localhost:6333"
-    prefer_grpc=False,
-)
-
-VECTOR_STORE = Qdrant(
-    client=_qdrant_client,
-    collection_name="attractions",
-    embeddings=_embeddings,
-)
+def get_vector_store():
+    """延迟初始化向量存储，避免在模块导入时连接"""
+    global _embeddings, _qdrant_client, VECTOR_STORE
+    
+    if VECTOR_STORE is None:
+        _embeddings = OpenAIEmbeddings(api_key=settings.openai_api_key)
+        _qdrant_client = QdrantClient(
+            url=settings.qdrant_url,  # e.g. "http://localhost:6333"
+            prefer_grpc=False,
+            check_compatibility=False,
+        )
+        VECTOR_STORE = QdrantVectorStore(
+            client=_qdrant_client,
+            collection_name="attractions",
+            embedding=_embeddings,
+        )
+    
+    return VECTOR_STORE
 
 # ---------- 2. 构造过滤器 ----------
 def _build_filter(parsed: ParsedQuery) -> Optional[qm.Filter]:
@@ -66,8 +76,9 @@ def semantic_search(
     返回 langchain.schema.Document 列表
     """
     q_filter = _build_filter(parsed)
+    vector_store = get_vector_store()
 
-    return VECTOR_STORE.similarity_search(
+    return vector_store.similarity_search(
         query=question,
         k=top_k,
         filter=q_filter,           # None 则表示不加过滤

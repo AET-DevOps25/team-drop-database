@@ -4,11 +4,11 @@ from typing import Any, Dict
 from pydantic import ValidationError
 from pydantic import SecretStr
 from langchain_openai import ChatOpenAI
-from langchain.schema import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage, HumanMessage
 
 from travel_buddy_ai.pipelines.parser.base import InputParser
 from travel_buddy_ai.pipelines.parser.schema import ParsedQuery
-from travel_buddy_ai.config import settings
+from travel_buddy_ai.core.config import settings
 
 _SYSTEM_PROMPT = """You are a travel query parser.
 
