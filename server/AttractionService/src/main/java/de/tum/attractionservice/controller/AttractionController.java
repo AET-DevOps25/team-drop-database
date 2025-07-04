@@ -1,5 +1,7 @@
 package de.tum.attractionservice.controller;
 
+import de.tum.attractionservice.importer.AttractionDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import de.tum.attractionservice.model.AttractionEntity;
 import de.tum.attractionservice.service.AttractionService;
+
+import java.util.List;
 
 
 @RestController
@@ -63,16 +67,22 @@ public class AttractionController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> saveAttraction(@RequestBody AttractionEntity attraction) {
-        if (attraction.getId() != null) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("New attraction must not contain an id.");
-        }
+//    @PostMapping
+//    public ResponseEntity<?> saveAttraction(@RequestBody AttractionEntity attraction) {
+//        if (attraction.getId() != null) {
+//            return ResponseEntity
+//                    .status(HttpStatus.BAD_REQUEST)
+//                    .body("New attraction must not contain an id.");
+//        }
+//
+//        attractionService.saveAttraction(attraction);
+//        return ResponseEntity.status(HttpStatus.CREATED).build();
+//    }
 
-        attractionService.saveAttraction(attraction);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<String> ingest(@RequestBody List<AttractionDTO> dtos) {
+        attractionService.saveAll(dtos);
+        return ResponseEntity.ok("Saved " + dtos.size() + " attractions");
     }
 
 
