@@ -43,7 +43,7 @@ public class AttractionControllerIntegrationTest {
         // Clean up database
         attractionRepository.deleteAll();
         cityRepository.deleteAll();
-        
+
         // Create test city data
         CityEntity testCity = new CityEntity();
         testCity.setName("Munich");
@@ -53,14 +53,14 @@ public class AttractionControllerIntegrationTest {
         testCity.setLongitude(11.5820);
         testCity = cityRepository.save(testCity);
         testCityId = testCity.getId();
-        
+
         // Create test attraction data
         AttractionEntity testAttraction = new AttractionEntity();
         testAttraction.setName("Test Attraction");
         testAttraction.setDescription("A test attraction for integration tests");
         testAttraction.setCity(testCity);
         testAttraction.setWebsite("https://test.com");
-        
+
         // Create location information
         de.tum.attractionservice.model.Location location = new de.tum.attractionservice.model.Location();
         location.setAddress("Test Address");
@@ -68,7 +68,7 @@ public class AttractionControllerIntegrationTest {
         location.setLatitude("48.1351");
         location.setLongitude("11.5820");
         testAttraction.setLocation(location);
-        
+
         testAttraction = attractionRepository.save(testAttraction);
         testAttractionId = testAttraction.getId();
     }
@@ -96,42 +96,37 @@ public class AttractionControllerIntegrationTest {
     @DisplayName("Create attraction - Requires admin privileges")
     void createAttraction_AsAdmin_ShouldReturnCreated() throws Exception {
         String attractionJson = """
-            {
-            "name": "New Deutsches Museum",
-            "description": "One of the world's largest science and technology museums.",
-            "city": {
-                "id": %d
-                },
-            "location": {
-                "address": "Museumsinsel 1",
+            [
+                {
+                "name": "New Deutsches Museum",
+                "description": "One of the world's largest science and technology museums.",
+                "city": "Munich",
                 "country": "Germany",
-                "latitude": "48.1303",
-                "longitude": "11.5840"
-            },
-            "openingHours": [
-                {
-                "day": "MONDAY",
-                "from": "09:00",
-                "to": "17:00"
-                },
-                {
-                "day": "TUESDAY",
-                "from": "09:00",
-                "to": "17:00"
+                "openingHours": [
+                    "Monday: 09:00 - 18:00",
+                    "Tuesday: 09:00 - 18:00",
+                    "Wednesday: 09:00 - 18:00",
+                    "Thursday: 09:00 - 18:00",
+                    "Friday: 09:00 - 18:00",
+                    "Saturday: 09:00 - 18:00",
+                    "Sunday: 09:00 - 18:00"
+                ],
+                "photos": [
+                    "https://example.com/photo1.jpg",
+                    "https://example.com/photo2.jpg"
+                ],
+                "website": "https://www.deutsches-museum.de",
+                "address": "Museumsinsel 1, 80538 München",
+                "latitude": "48.131381",
+                "longitude": "11.585605"
                 }
-            ],
-            "photos": [
-                "https://example.com/photo1.jpg",
-                "https://example.com/photo2.jpg"
-            ],
-            "website": "https://www.deutsches-museum.de"
-            }
-            """.formatted(testCityId);
+            ]
+            """;
 
         mockMvc.perform(post("/attractions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(attractionJson))
-                .andExpect(status().isCreated());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(attractionJson))
+                .andExpect(status().isOk());
     }
 
     @WithMockUser(username = "user", roles = {"USER"})
@@ -139,22 +134,22 @@ public class AttractionControllerIntegrationTest {
     @DisplayName("Create attraction - Regular user should be forbidden")
     void createAttraction_AsUser_ShouldReturnForbidden() throws Exception {
         String attractionJson = """
-            {
-                "name": "User Test Attraction",
-                "description": "A test attraction",
-                "city": {"id": %d},
-                "location": {
-                    "address": "Test Address 1",
-                    "country": "Germany",
-                    "latitude": "48.1351",
-                    "longitude": "11.5820"
+                {
+                    "name": "User Test Attraction",
+                    "description": "A test attraction",
+                    "city": {"id": %d},
+                    "location": {
+                        "address": "Test Address 1",
+                        "country": "Germany",
+                        "latitude": "48.1351",
+                        "longitude": "11.5820"
+                    }
                 }
-            }
-            """.formatted(testCityId);
+                """.formatted(testCityId);
 
         mockMvc.perform(post("/attractions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(attractionJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(attractionJson))
                 .andExpect(status().isForbidden());
     }
 
@@ -162,22 +157,22 @@ public class AttractionControllerIntegrationTest {
     @DisplayName("Create attraction - Anonymous user should be unauthorized")
     void createAttraction_AsAnonymous_ShouldReturnUnauthorized() throws Exception {
         String attractionJson = """
-            {
-                "name": "Anonymous Test Attraction",
-                "description": "A test attraction",
-                "city": {"id": %d},
-                "location": {
-                    "address": "Test Address",
-                    "country": "Germany",
-                    "latitude": "48.1351",
-                    "longitude": "11.5820"
+                {
+                    "name": "Anonymous Test Attraction",
+                    "description": "A test attraction",
+                    "city": {"id": %d},
+                    "location": {
+                        "address": "Test Address",
+                        "country": "Germany",
+                        "latitude": "48.1351",
+                        "longitude": "11.5820"
+                    }
                 }
-            }
-            """.formatted(testCityId);
+                """.formatted(testCityId);
 
         mockMvc.perform(post("/attractions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(attractionJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(attractionJson))
                 .andExpect(status().isUnauthorized());
     }
 

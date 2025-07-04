@@ -20,3 +20,5 @@ application:
       expiration: 86400000 # 1 day
       refresh-token:
         expiration: 604800000 # 7 days
+
+  api-key: super-secret-12345
