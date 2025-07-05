@@ -1,0 +1,464 @@
+meta {
+  name: test json upload
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8082/attraction-service/api/v1/attractions
+  body: json
+  auth: inherit
+}
+
+headers {
+  X-API-KEY: super-secret-12345
+  Content-Type: application/json
+}
+
+body:json {
+  [
+    {
+      "name": "Nymphenburg Palace",
+      "description": "Travel back in time to the age of the Bavarian monarchy: the extensive park with its pavilions, promenades along the palace canals, enormous fountains, magnificent flower gardens and, of course, impressive palace buildings is a source of fascination for Munich natives and tourists alike.\nIn addition to the rooms inside the castle, which were designed by the best sculptors, painters and plasterers of the time, you can visit several museums housed in the palace itself, including the Museum of Man and Nature and the Museum of Nymphenburg Porcelain.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 09:00 - 18:00",
+        "Tuesday: 09:00 - 18:00",
+        "Wednesday: 09:00 - 18:00",
+        "Thursday: 09:00 - 18:00",
+        "Friday: 09:00 - 18:00",
+        "Saturday: 09:00 - 18:00",
+        "Sunday: 09:00 - 18:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/nymphenburgsommer.jpg.webp"
+      ],
+      "website": "https://www.schloss-nymphenburg.de/",
+      "address": "Schloss Nymphenburg, 80638 München",
+      "latitude": "48.1553161",
+      "longitude": "11.4986783"
+    },
+    {
+      "name": "Frauenkirche",
+      "description": "Built in the 15th century, the gothic \"Cathedral of Our Lady\" or Frauenkirche in German, was and is an unmistakable symbol of the city. But not everyone knows that the Frauenkirche serves as the final resting place of Emperors and Kings and that the Devil himself is said to have visited the church.\nThe 500-year-old brick building is the seat of the Archbishop of Munich and Freising. Visitors can climb one of the cathedral's two 100-meter towers for spectacular views over the city.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 09:00 - 20:00",
+        "Tuesday: 09:00 - 20:00",
+        "Wednesday: 09:00 - 20:00",
+        "Thursday: 09:00 - 20:00",
+        "Friday: 09:00 - 20:00",
+        "Saturday: 09:00 - 20:00",
+        "Sunday: 09:00 - 20:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2025-01/frauenkirche.jpg.webp"
+      ],
+      "website": "https://www.muenchner-dom.de/",
+      "address": "Frauenplatz 1, 80331 München",
+      "latitude": "48.138602",
+      "longitude": "11.573625"
+    },
+    {
+      "name": "Marienplatz",
+      "description": "The heartbeat of Munich: Marienplatz (St. Mary's Square), the world-famous center of the state capital, is home to the New Town Hall. No matter the time of year, there's always something happening near the Mariensäule (Column of St. Mary) - whether it's people gathering to witness the Glockenspiel (carillion housed in the Town Hall), the Christmas market, championship celebrations for major sports teams or simply visitors from all over the world strolling through the city.\n Marienplatz is situated in the very center of Munich, where the east-west axis between the Isartor and the Karlstor gates and the north-south axis between Schwabing and the Sendlinger Tor gate meet, making it an ideal starting point for sightseeing around the city.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-07/marienplatz-750.jpg.webp"
+      ],
+      "website": "",
+      "address": "Marienplatz 1, 80331 München",
+      "latitude": "48.137440",
+      "longitude": "11.574710"
+    },
+    {
+      "name": "Deutsches Museum",
+      "description": "The largest museum of technology in the world: The German Museum of Masterpieces of Science and Technology, as it’s officially called, is both a traditional museum and a modern, hands-on facility. Visitors can get involved with demonstrations, experiments and media stations, where they can press buttons, flip levers and switches and touch many of the exhibits.\n The 50 or so subjects covered by the museum are diverse, ranging from agriculture and food technology to astronomy, chemistry, photography and film, aeronautics and space technology, marine biology and physics to shipping, telecommunications and even clocks.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 09:00 - 17:00",
+        "Tuesday: 09:00 - 17:00",
+        "Wednesday: 09:00 - 17:00",
+        "Thursday: 09:00 - 17:00",
+        "Friday: 09:00 - 17:00",
+        "Saturday: 09:00 - 17:00",
+        "Sunday: 09:00 - 17:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/deutsches-museum-43.jpg.webp"
+      ],
+      "website": "https://www.deutsches-museum.de",
+      "address": "Museumsinsel 1, 80538 München",
+      "latitude": "48.131381",
+      "longitude": "11.585605"
+    },
+    {
+      "name": "Platzl in the old town with the Hofbräuhaus",
+      "description": "At the \"Platzl\" in the old town, you can get an idea of what Munich once looked like: magnificent town houses and cobblestones create a cozy ambience. The world-famous Hofbräuhaus, where Munich's beer tradition is lived, has been located here since 1608. The neo-Renaissance building is also an eye-catcher from the outside. ",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 11:00 - 24:00",
+        "Tuesday: 09:00 - 24:00",
+        "Wednesday: 09:00 - 24:00",
+        "Thursday: 09:00 - 24:00",
+        "Friday: 09:00 - 24:00",
+        "Saturday: 09:00 - 24:00",
+        "Sunday: 09:00 - 24:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/20201204-hofbraeuhaus-daemmerung-4-3.jpg.webp"
+      ],
+      "website": "https://hofbraeuhaus.de/",
+      "address": "Platzl 9, 80331 München",
+      "latitude": "48.137611",
+      "longitude": "11.579940"
+    },
+    {
+      "name": "Tierpark Hellabrunn",
+      "description": "A journey around the world: Munich’s Tierpark Hellabrunn zoo was founded in 1911 and is the world’s first geological zoo. Since 1928, the animals have lived here according to continents - today partly in natural communities, as in nature.\n The zoo puts on a number events at different times of year, offering fascinating insights into the natural habitats of the Isar conservation area. Animals roam free in large enclosures without fencing and cages, providing an optimal venue for learning about animals and environmental protection.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 09:00 - 18:00",
+        "Tuesday: 09:00 - 18:00",
+        "Wednesday: 09:00 - 18:00",
+        "Thursday: 09:00 - 18:00",
+        "Friday: 09:00 - 18:00",
+        "Saturday: 09:00 - 18:00",
+        "Sunday: 09:00 - 18:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2025-02/2023-02-06_loewe_maria_fencik_8.jpg.webp"
+      ],
+      "website": "https://www.hellabrunn.de/",
+      "address": "Residenzstr. 1, 80333 München",
+      "latitude": "48.140487",
+      "longitude": "11.57743"
+    },
+    {
+      "name": "English Garden",
+      "description": "Munich's green lung: With its 375 hectares, the English Garden is one of the largest inner-city parks in the world. It is not only a popular recreation area in Munich and ideally suited for sports activities such as jogging, cycling or volleyball. A special highlight is the standing wave at the Eisbach - Eisbachwelle for short - not only for people who surf themselves, but also to watch.\n A visit to the English Garden is also worthwhile because of the numerous sights such as the Monopteros, the Chinese Tower, the Japanese Tea House or the Rumfordschlössl. Throughout the year there are numerous events in the English Garden, such as the Kocherlball (Munich’s largest folk dance event) or the Japanese Festival.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-07/lhm-e-garten-panorama.jpg.webp"
+      ],
+      "website": "",
+      "address": "Englischer Garten 1, 80538 Munich",
+      "latitude": "48.15654754638672",
+      "longitude": "11.590193748474121"
+    },
+    {
+      "name": "Residenz",
+      "description": "The Munich Residenz is the largest palace in any German city center. Stretching from Dienerstrasse to Max-Joseph-Platz, its imposing façade towers over all those who come to marvel at it.\n Highlights of a tour around the Residenz of Bavaria’s erstwhile rules include its many apartments, ballrooms and chapels, featuring different styles ranging from Baroque to Rococo to neoclassical – a testament to the continuous expansion and rebuilding the palace has undergone during its more than 600-year history.\n Also worth visiting are the palace treasury, the sumptuous Rococo Cuvilliés Theater and the magnificent Hofgarten (Royal Garden).",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 09:00 - 18:00",
+        "Tuesday: 09:00 - 18:00",
+        "Wednesday: 09:00 - 18:00",
+        "Thursday: 09:00 - 18:00",
+        "Friday: 09:00 - 18:00",
+        "Saturday: 09:00 - 18:00",
+        "Sunday: 09:00 - 18:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/20210326_schatzkammer-residenz_Katy-Spichal.jpg.webp"
+      ],
+      "website": "https://www.residenz-muenchen.de/index.htm",
+      "address": "Residenzstr. 1, 80333 München",
+      "latitude": "48.1421714",
+      "longitude": "11.5778676"
+    },
+    {
+      "name": "Karlsplatz (Stachus)",
+      "description": "Karlsplatz, better known as Stachus, is formed by the Karlstor gate with a semicircle of rondell buildings on both sides and serves as the entryway to Munich’s largest pedestrian zone. The saying German “Da geht’s ja zu wie am Stachus” has spread beyond Munich throughout Bavaria as a way to describe a place where there’s lots going on.\n These days, there’s still a lot going on at Stachus, day and night: Several S-bahn, U-bahn and tram lines run through here, with cars, buses, cyclists and pedestrians passing through by the thousands every day. Some simply use it to make their way through the old town, while others use it to access the pedestrian zone. It also serves as the starting point for Munich’s shopping district.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/201212_stachus-sommer_shutterstock-422259487.jpg.webp"
+      ],
+      "website": "",
+      "address": "Karlsplatz 1, 80335 München",
+      "latitude": "48.1392734",
+      "longitude": "11.5645151"
+    },
+    {
+      "name": "Isar river",
+      "description": "The Isar is the perfect place to relax in Munich: At almost 14 kilometers long, the river stretches from south to north in the city area. The numerous banks are perfect for relaxing and in certain areas also for barbecuing and swimming. Particularly popular are the Isarauen at the Flaucher and the extensive area around the Reichenbach Bridge. However, there are also less busy sections that are popular for cycling, jogging and walking. Boating is permitted in selected areas of the Isar during the warm season.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/201214_isarauen-sommer_monica-garduno.jpg.webp"
+      ],
+      "website": "",
+      "address": "Reichenbachbrücke, 80649 München",
+      "latitude": "48.127185",
+      "longitude": "11.577231"
+    },
+    {
+      "name": "Viktualienmarkt",
+      "description": "Viktualienmarkt is Munich’s largest market and a hub for the city’s foodies. Spread across 22,000 square meters, it features a huge range of fresh produce with much more than just fruit and vegetables: Bakers, butchers, fishmongers, delicatessens and flower stalls have turned Viktualienmarkt into a Munich landmark for more than 200 years.\n The best thing: entry to the market is free. It also features food stalls and a comfy beer garden, complete with an authentic Bavarian Maibaum (Maypole).",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 08:00 - 20:00",
+        "Tuesday: 08:00 - 20:00",
+        "Wednesday: 08:00 - 20:00",
+        "Thursday: 08:00 - 20:00",
+        "Friday: 08:00 - 20:00",
+        "Saturday: 08:00 - 20:00",
+        "Sunday: 08:00 - 20:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/viktualienmarkt-sommer.jpg.webp"
+      ],
+      "website": "https://www.viktualienmarkt-muenchen.de/en/home/",
+      "address": "Viktualienmarkt, 80331 München",
+      "latitude": "48.134755",
+      "longitude": "11.576438"
+    },
+    {
+      "name": "Olympiapark",
+      "description": "The Olympic Park is one of the most impressive and popular places in Munich. Created on the occasion of the 1972 Olympic Games, some of the most important buildings in the state capital are located here in a very small area: the Olympic Stadium and the Olympic Hall with the world-famous tent roof construction and the over 290-meter-high Olympic Tower with its viewing platform.\n In addition, the 850,000 square meter park offers a varied range of leisure activities with concerts, spectacular events, festivals and a wide variety of sports.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-09/01-olympiapark.jpg.webp"
+      ],
+      "website": "https://www.olympiapark.de/de",
+      "address": "Spiridon-Louis-Ring 21, 80809 München",
+      "latitude": "48.175433",
+      "longitude": "11.550931"
+    },
+    {
+      "name": "Odeonsplatz",
+      "description": "“La dolce vita” is truly on display at Odeonsplatz in Munich: The Italian-style square is complete with a Late Baroque-style church, a building designed in the style of the Loggia dei Lanzi in Florence and a great deal of hustle and bustle. It also serves as the northern boundary of the pedestrian zone and forms the starting point of Ludwigstrasse.\n A number of landmarks are located within a stone’s throw of Odeonsplatz, including the Residenz palace with the Hofgarten (Royal Garden), the Feldherrnhalle (Field Marshalls’ Hall), the Theatinerkirche (Theatine Church), several palaces and the sweeping Bazargebäude (Bazaar Building). High-profile events are regularly held in the square, including the Stadtgründungsfest celebrating the city’s founding, the Streetlife Festival and the popular Klassik am Odeonsplatz open-air classical music festival.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/201203_Odeonsplatz_Shutterstock_141715471.jpg.webp"
+      ],
+      "website": "",
+      "address": "Odeonsplatz 1, 80539 München",
+      "latitude": "48.142864",
+      "longitude": "11.577181"
+    },
+    {
+      "name": "Alter Peter",
+      "description": "St. Peter's Church, located just behind Marienplatz, is the oldest parish church in Munich. Alter Peter (Old Peter), as it is lovingly known by the people of Munich, offers one of the best views over the city's rooftops. It also houses Munich's oldest bells and clocks.\n The tower isn't the only feature worth visiting. The church's impressive Baroque high age and the relics housed in a glass case, specifically the skeleton of St. Munditia, are well worth a visit.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 12:00 - 16:30",
+        "Tuesday: 12:00 - 16:30",
+        "Wednesday: 12:00 - 16:30",
+        "Thursday: 12:00 - 16:30",
+        "Friday: 12:00 - 16:30",
+        "Saturday: 12:00 - 16:30",
+        "Sunday: 12:00 - 16:30"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-07/alterpeter-rathausaussicht-detail.jpg.webp"
+      ],
+      "website": "https://alterpeter.de/",
+      "address": "Rindermarkt 1, 80331 München",
+      "latitude": "48.136328",
+      "longitude": "11.575334"
+    },
+    {
+      "name": "Allianz Arena",
+      "description": "The Allianz Arena is the architecturally impressive football stadium of FC Bayern Munich. With a capacity of over 75,000 spectators, it is one of the largest stadiums in Germany. The white outer shell made of air cushions can be illuminated with LED lamps and shines in red during Bayern home games. Inside is the FC Bayern club museum with its numerous trophies and guided tours are offered on non-match days.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 09:00 - 18:00",
+        "Tuesday: 09:00 - 18:00",
+        "Wednesday: 09:00 - 18:00",
+        "Thursday: 09:00 - 18:00",
+        "Friday: 09:00 - 18:00",
+        "Saturday: 09:00 - 18:00",
+        "Sunday: 09:00 - 18:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/allianzarena-daemmerung.jpg.webp"
+      ],
+      "website": "https://allianz-arena.com/de",
+      "address": "Franz-Beckenbauer-Platz 5, 80939 München",
+      "latitude": "48.21892714778492",
+      "longitude": "11.62470165679151"
+    },
+    {
+      "name": "Munich Pinacotheca",
+      "description": "Munich's Pinakothek museums are home to art from a wide variety of eras and styles.\n The Pinakothek der Moderne is one of Munich's biggest attractions and one of the best-known exhibition houses in the world. It combines four independent museums of art, graphics, architecture and design on more than 12,000 square meters.\n As one of the most important painting galleries in the world, the Alte Pinakothek on Königsplatz shows European painting from the 14th to the 18th century. Well over 700 paintings are exhibited in 19 halls and 47 cabinets. Since 1836, art lovers have been wandering through the impressive rooms on two floors created by architect Leo von Klenze.\n Visitors walk through the Neue Pinakothek like in a labyrinth with its exciting overview of the epochs of European art from the Enlightenment to the beginning of modernism, from Vincent Van Gogh's Sunflowers to Carl Spitzweg's Poor Poet. The Neue Pinakothek is closed for renovation until 2025.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/Pinakothek-der-Moderne.png.webp"
+      ],
+      "website": "",
+      "address": "Barer Str. 29, 80799 München",
+      "latitude": "48.15011219100161",
+      "longitude": "11.570932582608252"
+    },
+    {
+      "name": "Königsplatz",
+      "description": "With its magnificent buildings, Königsplatz combines architecture from Greek antiquity with European classicism. The square, which was built at the beginning of the 19th century, attracts visitors with numerous impressive museums, such as the Glyptothek, the State Collection of Classical Antiquities or the Lenbachhaus with its works of modern painting.\n In the summer months, numerous open-air events, concerts and festivals also take place here. A memorial commemorates the use of Königsplatz for Nazi propaganda events and book burnings by the National Socialists.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/koenigsplatz-abend.jpg.webp"
+      ],
+      "website": "",
+      "address": "Königsplatz 1, 80333 München",
+      "latitude": "48.14540426354743",
+      "longitude": "11.564880851918291"
+    },
+    {
+      "name": "Oktoberfest",
+      "description": "Munich Oktoberfest, called the \"Wiesn\" (meadow) by locals, is the world’s largest folk festival. First held in 1810 to celebrate the marriage of King Ludwig I and Princess Therese of Saxe-Hildburghausen, the festival has now become one of the top highlights of the Munich calendar.\n\nAround six million guests from all over the world flock to Munich every year to attend the two-week festival on the Theresienwiese. Opened on the 200th anniversary of Oktoberfest in 2010, the Oide Wiesn (Old Wiesn) is celebrated on a separate, adjacent site – the perfect place to experience a traditional Oktoberfest as it was once.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 00:00 - 00:00",
+        "Tuesday: 00:00 - 00:00",
+        "Wednesday: 00:00 - 00:00",
+        "Thursday: 00:00 - 00:00",
+        "Friday: 00:00 - 00:00",
+        "Saturday: 00:00 - 00:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/oktoberfest-nacht.jpg.webp"
+      ],
+      "website": "https://www.oktoberfest.de/",
+      "address": "Theresienwiese, 80336 München",
+      "latitude": "48.13600689310927",
+      "longitude": "11.550005024935377"
+    },
+    {
+      "name": "Bayerische Staatsoper",
+      "description": "One of the world’s most celebrated opera houses, the Bayerische Staatsoper (Bavarian State Opera) in Munich is steeped in 350 years of history. Elector Ferdinand Maria had a theater built in the Herkulessaal (Hercules Hall) of the royal residence in the 17th century, where the first Italian opera performances were staged for courtiers.\n After relocating to the newly-built National Theater on Max-Joseph-Platz in 1811, the Bavarian State Opera has now become Germany’s largest opera house, enjoying enormous success with more than half a million visitors per year and some 450 performances.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 10:00 - 19:00",
+        "Tuesday: 10:00 - 19:00",
+        "Wednesday: 10:00 - 19:00",
+        "Thursday: 10:00 - 19:00",
+        "Friday: 10:00 - 19:00",
+        "Saturday: 10:00 - 19:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/210104_bayerische-staatsoper-abend_shutterstock_181928225.jpg.webp"
+      ],
+      "website": "https://www.staatsoper.de/en/",
+      "address": "Max-Joseph-Platz 2, 80539 München",
+      "latitude": "48.13965495769314",
+      "longitude": "11.57974178260793"
+    },
+    {
+      "name": "Botanical Garden",
+      "description": "The Botanical Garden not far from Nymphenburg Palace offers magnificent plants from all over the world all year round. There are over 19,000 species and subspecies to discover in the open-air area - from local useful plants and alpine flowers in the Alpinum to flora from the Far East and America that is unknown in this country.\n The greenhouses cover an area of more than 5,000 square meters. Whatever the weather, cacti, palms, ferns and tropical plants in all colors and shapes can be admired here.",
+      "city": "Munich",
+      "country": "Germany",
+      "openingHours": [
+        "Monday: 09:00 - 18:00",
+        "Tuesday: 09:00 - 18:00",
+        "Wednesday: 09:00 - 18:00",
+        "Thursday: 09:00 - 18:00",
+        "Friday: 09:00 - 18:00",
+        "Saturday: 09:00 - 18:00",
+        "Sunday: 00:00 - 00:00"
+      ],
+      "photos": [
+        "https://www.muenchen.de/sites/default/files/styles/3_2_w1216/public/2022-06/201307-botanischer-garten-institut-shutterstock.jpg.webp"
+      ],
+      "website": "https://botmuc.snsb.de/",
+      "address": "Menzinger Str. 65, 80638 München",
+      "latitude": "48.163558194915744",
+      "longitude": "11.50114181610752"
+    }
+  ]
+  
+  
+  
+}
