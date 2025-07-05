@@ -1,0 +1,14 @@
+graph TD
+    A[用户自然语言输入<br>（如“我想要三天文艺之旅”）] --> B[Input Parser<br>解析关键词/时间/偏好]
+    B --> C[Retriever<br>向量数据库语义检索景点]
+    C --> D[User Preference Fetcher<br>从PostgreSQL加载用户偏好]
+    D --> E[Prompt Composer<br>合成提示词模板]
+    E --> F[LLM Generator<br>调用GPT生成推荐路线]
+    F --> G[Post-Processor<br>提取结构化推荐信息]
+    G --> H[前端可视化展示<br>整合地图与路线]
+
+    style A fill:#f9f,stroke:#333,stroke-width:1px
+    style H fill:#bbf,stroke:#333,stroke-width:1px
+
+
+visualization using https://mermaid.live/edit
