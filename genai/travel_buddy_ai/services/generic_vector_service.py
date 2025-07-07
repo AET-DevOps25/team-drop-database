@@ -1,6 +1,6 @@
 """
-简化的通用向量服务
-移除attractions特定逻辑，提供通用向量操作
+Simplified generic vector service
+Removes attractions-specific logic, provides generic vector operations
 """
 
 from typing import List, Optional, Dict, Any
@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 
 
 class GenericVectorService:
-    """通用向量存储服务类"""
+    """Generic vector storage service class"""
 
     def __init__(self, collection_name: str = None):
         self._dense_embeddings = OpenAIEmbeddings(
@@ -41,7 +41,7 @@ class GenericVectorService:
         )
 
     def create_collection(self, collection_name: str) -> None:
-        """创建 Qdrant 集合"""
+        """Create Qdrant collection"""
         if not self._qdrant_client.collection_exists(collection_name):
             self._qdrant_client.create_collection(
                 collection_name=collection_name,
@@ -54,29 +54,29 @@ class GenericVectorService:
                     )
                 },
             )
-            logger.info(f"向量集合 '{collection_name}' 已创建")
+            logger.info(f"Vector collection '{collection_name}' created")
 
     def add_documents(self, documents: List[Document], ids: List[str] = None) -> None:
-        """添加文档到向量存储"""
+        """Add documents to vector storage"""
         if ids:
-            # 确保ID是整数格式（Qdrant要求）
+            # Ensure IDs are in integer format (required by Qdrant)
             processed_ids = []
             for doc_id in ids:
                 try:
-                    # 如果是数字字符串，转换为整数
+                    # If it's a numeric string, convert to integer
                     processed_ids.append(int(doc_id))
                 except ValueError:
-                    # 如果不是数字，使用hash生成整数ID
+                    # If not numeric, generate integer ID using hash
                     processed_ids.append(abs(hash(doc_id)) % (10**10))
             
             self.vector_store.add_documents(documents=documents, ids=processed_ids)
         else:
             self.vector_store.add_documents(documents=documents)
         
-        logger.info(f"已添加 {len(documents)} 个文档到向量存储中")
+        logger.info(f"Added {len(documents)} documents to vector storage")
 
     def search(self, query: str, limit: int = 10, score_threshold: float = 0.7) -> List[Dict[str, Any]]:
-        """执行向量搜索"""
+        """Perform vector search"""
         docs_with_scores = self.vector_store.similarity_search_with_score(
             query, k=limit
         )
@@ -93,21 +93,21 @@ class GenericVectorService:
         return results
 
     def delete_by_id(self, doc_id: str) -> None:
-        """根据ID删除文档"""
+        """Delete document by ID"""
         try:
-            # 转换ID为整数格式
+            # Convert ID to integer format
             int_id = int(doc_id) if doc_id.isdigit() else abs(hash(doc_id)) % (10**10)
             self._qdrant_client.delete(
                 collection_name=self.collection_name,
                 points_selector=[int_id]
             )
-            logger.info(f"文档 ID {doc_id} 已删除")
+            logger.info(f"Document ID {doc_id} deleted")
         except Exception as e:
-            logger.error(f"删除文档失败: {e}")
+            logger.error(f"Failed to delete document: {e}")
             raise
 
     def get_collection_info(self) -> Dict[str, Any]:
-        """获取集合信息"""
+        """Get collection information"""
         if not self._qdrant_client.collection_exists(self.collection_name):
             return {"exists": False}
         
@@ -120,6 +120,6 @@ class GenericVectorService:
         }
 
     def get_list_of_collections(self) -> List[str]:
-        """获取所有集合列表"""
+        """Get list of all collections"""
         collections = self._qdrant_client.get_collections()
         return [col.name for col in collections.collections]
