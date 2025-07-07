@@ -102,7 +102,7 @@ def show_current_config():
 def test_current_model():
     """测试当前模型配置"""
     try:
-        from qa_system_fixed import AttractionQASystem
+        from travel_buddy_ai.services.qa_system_fixed import AttractionQASystem
         
         print("🧪 测试当前模型配置...")
         qa_system = AttractionQASystem()

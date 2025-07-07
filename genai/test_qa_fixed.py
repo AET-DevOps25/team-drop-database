@@ -3,7 +3,7 @@
 测试修正版问答系统
 """
 
-from qa_system_fixed import AttractionQASystem
+from travel_buddy_ai.services.qa_system_fixed import AttractionQASystem
 
 def test_qa_system():
     """测试问答系统"""
