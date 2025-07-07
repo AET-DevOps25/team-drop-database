@@ -4,15 +4,11 @@ from typing import Optional
 from travel_buddy_ai.pipelines.parser import get_parser
 from travel_buddy_ai.pipelines.retriever import semantic_search
 from travel_buddy_ai.api.vector_api import router as vector_router
-from travel_buddy_ai.api.recommendation_api import router as recommendation_router
 
 router = APIRouter()
 
 # 注册向量搜索相关的路由
 router.include_router(vector_router)
-
-# 注册旅行推荐相关的路由
-router.include_router(recommendation_router)
 
 class RecommendRequest(BaseModel):
     query: str

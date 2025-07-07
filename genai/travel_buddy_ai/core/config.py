@@ -10,6 +10,11 @@ class Settings(BaseSettings):
     # OpenAI API 配置
     openai_api_key: Optional[str] = None
     
+    # LLM模型配置
+    llm_model_type: str = "openai"  # openai, gpt4all, llamacpp, ollama
+    llm_model_name: str = "gpt-3.5-turbo"  # 具体模型名称
+    llm_model_path: Optional[str] = None  # 本地模型路径（用于llamacpp等）
+    
     # Qdrant 向量数据库配置
     qdrant_host: str = "localhost"
     qdrant_port: int = 6334
@@ -21,7 +26,7 @@ class Settings(BaseSettings):
     
     # 数据库配置 (连接到旅游景点数据库)
     attraction_db_host: str = "localhost"
-    attraction_db_port: int = 5432
+    attraction_db_port: int = 5443
     attraction_db_name: str = "team-drop-database"
     attraction_db_user: str = "user"
     attraction_db_password: str = "password"

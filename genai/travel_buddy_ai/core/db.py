@@ -66,19 +66,30 @@ def get_qdrant_connection() -> QdrantClient:
         Qdrant 客户端实例
     """
     if db_connection._qdrant_client is None:
-        if settings.qdrant_url:
-            # 使用完整的 URL 连接
+        # 对于本地开发环境，强制使用HTTP连接
+        if settings.qdrant_host == "localhost" or settings.qdrant_host == "127.0.0.1":
+            # 本地开发环境：使用HTTP，不使用API key
+            db_connection._qdrant_client = QdrantClient(
+                host=settings.qdrant_host,
+                port=settings.qdrant_port,
+                https=False,
+                api_key=None
+            )
+            logger.info("Qdrant 本地客户端连接已创建（HTTP模式）")
+        elif settings.qdrant_url:
+            # 使用完整的 URL 连接（生产环境）
             db_connection._qdrant_client = QdrantClient(
                 url=settings.qdrant_url,
                 api_key=settings.qdrant_api_key
             )
+            logger.info("Qdrant 远程客户端连接已创建（URL模式）")
         else:
-            # 使用主机和端口连接
+            # 使用主机和端口连接（远程环境）
             db_connection._qdrant_client = QdrantClient(
                 host=settings.qdrant_host,
                 port=settings.qdrant_port,
                 api_key=settings.qdrant_api_key
             )
-        logger.info("Qdrant 客户端连接已创建")
+            logger.info("Qdrant 远程客户端连接已创建（主机端口模式）")
     
     return db_connection._qdrant_client
