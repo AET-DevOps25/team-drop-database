@@ -20,13 +20,11 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String USER = "USER";
     private static final String ADMIN = "ADMIN";
     private static final String MANAGER = "MANAGER";
-    private static final String API = "API";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,9 +39,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             //  configure role-based access control
-                            .requestMatchers(HttpMethod.POST, "/cities").hasAnyRole(API, ADMIN, MANAGER)
+                            .requestMatchers(HttpMethod.POST, "/cities").hasAnyRole(ADMIN, MANAGER)
                             .requestMatchers(HttpMethod.DELETE, "/cities/**").hasAnyRole(ADMIN, MANAGER)
-                            .requestMatchers(HttpMethod.POST, "/attractions/**").hasAnyRole(API, ADMIN, MANAGER)
+                            .requestMatchers(HttpMethod.POST, "/attractions/**").hasAnyRole(ADMIN, MANAGER)
                             .requestMatchers(HttpMethod.DELETE, "/attractions/**").hasAnyRole(ADMIN, MANAGER)
                             // configure access to connection endpoints
                             .requestMatchers("/connection/ping").permitAll()
@@ -57,7 +55,6 @@ public class SecurityConfiguration {
                             .authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
