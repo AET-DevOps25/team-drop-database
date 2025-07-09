@@ -127,6 +127,8 @@ attractionservice:
       value: attr_user
     - name: SPRING_DATASOURCE_PASSWORD
       value: attr_pwd
+    - name: APPLICATION_SECURITY_API_KEY
+      value: travel-buddy-devops-2025
 
 auth-postgres:
   auth:

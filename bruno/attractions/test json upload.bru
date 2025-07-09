@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: http://localhost:8082/attraction-service/api/v1/attractions
+  url: http://{{attraction-service}}/attraction-service/api/v1/attractions
   body: json
   auth: inherit
 }
 
 headers {
-  X-API-KEY: super-secret-12345
+  X-API-KEY: travel-buddy-devops-2025
   Content-Type: application/json
 }
 
