@@ -17,5 +17,3 @@ application:
     jwt:
       private-key-path: keys/private.pem
       public-key-path: keys/public.pem
-
-    api-key: super-secret-12345
