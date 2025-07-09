@@ -35,6 +35,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers(WHITE_LIST_URL).permitAll()
+                            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/profiles").hasAnyRole(USER)
                             .requestMatchers("/connection/ping").permitAll()
                             .requestMatchers("/connection/user-ping").hasAnyRole(USER)
