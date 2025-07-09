@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_travel
+    ports:
+      - "6334:6333"  # REST API
+      - "6335:6334"  # gRPC API
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  qdrant_data:
