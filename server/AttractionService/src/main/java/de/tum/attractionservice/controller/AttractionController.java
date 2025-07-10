@@ -79,7 +79,7 @@ public class AttractionController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping(value = "/list", consumes = "application/json")
+    @PostMapping("/list")
     public ResponseEntity<String> saveAllAttractions(@RequestBody List<AttractionDTO> attractionDTOS) {
         attractionService.saveAll(attractionDTOS);
         return ResponseEntity.status(HttpStatus.CREATED).build();
