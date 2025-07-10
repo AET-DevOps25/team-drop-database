@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers(WHITE_LIST_URL).permitAll()
+                            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                             .requestMatchers("/connection/ping").permitAll()
                             .requestMatchers("/connection/user-ping").hasAnyRole(USER.name())
                             .requestMatchers("/connection/admin-ping").hasAnyRole(ADMIN.name())

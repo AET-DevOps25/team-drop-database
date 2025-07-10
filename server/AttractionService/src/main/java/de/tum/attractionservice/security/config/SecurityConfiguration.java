@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             //  configure role-based access control
+                            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/cities").hasAnyRole(ADMIN, MANAGER)
                             .requestMatchers(HttpMethod.DELETE, "/cities/**").hasAnyRole(ADMIN, MANAGER)
                             .requestMatchers(HttpMethod.POST, "/attractions/**").hasAnyRole(ADMIN, MANAGER)
