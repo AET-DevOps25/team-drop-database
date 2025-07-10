@@ -16,6 +16,7 @@ import java.util.List;
 public class ConversationService {
     private final UserRepository userRepository;
     private final ConversationRepository conversationRepository;
+    private final LlmClient llmClient;
 
     @Transactional
     public ConversationEntity createNewConversation(Long userId, String prompt) {
@@ -52,7 +53,11 @@ public class ConversationService {
                 .build();
         userMessage.setConversation(conversation);
         conversation.getMessages().add(userMessage);
-        return conversationRepository.save(conversation);
+        conversation = conversationRepository.save(conversation);
+
+        String llmText = callLlmAndPersistReply(conversation, prompt);
+        conversation.setTitle(extractTitle(llmText));
+        return conversation;
     }
 
     @Transactional(readOnly = true)
@@ -74,8 +79,12 @@ public class ConversationService {
         conversation.getMessages().add(userMessage);
         userMessage.setConversation(conversation);
         conversation.setUpdatedAt(Instant.now());
-        return conversationRepository.save(conversation);
+        conversationRepository.save(conversation);
+
+        callLlmAndPersistReply(conversation, prompt);
+        return conversation;
     }
+
     @Transactional
     public boolean deleteConversation(Long conversationId) {
         if (!conversationRepository.existsById(conversationId)) {
@@ -108,4 +117,28 @@ public class ConversationService {
         return conversationRepository
                 .findByUserIdOrderByUpdatedAtDesc(userId);
     }
+
+    private String callLlmAndPersistReply(ConversationEntity conversation, String prompt) {
+        String llmResponse = llmClient.generateResponse(prompt);
+
+        ChatMessageEntity llmMessage = ChatMessageEntity.builder()
+                .role(Role.SYSTEM)
+                .content(llmResponse)
+                .build();
+        llmMessage.setConversation(conversation);
+        conversation.getMessages().add(llmMessage);
+
+        conversation.setUpdatedAt(Instant.now());
+        conversationRepository.save(conversation);
+
+        return llmResponse;
+    }
+
+    private String extractTitle(String llmText) {
+        String[] lines = llmText.split("\n", 2);
+        return lines[0].length() > 50
+                ? lines[0].substring(0, 47) + "..."
+                : lines[0];
+    }
+
 }
