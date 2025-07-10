@@ -29,5 +29,11 @@ jobs:
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo update
           helm dependency build helm/travel-buddy
+        
+          TIMESTAMP=$(date +%s)
           helm upgrade --install travel-buddy helm/travel-buddy \
-            --namespace travelbuddy --create-namespace --atomic
+            --namespace travelbuddy \
+            --create-namespace \
+            --atomic \
+            --reuse-values \
+            --set forceUpdate=$TIMESTAMP
