@@ -67,10 +67,22 @@ public class AttractionController {
         }
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<String> ingest(@RequestBody List<AttractionDTO> dtos) {
-        attractionService.saveAll(dtos);
-        return ResponseEntity.ok("Saved " + dtos.size() + " attractions");
+    @PostMapping
+    public ResponseEntity<?> saveAttraction(@RequestBody AttractionEntity attraction) {
+        if (attraction.getId() != null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("New attraction must not contain an id.");
+        }
+
+        attractionService.saveAttraction(attraction);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/list")
+    public ResponseEntity<String> saveAllAttractions(@RequestBody List<AttractionDTO> attractionDTOS) {
+        attractionService.saveAll(attractionDTOS);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 

@@ -96,6 +96,49 @@ public class AttractionControllerIntegrationTest {
     @DisplayName("Create attraction - Requires admin privileges")
     void createAttraction_AsAdmin_ShouldReturnCreated() throws Exception {
         String attractionJson = """
+            {
+            "name": "New Deutsches Museum",
+            "description": "One of the world's largest science and technology museums.",
+            "city": {
+                "id": %d
+                },
+            "location": {
+                "address": "Museumsinsel 1",
+                "country": "Germany",
+                "latitude": "48.1303",
+                "longitude": "11.5840"
+            },
+            "openingHours": [
+                {
+                "day": "MONDAY",
+                "from": "09:00",
+                "to": "17:00"
+                },
+                {
+                "day": "TUESDAY",
+                "from": "09:00",
+                "to": "17:00"
+                }
+            ],
+            "photos": [
+                "https://example.com/photo1.jpg",
+                "https://example.com/photo2.jpg"
+            ],
+            "website": "https://www.deutsches-museum.de"
+            }
+            """.formatted(testCityId);
+
+        mockMvc.perform(post("/attractions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(attractionJson))
+                .andExpect(status().isCreated());
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    @DisplayName("Create attraction - Requires admin privileges")
+    void createAttractions_AsAdmin_ShouldReturnCreated() throws Exception {
+        String attractionJson = """
             [
                 {
                 "name": "New Deutsches Museum",
@@ -123,10 +166,10 @@ public class AttractionControllerIntegrationTest {
             ]
             """;
 
-        mockMvc.perform(post("/attractions")
+        mockMvc.perform(post("/attractions/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(attractionJson))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @WithMockUser(username = "user", roles = {"USER"})
