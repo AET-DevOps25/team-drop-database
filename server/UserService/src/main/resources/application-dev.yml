@@ -17,3 +17,8 @@ application:
     jwt:
       private-key-path: keys/private.pem
       public-key-path: keys/public.pem
+
+llm:
+  api:
+    base-url: http://localhost:8000/api/v1
+    key: super-secret-12345

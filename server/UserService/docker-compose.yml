@@ -29,6 +29,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
       PRIVATE_KEY_PATH: /app/config/private.pem
       PUBLIC_KEY_PATH: /app/config/public.pem
+      LLM_API_BASE-URL: http://localhost:8000/api/v1
+      LLM_API_KEY: super-secret-12345
 
   adminer:
     image: adminer
