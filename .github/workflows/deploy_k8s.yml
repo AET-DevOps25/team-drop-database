@@ -35,6 +35,5 @@ jobs:
           --namespace travelbuddy \
           --create-namespace \
           --atomic \
-          --reuse-values \
           --set forceUpdate=$TIMESTAMP
 
