@@ -12,6 +12,8 @@ spec:
     metadata:
       labels:
         app: travel-buddy-auth-selector
+      annotations:
+        forceUpdateTimestamp: "{{ .Values.forceUpdate | default "" }}"
     spec:
       imagePullSecrets:
         - name: ghcr-secret
