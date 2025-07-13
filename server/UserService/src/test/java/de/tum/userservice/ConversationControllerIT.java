@@ -9,6 +9,7 @@ import de.tum.userservice.conversation.dto.PromptDTO;
 import de.tum.userservice.user.UserEntity;
 import de.tum.userservice.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -75,6 +76,7 @@ class ConversationControllerIT {
 
     @Test
     @WithMockUser(username = "test.user@tum.de")
+    @Disabled("Temporarily disabled until LLM API is live")
     void createConversationByEmail_whenEmailMatchesPrincipal_shouldReturnCreated() throws Exception {
         userRepository.save(new UserEntity(null, "test.user@tum.de",
                 "Test", "User", null, null));
@@ -157,6 +159,7 @@ class ConversationControllerIT {
     }
 
     @Test
+    @Disabled("Temporarily disabled until LLM API is live")
     @WithMockUser(username = "test.user@tum.de")
     void resumeConversation_whenOwner_shouldReturnOk() throws Exception {
         UserEntity user = userRepository.save(new UserEntity(null, "test.user@tum.de",
