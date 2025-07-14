@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
 LLM Models Module
-This module defines the base class for LLM models and specific implementations for OpenAI, GPT4All, LlamaCpp, and Ollama.
-It also includes a model manager to handle different models and their configurations.
+This module defines the base class for LLM models and specific implementations for OpenAI and Local Ollama.
 """
 
 from abc import ABC, abstractmethod
@@ -19,9 +18,7 @@ logger = get_logger(__name__)
 class ModelType(Enum):
     """Enumeration for supported LLM model types"""
     OPENAI = "openai"
-    GPT4ALL = "gpt4all"
-    LLAMACPP = "llamacpp"
-    OLLAMA = "ollama"
+    LOCAL_OLLAMA = "local_ollama"
 
 
 class BaseLLMModel(ABC):
@@ -56,7 +53,7 @@ class BaseLLMModel(ABC):
 class OpenAIModel(BaseLLMModel):
     """OpenAI API model implementation"""
     
-    def __init__(self, model_name: str = "gpt-3.5-turbo", **kwargs):
+    def __init__(self, model_name: str = "gpt-4.1", **kwargs):
         super().__init__(model_name, **kwargs)
         try:
             from openai import OpenAI
@@ -96,153 +93,110 @@ class OpenAIModel(BaseLLMModel):
         return self.client is not None and settings.openai_api_key is not None
 
 
-class GPT4AllModel(BaseLLMModel):
-    """GPT4All local model implementation"""
+class LocalOllamaModel(BaseLLMModel):
+    """本地Ollama API模型实现"""
     
-    def __init__(self, model_name: str = "mistral-7b-openorca.Q4_0.gguf", **kwargs):
+    def __init__(self, model_name: str = "llama3.2:3b", api_url: str = "http://ollama.wei-tech.site/api/generate", **kwargs):
         super().__init__(model_name, **kwargs)
-        self.model = None
-        try:
-            import gpt4all
-            # Can specify model path
-            model_path = kwargs.get('model_path', None)
-            if model_path and os.path.exists(model_path):
-                self.model = gpt4all.GPT4All(model_path)
-            else:
-                self.model = gpt4all.GPT4All(model_name)
-            logger.info(f"GPT4All model {model_name} initialized successfully")
-        except ImportError:
-            logger.warning("GPT4All not installed, please run: pip install gpt4all")
-        except Exception as e:
-            logger.error(f"GPT4All model initialization failed: {e}")
-    
-    def generate(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7, **kwargs) -> str:
-        """Generate response using GPT4All"""
-        if not self.model:
-            raise RuntimeError("GPT4All model not initialized")
+        self.api_url = api_url
+        self.session = None
         
         try:
-            # GPT4All parameter names may be different
-            response = self.model.generate(
-                prompt=prompt,
-                max_tokens=max_tokens,
-                temp=temperature,
-                **kwargs
+            import requests
+            self.session = requests.Session()
+            # 测试连接
+            test_response = self.session.post(
+                self.api_url,
+                json={
+                    "model": model_name,
+                    "prompt": "Hello",
+                    "stream": False
+                },
+                timeout=10
             )
-            
-            logger.info(f"GPT4All response generated successfully, length: {len(response)} characters")
-            return response.strip()
-            
-        except Exception as e:
-            logger.error(f"GPT4All response generation failed: {e}")
-            raise
-    
-    def is_available(self) -> bool:
-        """Check if GPT4All model is available"""
-        return self.model is not None
-
-
-class LlamaCppModel(BaseLLMModel):
-    """llama-cpp-python local model implementation"""
-    
-    def __init__(self, model_name: str, model_path: str, **kwargs):
-        super().__init__(model_name, **kwargs)
-        self.model = None
-        try:
-            from llama_cpp import Llama
-            
-            # Default parameters
-            default_kwargs = {
-                'n_ctx': 2048,  # Context length
-                'n_batch': 512,  # Batch size
-                'verbose': False,
-            }
-            default_kwargs.update(kwargs)
-            
-            self.model = Llama(model_path=model_path, **default_kwargs)
-            logger.info(f"LlamaCpp model {model_name} initialized successfully")
+            test_response.raise_for_status()
+            logger.info(f"Local Ollama model {model_name} at {api_url} initialized successfully")
         except ImportError:
-            logger.warning("llama-cpp-python not installed, please run: pip install llama-cpp-python")
+            logger.error("requests library not found, please install: pip install requests")
         except Exception as e:
-            logger.error(f"LlamaCpp model initialization failed: {e}")
+            logger.warning(f"Local Ollama model connection test failed: {e}, but will continue")
+            try:
+                import requests
+                self.session = requests.Session()
+            except ImportError:
+                pass
     
     def generate(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7, **kwargs) -> str:
-        """Generate response using LlamaCpp"""
-        if not self.model:
-            raise RuntimeError("LlamaCpp model not initialized")
+        """使用本地Ollama API生成响应"""
+        if not self.session:
+            raise RuntimeError("requests session not available")
         
         try:
-            response = self.model(
-                prompt,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                stop=["Human:", "Assistant:", "\n\n"],
-                **kwargs
-            )
-            
-            answer = response['choices'][0]['text'].strip()
-            logger.info(f"LlamaCpp response generated successfully, length: {len(answer)} characters")
-            return answer
-            
-        except Exception as e:
-            logger.error(f"LlamaCpp response generation failed: {e}")
-            raise
-    
-    def is_available(self) -> bool:
-        """Check if LlamaCpp model is available"""
-        return self.model is not None
+            # 构建完整的prompt，包含系统提示
+            full_prompt = f"""You are a professional tourism attraction recommendation assistant, capable of providing accurate and useful travel advice based on provided attraction information.
 
+User question: {prompt}
 
-class OllamaModel(BaseLLMModel):
-    """Ollama local model implementation"""
-    
-    def __init__(self, model_name: str = "llama2", **kwargs):
-        super().__init__(model_name, **kwargs)
-        self.client = None
-        try:
-            import ollama
-            self.client = ollama.Client()
-            # Test connection
-            self.client.list()
-            logger.info(f"Ollama model {model_name} initialized successfully")
-        except ImportError:
-            logger.warning("Ollama not installed, please run: pip install ollama")
-        except Exception as e:
-            logger.error(f"Ollama model initialization failed: {e}")
-    
-    def generate(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7, **kwargs) -> str:
-        """Generate response using Ollama"""
-        if not self.client:
-            raise RuntimeError("Ollama client not initialized")
-        
-        try:
-            response = self.client.generate(
-                model=self.model_name,
-                prompt=prompt,
-                options={
-                    'num_predict': max_tokens,
-                    'temperature': temperature,
-                    **kwargs
+Please provide a helpful and detailed response:"""
+            
+            # 构建请求数据
+            data = {
+                "model": self.model_name,
+                "prompt": full_prompt,
+                "stream": False,
+                "options": {
+                    "temperature": temperature,
+                    "num_predict": max_tokens,
                 }
+            }
+            
+            # 添加其他选项
+            if kwargs:
+                data["options"].update(kwargs)
+            
+            # 发送请求
+            response = self.session.post(
+                self.api_url,
+                json=data,
+                timeout=60  # 本地模型可能需要更长时间
             )
             
-            answer = response['response'].strip()
-            logger.info(f"Ollama response generated successfully, length: {len(answer)} characters")
+            response.raise_for_status()
+            result = response.json()
+            
+            # 解析响应
+            if 'response' in result:
+                answer = result['response'].strip()
+            else:
+                logger.warning(f"Unexpected response format: {result}")
+                answer = str(result)
+            
+            logger.info(f"Local Ollama response generated successfully, length: {len(answer)} characters")
             return answer
             
         except Exception as e:
-            logger.error(f"Ollama response generation failed: {e}")
+            logger.error(f"Local Ollama response generation failed: {e}")
             raise
     
     def is_available(self) -> bool:
-        """Check if Ollama model is available"""
+        """检查本地Ollama模型是否可用"""
+        if not self.session:
+            return False
+        
         try:
-            if self.client:
-                self.client.list()
-                return True
+            # 发送简单测试请求
+            response = self.session.post(
+                self.api_url,
+                json={
+                    "model": self.model_name,
+                    "prompt": "test",
+                    "stream": False
+                },
+                timeout=5
+            )
+            return response.status_code == 200
         except:
-            pass
-        return False
+            return False
 
 
 class ModelManager:
@@ -266,34 +220,23 @@ class ModelManager:
         except Exception as e:
             logger.warning(f"Failed to load OpenAI model: {e}")
         
-        # Try to load local models (if configured)
-        self._try_load_local_models()
-    
-    def _try_load_local_models(self):
-        """Try to load local models"""
-        # GPT4All
+        # Try to load Local Ollama model
         try:
-            gpt4all_model = GPT4AllModel()
-            if gpt4all_model.is_available():
-                self.models["gpt4all"] = gpt4all_model
-                if not self.current_model:
-                    self.current_model = gpt4all_model
-                    logger.info("Set GPT4All as default model")
+            local_ollama_url = getattr(settings, 'local_ollama_url', None)
+            local_ollama_model = getattr(settings, 'local_ollama_model', 'llama3.2:3b')
+            
+            if local_ollama_url:
+                local_ollama = LocalOllamaModel(
+                    model_name=local_ollama_model,
+                    api_url=local_ollama_url
+                )
+                if local_ollama.is_available():
+                    self.models["local_ollama"] = local_ollama
+                    if not self.current_model:
+                        self.current_model = local_ollama
+                        logger.info("Set Local Ollama as default model")
         except Exception as e:
-            logger.debug(f"GPT4All model not available: {e}")
-        
-        # Ollama
-        try:
-            # Read model name from config file
-            ollama_model_name = getattr(settings, 'llm_model_name', 'llama2')
-            ollama_model = OllamaModel(model_name=ollama_model_name)
-            if ollama_model.is_available():
-                self.models["ollama"] = ollama_model
-                if not self.current_model:
-                    self.current_model = ollama_model
-                    logger.info("Set Ollama as default model")
-        except Exception as e:
-            logger.debug(f"Ollama model not available: {e}")
+            logger.debug(f"Local Ollama model not available: {e}")
     
     def add_model(self, name: str, model: BaseLLMModel):
         """Add model"""

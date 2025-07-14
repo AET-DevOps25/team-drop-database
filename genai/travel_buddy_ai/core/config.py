@@ -11,9 +11,13 @@ class Settings(BaseSettings):
     openai_api_key: Optional[str] = None
     
     # LLM model configuration
-    llm_model_type: str = "openai"  # openai, gpt4all, llamacpp, ollama
-    llm_model_name: str = "gpt-3.5-turbo"  # specific model name
+    llm_model_type: str = "openai"  # openai, gpt4all, llamacpp, ollama, local_ollama
+    llm_model_name: str = "gpt-4.1"  # specific model name
     llm_model_path: Optional[str] = None  # local model path (for llamacpp etc.)
+    
+    # 本地Ollama API配置
+    local_ollama_url: str = "http://ollama.wei-tech.site/api/generate"
+    local_ollama_model: str = "llama3.2:3b"
     
     # Qdrant vector database configuration
     qdrant_host: str = "localhost"
