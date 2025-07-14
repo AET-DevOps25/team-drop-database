@@ -84,20 +84,20 @@ class AttractionQASystem:
         query_lower = query.lower()
         
         # Itinerary planning questions
-        if any(keyword in query_lower for keyword in ['itinerary', 'plan', 'days', 'schedule', 'trip', '行程', '规划', '几天', '安排', '计划']):
+        if any(keyword in query_lower for keyword in ['itinerary', 'plan', 'days', 'schedule', 'trip']):
             return "Munich attractions recommended attractions tourist attractions"
         
         # Add more query expansions for common travel terms
-        if any(keyword in query_lower for keyword in ['food', 'restaurant', 'eat', 'dining', '美食', '餐厅', '吃']):
+        if any(keyword in query_lower for keyword in ['food', 'restaurant', 'eat', 'dining']):
             return "Munich restaurant food dining attractions"
         
-        if any(keyword in query_lower for keyword in ['shopping', 'shop', 'buy', 'market', '购物', '商店', '市场']):
+        if any(keyword in query_lower for keyword in ['shopping', 'shop', 'buy', 'market']):
             return "Munich shopping market attractions"
         
-        if any(keyword in query_lower for keyword in ['museum', 'art', 'culture', 'history', '博物馆', '艺术', '文化', '历史']):
+        if any(keyword in query_lower for keyword in ['museum', 'art', 'culture', 'history']):
             return "Munich museum art culture history attractions"
         
-        if any(keyword in query_lower for keyword in ['park', 'garden', 'nature', 'outdoor', '公园', '花园', '自然', '户外']):
+        if any(keyword in query_lower for keyword in ['park', 'garden', 'nature', 'outdoor']):
             return "Munich park garden nature outdoor attractions"
         
         # Return original query directly
