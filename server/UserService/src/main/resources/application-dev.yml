@@ -22,3 +22,12 @@ llm:
   api:
     base-url: http://localhost:8000/api/v1
     key: super-secret-12345
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  metrics:
+    enable:
+      all: true
