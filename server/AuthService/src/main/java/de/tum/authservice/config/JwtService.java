@@ -28,6 +28,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+
 @Service
 public class JwtService {
 
@@ -43,10 +47,57 @@ public class JwtService {
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;
 
+    private final Counter tokenGenCounter;
+    private final Counter refreshGenCounter;
+    private final Counter validationSuccessCounter;
+    private final Counter validationFailureCounter;
+    private final Counter keyLoadErrorCounter;
+    private final Timer tokenGenTimer;
+    private final Timer validationTimer;
+
+    public JwtService(MeterRegistry registry) {
+        this.tokenGenCounter = Counter
+                .builder("authentication_service_jwt_tokens_generated_total")
+                .description("Number of JWTs issued")
+                .register(registry);
+        this.refreshGenCounter = Counter
+                .builder("authentication_service_jwt_refresh_tokens_generated_total")
+                .description("Number of refresh tokens issued")
+                .register(registry);
+        this.validationSuccessCounter = Counter
+                .builder("authentication_service_jwt_validation_success_total")
+                .description("Number of successful token validations")
+                .register(registry);
+        this.validationFailureCounter = Counter
+                .builder("authentication_service_jwt_validation_failure_total")
+                .description("Number of failed token validations")
+                .register(registry);
+        this.keyLoadErrorCounter = Counter
+                .builder("authentication_service_jwt_key_load_errors_total")
+                .description("Number of failures loading RSA keys")
+                .register(registry);
+
+        this.tokenGenTimer = Timer
+                .builder("authentication_service_jwt_token_generation_duration_seconds")
+                .description("Time to generate JWTs")
+                .publishPercentileHistogram()
+                .register(registry);
+        this.validationTimer = Timer
+                .builder("authentication_service_jwt_token_validation_duration_seconds")
+                .description("Time to validate JWTs")
+                .publishPercentileHistogram()
+                .register(registry);
+    }
+
     @PostConstruct
     private void initKeys() {
-        this.privateKey = loadPrivateKey();
-        this.publicKey = loadPublicKey();
+        try {
+            this.privateKey = loadPrivateKey();
+            this.publicKey = loadPublicKey();
+        } catch (Exception e) {
+            keyLoadErrorCounter.increment();
+            throw (RuntimeException) e;
+        }
     }
 
     public String extractUsername(String token) {
@@ -59,31 +110,49 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        if (!(userDetails instanceof User user)) {
-            throw new IllegalArgumentException("userDetails must be instance of User");
-        }
+        return tokenGenTimer.record(() -> {
+            if (!(userDetails instanceof User user)) {
+                throw new IllegalArgumentException("userDetails must be User");
+            }
+            tokenGenCounter.increment();
+            Map<String, Object> extraClaims = new HashMap<>();
+            extraClaims.put("roles", List.of(user.getRole().name()));
+            extraClaims.put("permissions", user.getRole().getPermissions()
+                    .stream()
+                    .map(p -> p.getPermission())
+                    .toList());
+            return buildToken(extraClaims, userDetails, jwtExpiration);
+        });
 
-        var extraClaims = new HashMap<String, Object>();
-        extraClaims.put("roles", List.of(user.getRole().name()));
-        List<String> permissions = user.getRole().getPermissions()
-                .stream()
-                .map(Permission::getPermission)
-                .toList();
-        extraClaims.put("permissions", permissions);
-        return generateToken(extraClaims, userDetails);
+//        if (!(userDetails instanceof User user)) {
+//            throw new IllegalArgumentException("userDetails must be instance of User");
+//        }
+//
+//        var extraClaims = new HashMap<String, Object>();
+//        extraClaims.put("roles", List.of(user.getRole().name()));
+//        List<String> permissions = user.getRole().getPermissions()
+//                .stream()
+//                .map(Permission::getPermission)
+//                .toList();
+//        extraClaims.put("permissions", permissions);
+//        return generateToken(extraClaims, userDetails);
     }
 
-    public String generateToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails
-    ) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
-    }
+//    public String generateToken(
+//            Map<String, Object> extraClaims,
+//            UserDetails userDetails
+//    ) {
+//        return buildToken(extraClaims, userDetails, jwtExpiration);
+//    }
 
     public String generateRefreshToken(
             UserDetails userDetails
     ) {
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+        return tokenGenTimer.record(() -> {
+            refreshGenCounter.increment();
+            return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+        });
+//        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
     private String buildToken(
@@ -102,8 +171,21 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return validationTimer.record(() -> {
+            boolean valid = false;
+            try {
+                String username = extractUsername(token);
+                valid = username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+            } catch (Exception e) {
+                validationFailureCounter.increment();
+                return false;
+            }
+            if (valid) validationSuccessCounter.increment();
+            else    validationFailureCounter.increment();
+            return valid;
+        });
+//        final String username = extractUsername(token);
+//        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
