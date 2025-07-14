@@ -12,6 +12,8 @@ services:
       - "5444:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - monitoring
 
   userservice:
     build: .
@@ -31,6 +33,8 @@ services:
       PUBLIC_KEY_PATH: /app/config/public.pem
       LLM_API_BASE-URL: http://localhost:8000/api/v1
       LLM_API_KEY: super-secret-12345
+    networks:
+      - monitoring
 
   adminer:
     image: adminer
@@ -40,6 +44,12 @@ services:
       - "8093:8080"
     depends_on:
       - postgres
+    networks:
+      - monitoring
 
 volumes:
   pgdata:
+
+networks:
+  monitoring:
+    driver: bridge
