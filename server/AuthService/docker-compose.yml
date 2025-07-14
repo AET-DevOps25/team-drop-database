@@ -12,6 +12,8 @@ services:
       - "5442:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - monitoring
 
   authservice:
     build: .
@@ -30,6 +32,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
       PRIVATE_KEY_PATH: /app/config/private.pem
       PUBLIC_KEY_PATH: /app/config/public.pem
+    networks:
+      - monitoring
 
   adminer:
     image: adminer
@@ -39,6 +43,12 @@ services:
       - "8091:8080"
     depends_on:
       - postgres
+    networks:
+      - monitoring
 
 volumes:
   pgdata:
+
+networks:
+  monitoring:
+    driver: bridge
