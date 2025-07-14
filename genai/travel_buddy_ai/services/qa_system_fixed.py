@@ -87,6 +87,19 @@ class AttractionQASystem:
         if any(keyword in query_lower for keyword in ['itinerary', 'plan', 'days', 'schedule', 'trip', '行程', '规划', '几天', '安排', '计划']):
             return "Munich attractions recommended attractions tourist attractions"
         
+        # Add more query expansions for common travel terms
+        if any(keyword in query_lower for keyword in ['food', 'restaurant', 'eat', 'dining', '美食', '餐厅', '吃']):
+            return "Munich restaurant food dining attractions"
+        
+        if any(keyword in query_lower for keyword in ['shopping', 'shop', 'buy', 'market', '购物', '商店', '市场']):
+            return "Munich shopping market attractions"
+        
+        if any(keyword in query_lower for keyword in ['museum', 'art', 'culture', 'history', '博物馆', '艺术', '文化', '历史']):
+            return "Munich museum art culture history attractions"
+        
+        if any(keyword in query_lower for keyword in ['park', 'garden', 'nature', 'outdoor', '公园', '花园', '自然', '户外']):
+            return "Munich park garden nature outdoor attractions"
+        
         # Return original query directly
         return query
     
@@ -111,14 +124,24 @@ class AttractionQASystem:
             # 对查询进行向量化
             query_vector = self.embeddings.embed_query(processed_query)
             
-            # 在Qdrant中搜索
+            # 在Qdrant中搜索 - 降低分数阈值
             search_results = self.qdrant_client.search(
                 collection_name=self.collection_name,
                 query_vector=("dense", query_vector),  # 指定使用dense向量
                 limit=limit,
-                score_threshold=0.3,  # 降低阈值以获取更多结果
+                score_threshold=0.3,  # 大幅降低阈值以获取更多结果
                 with_payload=True
             )
+            
+            # 如果没有找到结果，尝试不使用阈值
+            if not search_results:
+                logger.info("No results with threshold, trying without threshold")
+                search_results = self.qdrant_client.search(
+                    collection_name=self.collection_name,
+                    query_vector=("dense", query_vector),
+                    limit=limit,
+                    with_payload=True
+                )
             
             results = []
             for result in search_results:
@@ -146,8 +169,30 @@ class AttractionQASystem:
         Returns:
             Generated answer
         """
+        # 如果没有搜索结果，提供通用的旅游建议
         if not search_results:
-            return "Sorry, I couldn't find relevant attraction information."
+            fallback_prompt = f"""
+The user asked: {question}
+
+Although I don't have specific attraction information for this query, please provide a helpful general response about Munich travel based on common knowledge. Include suggestions about:
+- Popular types of attractions in Munich
+- General travel tips
+- Recommendations for finding more specific information
+
+Please be helpful and encouraging, suggesting they ask more specific questions about Munich attractions, museums, restaurants, or activities.
+
+Answer:
+"""
+            try:
+                answer = model_manager.generate(
+                    prompt=fallback_prompt,
+                    max_tokens=500,
+                    temperature=0.7
+                )
+                return answer
+            except Exception as e:
+                logger.error(f"Fallback answer generation failed: {e}")
+                return "I understand you're asking about Munich travel. While I don't have specific information for your exact question, Munich is a wonderful city with many attractions including historic sites, museums, parks, and excellent food. Could you please ask a more specific question about Munich attractions, restaurants, or activities you're interested in?"
         
         # Build context
         context_parts = []
@@ -168,12 +213,14 @@ Related attraction information:
 {context}
 
 Please note:
-1. Only use the provided attraction information to answer
-2. If the user asks about itinerary planning, please create reasonable itinerary arrangements based on the provided attraction information
-3. Answer should be detailed and useful, including specific attraction names, addresses, descriptions, etc.
-4. Answer in English
-5. If there are multiple relevant attractions, you can recommend multiple ones
-6. For itinerary planning, arrange by days, considering the geographical location and types of attractions
+1. Use the provided attraction information as the primary source for your answer
+2. If the provided information doesn't fully answer the question, supplement with general knowledge but clearly indicate what comes from the provided data vs. general knowledge
+3. If the user asks about itinerary planning, please create reasonable itinerary arrangements based on the provided attraction information
+4. Answer should be detailed and useful, including specific attraction names, addresses, descriptions, etc.
+5. Answer in English
+6. If there are multiple relevant attractions, you can recommend multiple ones
+7. For itinerary planning, arrange by days, considering the geographical location and types of attractions
+8. Be helpful and encouraging, even if the match isn't perfect
 
 Answer:
 """
@@ -190,7 +237,7 @@ Answer:
             
         except Exception as e:
             logger.error(f"LLM answer generation failed: {e}")
-            return f"Sorry, an error occurred while generating the answer: {str(e)}"
+            return f"I understand you're asking about Munich travel. While I encountered an error processing your specific question ({str(e)}), I'd be happy to help if you could ask a more specific question about Munich attractions, restaurants, or activities."
     
     def ask(self, question: str) -> Dict[str, Any]:
         """
