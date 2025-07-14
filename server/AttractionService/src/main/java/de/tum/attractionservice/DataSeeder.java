@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Disable (or guard with a profile) in production!
  */
 @Component
-@Profile("dev")
+@Profile("test")
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
 
