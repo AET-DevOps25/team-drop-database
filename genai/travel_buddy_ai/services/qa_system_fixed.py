@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-景点问答系统（修正版）
-直接适配现有的attractions_collection数据格式
-支持多种LLM模型（OpenAI, GPT4All, LLaMA等）
+Attraction Q&A System (Fixed Version)
+Directly adapts to existing attractions_collection data format
+Supports multiple LLM models (OpenAI, GPT4All, LLaMA, etc.)
 """
 
 import asyncio
@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 
 
 class AttractionQASystem:
-    """景点问答系统"""
+    """Attraction Q&A System"""
     
     def __init__(self, model_type: str = None):
         self.qdrant_client = get_qdrant_connection()
@@ -28,41 +28,41 @@ class AttractionQASystem:
             api_key=settings.openai_api_key
         )
         
-        # 设置LLM模型
+        # Set LLM model
         if model_type:
             if not model_manager.set_model(model_type):
-                logger.warning(f"模型 {model_type} 不可用，使用默认模型")
+                logger.warning(f"Model {model_type} not available, using default model")
         
-        # 检查是否有可用模型
+        # Check if there's an available model
         if not model_manager.get_current_model():
-            raise RuntimeError("没有可用的LLM模型，请检查配置")
+            raise RuntimeError("No available LLM model, please check configuration")
         
         current_model = model_manager.get_current_model()
-        logger.info(f"使用LLM模型: {current_model.model_name}")
-        logger.info(f"可用模型列表: {model_manager.list_available_models()}")
+        logger.info(f"Using LLM model: {current_model.model_name}")
+        logger.info(f"Available models list: {model_manager.list_available_models()}")
     
     def switch_model(self, model_type: str) -> bool:
         """
-        切换LLM模型
+        Switch LLM model
         
         Args:
-            model_type: 模型类型 (openai, gpt4all, llamacpp, ollama)
+            model_type: Model type (openai, gpt4all, llamacpp, ollama)
             
         Returns:
-            是否切换成功
+            Whether switch was successful
         """
         success = model_manager.set_model(model_type)
         if success:
             current_model = model_manager.get_current_model()
-            logger.info(f"已切换到模型: {current_model.model_name}")
+            logger.info(f"Switched to model: {current_model.model_name}")
         return success
     
     def list_available_models(self) -> List[str]:
-        """获取可用模型列表"""
+        """Get list of available models"""
         return model_manager.list_available_models()
     
     def get_current_model_info(self) -> Dict[str, str]:
-        """获取当前模型信息"""
+        """Get current model information"""
         current_model = model_manager.get_current_model()
         if current_model:
             return {
@@ -73,40 +73,40 @@ class AttractionQASystem:
     
     def preprocess_query(self, query: str) -> str:
         """
-        预处理查询，将一般性问题转换为更具体的景点搜索查询
+        Preprocess query, convert general questions to more specific attraction search queries
         
         Args:
-            query: 原始查询
+            query: Original query
             
         Returns:
-            处理后的查询
+            Processed query
         """
         query_lower = query.lower()
         
-        # 行程规划类问题
-        if any(keyword in query_lower for keyword in ['行程', '规划', '几天', '安排', '计划', 'itinerary', 'plan']):
-            return "慕尼黑景点 推荐景点 旅游景点"
+        # Itinerary planning questions
+        if any(keyword in query_lower for keyword in ['itinerary', 'plan', 'days', 'schedule', 'trip', '行程', '规划', '几天', '安排', '计划']):
+            return "Munich attractions recommended attractions tourist attractions"
         
-        # 直接返回原查询
+        # Return original query directly
         return query
     
     def search_attractions(self, query: str, limit: int = 8) -> List[Dict[str, Any]]:
         """
-        搜索相关景点
+        Search related attractions
         
         Args:
-            query: 搜索查询
-            limit: 结果数量限制
+            query: Search query
+            limit: Result count limit
             
         Returns:
-            搜索结果列表
+            List of search results
         """
         try:
-            # 预处理查询
+            # Preprocess query
             processed_query = self.preprocess_query(query)
-            logger.info(f"原始查询: {query}")
+            logger.info(f"Original query: {query}")
             if processed_query != query:
-                logger.info(f"处理后查询: {processed_query}")
+                logger.info(f"Processed query: {processed_query}")
             
             # 对查询进行向量化
             query_vector = self.embeddings.embed_query(processed_query)
@@ -128,54 +128,54 @@ class AttractionQASystem:
                     "score": result.score
                 })
             
-            logger.info(f"向量搜索找到 {len(results)} 个相关结果")
+            logger.info(f"Vector search found {len(results)} relevant results")
             return results
             
         except Exception as e:
-            logger.error(f"向量搜索失败: {e}")
+            logger.error(f"Vector search failed: {e}")
             return []
     
     def generate_answer(self, question: str, search_results: List[Dict[str, Any]]) -> str:
         """
-        基于搜索结果生成回答
+        Generate answer based on search results
         
         Args:
-            question: 用户问题
-            search_results: 向量搜索结果
+            question: User question
+            search_results: Vector search results
             
         Returns:
-            生成的回答
+            Generated answer
         """
         if not search_results:
-            return "抱歉，我没有找到相关的景点信息。"
+            return "Sorry, I couldn't find relevant attraction information."
         
-        # 构建上下文
+        # Build context
         context_parts = []
         for result in search_results:
             content = result.get("content", "")
             score = result.get("score", 0)
-            context_parts.append(f"[相关度: {score:.3f}] {content}")
+            context_parts.append(f"[Relevance: {score:.3f}] {content}")
         
         context = "\n\n".join(context_parts)
         
-        # 构建提示词
+        # Build prompt
         prompt = f"""
-请基于以下景点信息回答用户的问题。
+Please answer the user's question based on the following attraction information.
 
-用户问题: {question}
+User question: {question}
 
-相关景点信息:
+Related attraction information:
 {context}
 
-请注意:
-1. 只使用提供的景点信息来回答
-2. 如果用户问的是行程规划类问题，请基于提供的景点信息制定合理的行程安排
-3. 回答要详细、有用，包含具体的景点名称、地址、描述等
-4. 用中文回答
-5. 如果有多个相关景点，可以推荐多个
-6. 对于行程规划，可以按天数安排，考虑景点的地理位置和类型
+Please note:
+1. Only use the provided attraction information to answer
+2. If the user asks about itinerary planning, please create reasonable itinerary arrangements based on the provided attraction information
+3. Answer should be detailed and useful, including specific attraction names, addresses, descriptions, etc.
+4. Answer in English
+5. If there are multiple relevant attractions, you can recommend multiple ones
+6. For itinerary planning, arrange by days, considering the geographical location and types of attractions
 
-回答:
+Answer:
 """
         
         try:
@@ -185,32 +185,32 @@ class AttractionQASystem:
                 temperature=0.7
             )
             
-            logger.info(f"LLM生成回答成功，长度: {len(answer)} 字符")
+            logger.info(f"LLM answer generated successfully, length: {len(answer)} characters")
             return answer
             
         except Exception as e:
-            logger.error(f"LLM生成回答失败: {e}")
-            return f"抱歉，生成回答时出现错误: {str(e)}"
+            logger.error(f"LLM answer generation failed: {e}")
+            return f"Sorry, an error occurred while generating the answer: {str(e)}"
     
     def ask(self, question: str) -> Dict[str, Any]:
         """
-        问答主流程
+        Main Q&A process
         
         Args:
-            question: 用户问题
+            question: User question
             
         Returns:
-            问答结果，包含搜索结果和生成的回答
+            Q&A result, including search results and generated answer
         """
-        logger.info(f"收到问题: {question}")
+        logger.info(f"Received question: {question}")
         
-        # 1. 向量搜索
+        # 1. Vector search
         search_results = self.search_attractions(question)
         
-        # 2. 生成回答
+        # 2. Generate answer
         answer = self.generate_answer(question, search_results)
         
-        # 3. 返回结果
+        # 3. Return result
         return {
             "question": question,
             "search_results": search_results,
@@ -220,60 +220,60 @@ class AttractionQASystem:
 
 
 def main():
-    """交互式问答"""
-    print("🎯 景点问答系统（多模型支持版）")
+    """Interactive Q&A"""
+    print("🎯 Attraction Q&A System (Multi-model Support)")
     print("=" * 50)
     
     try:
-        # 可以通过环境变量或命令行参数指定模型
+        # Can specify model through environment variables or command line arguments
         model_type = settings.llm_model_type if hasattr(settings, 'llm_model_type') else None
         qa_system = AttractionQASystem(model_type=model_type)
         
-        # 显示当前模型信息
+        # Display current model information
         model_info = qa_system.get_current_model_info()
-        print(f"✅ 问答系统初始化成功")
-        print(f"🤖 当前模型: {model_info['model_name']} ({model_info['model_type']})")
-        print(f"🔧 可用模型: {', '.join(qa_system.list_available_models())}")
+        print(f"✅ Q&A system initialized successfully")
+        print(f"🤖 Current model: {model_info['model_name']} ({model_info['model_type']})")
+        print(f"🔧 Available models: {', '.join(qa_system.list_available_models())}")
         print()
         
         while True:
-            user_input = input("🔍 请输入您的问题 (输入 'quit' 退出, 'models' 查看模型, 'switch <model>' 切换模型): ").strip()
+            user_input = input("🔍 Please enter your question (type 'quit' to exit, 'models' to view models, 'switch <model>' to switch model): ").strip()
             
-            if user_input.lower() in ['quit', 'exit', '退出', 'q']:
-                print("👋 再见！")
+            if user_input.lower() in ['quit', 'exit', 'q']:
+                print("👋 Goodbye!")
                 break
             
             if user_input.lower() == 'models':
                 model_info = qa_system.get_current_model_info()
-                print(f"🤖 当前模型: {model_info['model_name']} ({model_info['model_type']})")
-                print(f"🔧 可用模型: {', '.join(qa_system.list_available_models())}")
+                print(f"🤖 Current model: {model_info['model_name']} ({model_info['model_type']})")
+                print(f"🔧 Available models: {', '.join(qa_system.list_available_models())}")
                 continue
             
             if user_input.lower().startswith('switch '):
                 model_name = user_input[7:].strip()
                 if qa_system.switch_model(model_name):
                     model_info = qa_system.get_current_model_info()
-                    print(f"✅ 已切换到模型: {model_info['model_name']}")
+                    print(f"✅ Switched to model: {model_info['model_name']}")
                 else:
-                    print(f"❌ 切换失败，模型 {model_name} 不可用")
+                    print(f"❌ Switch failed, model {model_name} not available")
                 continue
             
             if not user_input:
-                print("❌ 请输入有效的问题")
+                print("❌ Please enter a valid question")
                 continue
             
             print("\n" + "=" * 50)
             result = qa_system.ask(user_input)
             
-            print(f"🔍 搜索到 {result['results_count']} 个相关结果")
-            print(f"\n🤖 AI回答:\n{result['answer']}")
+            print(f"🔍 Found {result['results_count']} relevant results")
+            print(f"\n🤖 AI Answer:\n{result['answer']}")
             print("=" * 50 + "\n")
             
     except KeyboardInterrupt:
-        print("\n👋 再见！")
+        print("\n👋 Goodbye!")
     except Exception as e:
-        print(f"❌ 系统错误: {e}")
-        logger.error(f"系统错误: {e}", exc_info=True)
+        print(f"❌ System error: {e}")
+        logger.error(f"System error: {e}", exc_info=True)
 
 
 if __name__ == "__main__":

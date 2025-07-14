@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class SimpleAttractionModel(BaseModel):
-    """简化的旅游景点模型 - 用于数据导入"""
+    """Simplified tourism attraction model - for data import"""
     id: int
     name: str
     description: str
@@ -16,21 +16,21 @@ class SimpleAttractionModel(BaseModel):
     website: Optional[str] = None
     
     def to_vector_content(self) -> str:
-        """生成用于向量化的文本内容"""
+        """Generate text content for vectorization"""
         content_parts = [
-            f"景点名称: {self.name}",
-            f"城市: {self.city_name}, {self.country}",
-            f"描述: {self.description}",
-            f"地址: {self.address}",
+            f"Attraction name: {self.name}",
+            f"City: {self.city_name}, {self.country}",
+            f"Description: {self.description}",
+            f"Address: {self.address}",
         ]
         
         if self.website:
-            content_parts.append(f"网站: {self.website}")
+            content_parts.append(f"Website: {self.website}")
             
         return "\n".join(content_parts)
     
     def to_metadata(self) -> dict:
-        """生成元数据"""
+        """Generate metadata"""
         return {
             "id": str(self.id),
             "name": self.name,

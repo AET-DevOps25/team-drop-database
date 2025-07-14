@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 
 
 class DatabaseConnection:
-    """数据库连接管理类"""
+    """Database connection management class"""
     
     def __init__(self):
         self._engine: Optional[Engine] = None
@@ -19,7 +19,7 @@ class DatabaseConnection:
     
     @property
     def engine(self) -> Engine:
-        """获取 SQLAlchemy 引擎"""
+        """Get SQLAlchemy engine"""
         if self._engine is None:
             database_url = (
                 f"postgresql://{settings.attraction_db_user}:"
@@ -29,67 +29,67 @@ class DatabaseConnection:
                 f"{settings.attraction_db_name}"
             )
             self._engine = create_engine(database_url)
-            logger.info("数据库引擎已创建")
+            logger.info("Database engine created")
         return self._engine
     
     @property
     def session_factory(self) -> sessionmaker:
-        """获取会话工厂"""
+        """Get session factory"""
         if self._session_factory is None:
             self._session_factory = sessionmaker(bind=self.engine)
         return self._session_factory
     
     def get_session(self) -> Session:
-        """获取数据库会话"""
+        """Get database session"""
         return self.session_factory()
 
 
-# 全局数据库连接实例
+# Global database connection instance
 db_connection = DatabaseConnection()
 
 
 def get_database_session() -> Session:
     """
-    获取数据库会话（用于依赖注入）
+    Get database session (for dependency injection)
     
     Returns:
-        数据库会话对象
+        Database session object
     """
     return db_connection.get_session()
 
 
 def get_qdrant_connection() -> QdrantClient:
     """
-    获取 Qdrant 客户端连接
+    Get Qdrant client connection
     
     Returns:
-        Qdrant 客户端实例
+        Qdrant client instance
     """
     if db_connection._qdrant_client is None:
-        # 对于本地开发环境，强制使用HTTP连接
+        # For local development environment, force HTTP connection
         if settings.qdrant_host == "localhost" or settings.qdrant_host == "127.0.0.1":
-            # 本地开发环境：使用HTTP，不使用API key
+            # Local development environment: use HTTP, no API key
             db_connection._qdrant_client = QdrantClient(
                 host=settings.qdrant_host,
                 port=settings.qdrant_port,
                 https=False,
                 api_key=None
             )
-            logger.info("Qdrant 本地客户端连接已创建（HTTP模式）")
+            logger.info("Qdrant local client connection created (HTTP mode)")
         elif settings.qdrant_url:
-            # 使用完整的 URL 连接（生产环境）
+            # Use full URL connection (production environment)
             db_connection._qdrant_client = QdrantClient(
                 url=settings.qdrant_url,
                 api_key=settings.qdrant_api_key
             )
-            logger.info("Qdrant 远程客户端连接已创建（URL模式）")
+            logger.info("Qdrant remote client connection created (URL mode)")
         else:
-            # 使用主机和端口连接（远程环境）
+            # Use host and port connection (remote environment)
             db_connection._qdrant_client = QdrantClient(
                 host=settings.qdrant_host,
                 port=settings.qdrant_port,
                 api_key=settings.qdrant_api_key
             )
-            logger.info("Qdrant 远程客户端连接已创建（主机端口模式）")
+            logger.info("Qdrant remote client connection created (host-port mode)")
     
     return db_connection._qdrant_client

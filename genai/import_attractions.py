@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Attractions数据导入脚本
-将PostgreSQL中的景点数据导入到Qdrant向量数据库
+Attractions data import script
+Import attraction data from PostgreSQL to Qdrant vector database
 """
 
 import asyncio
@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 
 
 class AttractionsImporter:
-    """景点数据导入器"""
+    """Attraction data importer"""
     
     def __init__(self):
         self.vector_service = GenericVectorService("attractions_collection")
@@ -26,21 +26,21 @@ class AttractionsImporter:
     
     def import_attractions(self, batch_size: int = 50) -> None:
         """
-        分批导入景点数据
+        Import attraction data in batches
         
         Args:
-            batch_size: 批次大小
+            batch_size: Batch size
         """
         try:
-            # 获取总数
+            # Get total count
             total_count = self.reader.count_attractions()
-            logger.info(f"开始导入 {total_count} 个景点数据到向量库")
+            logger.info(f"Starting to import {total_count} attraction records to vector database")
             
             imported_count = 0
             offset = 0
             
             while True:
-                # 获取一批数据
+                # Get a batch of data
                 attractions = self.reader.get_all_attractions(
                     limit=batch_size, 
                     offset=offset
@@ -49,7 +49,7 @@ class AttractionsImporter:
                 if not attractions:
                     break
                 
-                # 转换为Document格式
+                # Convert to Document format
                 documents = []
                 ids = []
                 
@@ -61,33 +61,33 @@ class AttractionsImporter:
                     documents.append(doc)
                     ids.append(str(attraction.id))
                 
-                # 导入到向量库
+                # Import to vector database
                 self.vector_service.add_documents(documents, ids)
                 
                 imported_count += len(attractions)
-                logger.info(f"已导入 {imported_count}/{total_count} 个景点")
+                logger.info(f"Imported {imported_count}/{total_count} attractions")
                 
                 offset += batch_size
             
-            logger.info(f"✅ 导入完成！总共导入了 {imported_count} 个景点")
+            logger.info(f"✅ Import completed! Total imported {imported_count} attractions")
             
-            # 获取集合信息
+            # Get collection info
             collection_info = self.vector_service.get_collection_info()
-            logger.info(f"集合信息: {collection_info}")
+            logger.info(f"Collection info: {collection_info}")
             
         except Exception as e:
-            logger.error(f"导入失败: {e}")
+            logger.error(f"Import failed: {e}")
             raise
     
-    def test_search(self, query: str = "美丽的海滩") -> None:
+    def test_search(self, query: str = "beautiful beach") -> None:
         """
-        测试搜索功能
+        Test search functionality
         
         Args:
-            query: 搜索查询
+            query: Search query
         """
         try:
-            logger.info(f"测试搜索: '{query}'")
+            logger.info(f"Testing search: '{query}'")
             
             results = self.vector_service.search(
                 query=query,
@@ -95,51 +95,51 @@ class AttractionsImporter:
                 score_threshold=0.5
             )
             
-            logger.info(f"找到 {len(results)} 个相关结果:")
+            logger.info(f"Found {len(results)} relevant results:")
             for i, result in enumerate(results, 1):
                 metadata = result["metadata"]
-                logger.info(f"{i}. {metadata.get('name', 'Unknown')} (城市: {metadata.get('city', 'Unknown')}) - 得分: {result['score']:.3f}")
+                logger.info(f"{i}. {metadata.get('name', 'Unknown')} (City: {metadata.get('city', 'Unknown')}) - Score: {result['score']:.3f}")
             
         except Exception as e:
-            logger.error(f"搜索测试失败: {e}")
+            logger.error(f"Search test failed: {e}")
 
 
 def main():
-    """主函数"""
-    print("🚀 开始导入景点数据到 Qdrant")
+    """Main function"""
+    print("🚀 Starting to import attraction data to Qdrant")
     print("=" * 50)
     
     importer = AttractionsImporter()
     
     try:
-        # 导入数据
+        # Import data
         importer.import_attractions(batch_size=50)
         
         print("\n" + "=" * 50)
-        print("🧪 测试搜索功能")
+        print("🧪 Testing search functionality")
         
-        # 测试搜索
+        # Test search
         test_queries = [
-            "美丽的海滩",
-            "历史文化遗址", 
-            "自然风景",
-            "适合拍照的地方",
-            "博物馆"
+            "beautiful beach",
+            "historical cultural sites", 
+            "natural scenery",
+            "good places for photography",
+            "museum"
         ]
         
         for query in test_queries:
-            print(f"\n🔍 搜索: {query}")
+            print(f"\n🔍 Search: {query}")
             importer.test_search(query)
         
-        print("\n🎉 导入和测试完成！")
-        print("💡 现在可以通过API进行向量搜索了")
-        print("📝 示例API调用:")
+        print("\n🎉 Import and testing completed!")
+        print("💡 Now you can perform vector search through API")
+        print("📝 Example API call:")
         print("curl -X POST http://localhost:8000/api/v1/vector/search \\")
         print('  -H "Content-Type: application/json" \\')
-        print('  -d \'{"query": "美丽的海滩", "limit": 5}\'')
+        print('  -d \'{"query": "beautiful beach", "limit": 5}\'')
         
     except Exception as e:
-        print(f"❌ 导入失败: {e}")
+        print(f"❌ Import failed: {e}")
         sys.exit(1)
 
 

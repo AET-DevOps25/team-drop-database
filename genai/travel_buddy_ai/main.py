@@ -5,7 +5,7 @@ from uvicorn import run as uvicorn_run
 from travel_buddy_ai.api.v1 import router as v1_router
 from travel_buddy_ai.core.config import settings
 from travel_buddy_ai.core.logger import get_logger
-from travel_buddy_ai.core.state import app_state  # 导入状态管理
+from travel_buddy_ai.core.state import app_state  # Import state management
 from dotenv import load_dotenv
 
 from travel_buddy_ai.services.qa_system_fixed import AttractionQASystem
@@ -15,29 +15,29 @@ load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """应用生命周期管理"""
+    """Application lifecycle management"""
     
-    # 启动时初始化
+    # Initialize on startup
     try:
-        logger.info("🧪 开始初始化问答系统...")
+        logger.info("🧪 Starting Q&A system initialization...")
         qa_system = AttractionQASystem()
-        app_state.set_qa_system(qa_system)  # 设置到全局状态
-        logger.info("✅ 问答系统初始化成功")
+        app_state.set_qa_system(qa_system)  # Set to global state
+        logger.info("✅ Q&A system initialized successfully")
     except Exception as e:
-        logger.error(f"❌ QA系统初始化失败: {e}")
+        logger.error(f"❌ QA system initialization failed: {e}")
         app_state.set_qa_system(None)
     
-    yield  # 应用运行期间
+    yield  # During application runtime
     
-    # 关闭时清理资源（如果需要的话）
-    logger.info("🔄 应用关闭，清理资源...")
+    # Cleanup resources on shutdown (if needed)
+    logger.info("🔄 Application shutting down, cleaning up resources...")
 
 class AppCreator:
     
     @staticmethod
     def create_app() -> FastAPI:
         """
-        Factory 模式创建 FastAPI 应用，便于测试 / 复用。
+        Factory pattern to create FastAPI app, convenient for testing / reuse.
         """
         app = FastAPI(
             title="Travel Buddy AI", 
@@ -46,16 +46,16 @@ class AppCreator:
             lifespan=lifespan  # 使用新的 lifespan 事件处理器
         )
         
-        # 添加 CORS 中间件
+        # Add CORS middleware
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],  # 生产环境中应该设置具体的域名
+            allow_origins=["*"],  # Should set specific domains in production
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
         )
         
-        # 注册路由
+        # Register routes
         app.include_router(v1_router, prefix="/api/v1")
 
         @app.get("/health", tags=["_infra"])

@@ -10,21 +10,21 @@ logger = get_logger(__name__)
 
 
 class SimpleAttractionReader:
-    """简化的景点数据读取器"""
+    """Simplified attraction data reader"""
     
     def __init__(self, session: Optional[Session] = None):
         self.session = session or get_database_session()
     
     def get_all_attractions(self, limit: int = 1000, offset: int = 0) -> List[SimpleAttractionModel]:
         """
-        获取所有景点数据
+        Get all attraction data
         
         Args:
-            limit: 限制数量
-            offset: 偏移量
+            limit: Limit count
+            offset: Offset value
             
         Returns:
-            景点模型列表
+            List of attraction models
         """
         try:
             query = text("""
@@ -55,10 +55,10 @@ class SimpleAttractionReader:
                 try:
                     attraction = SimpleAttractionModel(
                         id=result.id,
-                        name=result.name or f"景点_{result.id}",
+                        name=result.name or f"Attraction_{result.id}",
                         description=result.description or "",
-                        city_name=result.city_name or "未知城市",
-                        country=result.country or "未知国家",
+                        city_name=result.city_name or "Unknown City",
+                        country=result.country or "Unknown Country",
                         address=result.address or "",
                         latitude=str(result.latitude) if result.latitude else None,
                         longitude=str(result.longitude) if result.longitude else None,
@@ -66,17 +66,17 @@ class SimpleAttractionReader:
                     )
                     attractions.append(attraction)
                 except Exception as e:
-                    logger.warning(f"跳过景点 ID {result.id}: {e}")
+                    logger.warning(f"Skipping attraction ID {result.id}: {e}")
                     continue
             
             return attractions
         
         except Exception as e:
-            logger.error(f"获取景点数据失败: {e}")
+            logger.error(f"Failed to get attraction data: {e}")
             return []
     
     def count_attractions(self) -> int:
-        """获取景点总数"""
+        """Get total count of attractions"""
         try:
             query = text("""
                 SELECT COUNT(*) as count
@@ -90,5 +90,5 @@ class SimpleAttractionReader:
             return result.count if result else 0
         
         except Exception as e:
-            logger.error(f"获取景点总数失败: {e}")
+            logger.error(f"Failed to get attraction count: {e}")
             return 0

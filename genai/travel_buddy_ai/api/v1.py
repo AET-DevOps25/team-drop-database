@@ -4,7 +4,7 @@ from typing import Optional
 from travel_buddy_ai.pipelines.parser import get_parser
 from travel_buddy_ai.pipelines.retriever import semantic_search
 from travel_buddy_ai.api.vector_api import router as vector_router
-from travel_buddy_ai.core.state import app_state  # 导入状态管理
+from travel_buddy_ai.core.state import app_state  # Import state management
 
 router = APIRouter()
 router.include_router(vector_router)
@@ -34,31 +34,31 @@ async def recommend(req: RecommendRequest):
 
     parser = get_parser("llm")
     parsed = parser.parse(req.query)
-    print("解析结果 ->", parsed)
+    print("Parse result ->", parsed)
 
     docs = semantic_search(req.query, parsed, top_k=6)
 
-    # TODO: 调用 MCP Pipeline
+    # TODO: Call MCP Pipeline
     return RecommendResponse(
         itinerary="Day 1: Berlin → Neuschwanstein Castle\nDay 2: ..."
     )
 
 @router.post("/ask", response_model=QuestionResponse)
 async def ask_question(req: QuestionRequest):
-    # 从全局状态获取QA系统
+    # Get QA system from global state
     qa_system = app_state.get_qa_system()
     
     if qa_system is None:
         raise HTTPException(
             status_code=503, 
-            detail="QA系统未初始化或初始化失败，请稍后再试"
+            detail="QA system not initialized or initialization failed, please try again later"
         )
 
     if not req.question.strip():
         raise HTTPException(400, "question cannot be empty")
 
     try:
-        # 调用QA系统，使用正确的方法名
+        # Call QA system with correct method name
         result = qa_system.ask(req.question.strip())
         
         return QuestionResponse(
@@ -71,5 +71,5 @@ async def ask_question(req: QuestionRequest):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"问答处理失败: {str(e)}"
+            detail=f"Question answering failed: {str(e)}"
         )
