@@ -68,7 +68,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, loading = false }) => {
                         multiline
                         minRows={1}
                         maxRows={4}
-                        placeholder="询问任何问题"
+                        placeholder="Ask anything here"
                         value={inputValue}
                         onChange={handleInputChange}
                         variant="standard"
