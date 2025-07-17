@@ -9,3 +9,17 @@ services:
     ports:
       - "3000:80"
     restart: always
+    networks:
+      - monitoring
+
+  metrics-server:
+    build: ./metrics-server
+    container_name: metrics-server
+    ports:
+      - "9300:9300"
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge

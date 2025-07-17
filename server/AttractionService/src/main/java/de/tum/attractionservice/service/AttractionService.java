@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
+
 
 @Service
 public class AttractionService {
@@ -25,10 +29,60 @@ public class AttractionService {
     private final AttractionRepository attractionRepository;
     private final CityRepository cityRepository;
 
+    private final Counter totalLookUpsCounter;
+    private final Counter singleLookUpCounter;
+    private final Counter totalSavesCounter;
+    private final Counter singleSaveCounter;
+    private final Counter totalDeletesCounter;
+    private final Counter importedAttractionsCounter;
+    private final Counter urlParseErrorsCounter;
+
+    private final Timer lookupTimer;
+    private final Timer importTimer;
+
     @Autowired
-    public AttractionService(AttractionRepository attractionRepository, CityRepository cityRepository) {
+    public AttractionService(AttractionRepository attractionRepository, CityRepository cityRepository, MeterRegistry registry) {
         this.attractionRepository = attractionRepository;
         this.cityRepository = cityRepository;
+
+        this.totalLookUpsCounter = Counter
+                .builder("attraction_service_get_all_total")
+                .description("Total number of getAllAttractions calls")
+                .register(registry);
+        this.singleLookUpCounter = Counter
+                .builder("attraction_service_get_by_id_total")
+                .description("Total number of getAttractionById calls")
+                .register(registry);
+        this.totalSavesCounter = Counter
+                .builder("attraction_service_save_all_total")
+                .description("Total number of saveAll calls")
+                .register(registry);
+        this.singleSaveCounter = Counter
+                .builder("attraction_service_save_total")
+                .description("Total number of saveAttraction calls")
+                .register(registry);
+        this.totalDeletesCounter = Counter
+                .builder("attraction_service_deletes_total")
+                .description("Total number of deleteById calls")
+                .register(registry);
+        this.lookupTimer = Timer
+                .builder("attraction_service_get_by_name_duration_seconds")
+                .description("Latency of getAttractionByName")
+                .publishPercentileHistogram()
+                .register(registry);
+        this.importTimer = Timer
+                .builder("attraction_service_save_all_duration_seconds")
+                .description("Time to process saveAll imports")
+                .publishPercentileHistogram()
+                .register(registry);
+        this.importedAttractionsCounter = Counter
+                .builder("attraction_service_imported_attractions_total")
+                .description("Number of new attractions imported")
+                .register(registry);
+        this.urlParseErrorsCounter = Counter
+                .builder("attraction_service_url_parse_errors_total")
+                .description("Invalid photo URL count during import")
+                .register(registry);
     }
 
     public AttractionEntity getAttractionByName(String name) {
@@ -36,6 +90,7 @@ public class AttractionService {
     }
 
     public Page<AttractionEntity> getAllAttractions(Pageable pageable) {
+        totalLookUpsCounter.increment();
         return attractionRepository.findAll(pageable);
     }
 
@@ -44,28 +99,41 @@ public class AttractionService {
     }
 
     public AttractionEntity getAttractionById(Long id) {
+        singleLookUpCounter.increment();
         return attractionRepository.findById(id).orElse(null);
     }
 
     public void saveAttraction(AttractionEntity attraction) {
+        singleSaveCounter.increment();
         attractionRepository.save(attraction);
     }
 
     public void deleteById(Long id) {
+        totalDeletesCounter.increment();
         attractionRepository.deleteById(id);
     }
 
     public void saveAll(List<AttractionDTO> dtos) {
-        // pull all existing names in one go
-        Set<String> existing = attractionRepository.findAll()
-                .stream()
-                .map(AttractionEntity::getName)
-                .collect(Collectors.toSet());
+        totalSavesCounter.increment();
 
-        dtos.stream()
-                .filter(dto -> !existing.contains(dto.getName()))
-                .map(this::toEntity)
-                .forEach(attractionRepository::save);
+        importTimer.record(() -> {
+            for (AttractionDTO dto : dtos) {
+                if (attractionRepository.findByName(dto.getName()).isEmpty()) {
+                    importedAttractionsCounter.increment();
+                    attractionRepository.save(toEntity(dto));
+                }
+            }
+        });
+
+//        Set<String> existing = attractionRepository.findAll()
+//                .stream()
+//                .map(AttractionEntity::getName)
+//                .collect(Collectors.toSet());
+//
+//        dtos.stream()
+//                .filter(dto -> !existing.contains(dto.getName()))
+//                .map(this::toEntity)
+//                .forEach(attractionRepository::save);
     }
 
     private AttractionEntity toEntity(AttractionDTO dto) {
@@ -101,7 +169,10 @@ public class AttractionService {
         List<URL> photoUrls = dto.getPhotos().stream()
                 .map(u -> {
                     try { return new URL(u); }
-                    catch (Exception e) { throw new RuntimeException("Invalid URL", e); }
+                    catch (Exception e) {
+                        urlParseErrorsCounter.increment();
+                        throw new RuntimeException("Invalid URL", e);
+                    }
                 })
                 .collect(Collectors.toList());
 

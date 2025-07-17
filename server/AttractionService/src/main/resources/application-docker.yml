@@ -14,3 +14,16 @@ application:
     jwt:
       private-key-path: ${PRIVATE_KEY_PATH:/app/config/private.pem}
       public-key-path: ${PUBLIC_KEY_PATH:/app/config/public.pem}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  endpoint:
+    prometheus:
+      enabled: true
+
+  metrics:
+    enable:
+      all: true

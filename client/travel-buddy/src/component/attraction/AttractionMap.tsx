@@ -33,7 +33,7 @@ const AttractionMap: React.FC<AttractionMapProps> = ({
     if (loadError) {
         return (
             <div style={{textAlign: "center", marginTop: 16}}>
-                地图加载失败，请稍后再试
+                Failed to load map, please try again later
             </div>
         );
     }

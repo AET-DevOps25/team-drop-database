@@ -17,3 +17,12 @@ application:
     jwt:
       private-key-path: keys/private.pem
       public-key-path: keys/public.pem
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  metrics:
+    enable:
+      all: true
