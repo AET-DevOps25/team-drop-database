@@ -62,26 +62,26 @@ const Consult: React.FC = () => {
         try {
             let conv: Conversation;
             if (!activeId) {
-                // 没有会话 → 创建
+                // created new conversation if missing
                 conv = await createConversationByEmail(auth.user, {prompt: text});
                 setActiveId(String(conv.conversationId));
                 navigate(`/consult/${conv.conversationId}`);
             } else {
-                // 已有会话 → 追加
+                // continued new conversation if present
                 conv = await resumeConversation(Number(activeId), {prompt: text});
 
             }
             setMessages(conv.messages);
-            await refreshHistory(); // 新建成功 → 侧边栏重新拉，继续对话 → 最新排序
+            await refreshHistory();
 
-            // 获取最后一条用户消息 ID，用于后续轮询
+            // get last message id for polling
             const lastUserMsg = conv.messages[conv.messages.length - 1];
             setAwaitingMsgId(lastUserMsg.messageId);
             startPolling(conv.conversationId, lastUserMsg.messageId);
 
         } catch (e) {
             console.error(e);
-            // TODO: 做一个发送失败的snackbar
+            // TODO: add a snackbar for this
         } finally {
             setLoading(false);
         }
@@ -97,12 +97,12 @@ const Consult: React.FC = () => {
             setConversations(sorted);
 
         } catch (err) {
-            console.error('刷新侧边栏失败:', err);
+            console.error('Failed to refresh sidebar:', err);
         }
     }, [auth?.user, getConversationHistoryByEmail, activeId]);
 
     const startPolling = (convId: number, userMsgId: number) => {
-        // 避免并发轮询
+        // avoid concurrent polling
         if (timerRef.current) clearInterval(timerRef.current);
 
         timerRef.current = setInterval(async () => {
@@ -110,7 +110,7 @@ const Consult: React.FC = () => {
                 const conv = await getConversation(convId);
                 const latest = conv.messages[conv.messages.length - 1];
 
-                // 找到系统回复 → 停止轮询
+                // stop polling if hits a system response
                 if (latest.role !== "USER" && latest.messageId > userMsgId) {
                     clearInterval(timerRef.current!);
                     timerRef.current = null;
@@ -118,20 +118,19 @@ const Consult: React.FC = () => {
                     setAwaitingMsgId(null);
                 }
             } catch (e) {
-                console.error('轮询失败:', e);
+                console.error('Failed to poll response:', e);
             }
         }, 2500);
     };
 
     useEffect(() => {
-        // 当组件卸载或切换会话时，确保停止旧轮询
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
     }, []);
 
     useEffect(() => {
-        // 切换到新会话时，若仍在等待旧会话回复，则清掉旧轮询
+        // stop old polling if switch to new conversation
         if (timerRef.current && awaitingMsgId === null) {
             clearInterval(timerRef.current);
             timerRef.current = null;
@@ -153,7 +152,7 @@ const Consult: React.FC = () => {
                 const conv = await getConversation(Number(activeId));
                 setMessages(conv.messages);
             } catch (e) {
-                console.error('加载会话失败', e);
+                console.error('Failed to load conversation', e);
             }
         })();
     }, [activeId]);

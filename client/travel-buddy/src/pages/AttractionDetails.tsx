@@ -98,7 +98,7 @@ const AttractionDetails: React.FC = () => {
                   color="text.secondary"
                   style={{ marginLeft: 12 }}
                 >
-                  {line.day + "- from:" + line.fromTime + " to:" + line.toTime}
+                  {line.day + "- from: " + line.fromTime + " to: " + line.toTime}
                 </Typography>
               ))}
             </div>
