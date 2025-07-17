@@ -3,7 +3,7 @@ from typing import List, Optional
 
 
 class VectorSearchRequest(BaseModel):
-    """向量搜索请求模型"""
+    """Vector search request model"""
     query: str
     limit: int = 10
     score_threshold: float = 0.7
@@ -11,20 +11,20 @@ class VectorSearchRequest(BaseModel):
 
 
 class VectorSearchResult(BaseModel):
-    """向量搜索结果模型"""
+    """Vector search result model"""
     content: str
     metadata: dict
     score: float
 
 
 class DocumentIndexRequest(BaseModel):
-    """文档索引请求模型"""
+    """Document indexing request model"""
     documents: List[dict]  # 通用文档格式
     force_reindex: bool = False
 
 
 class DocumentModel(BaseModel):
-    """通用文档模型"""
+    """Document model for indexing"""
     id: str
     content: str
     metadata: Optional[dict] = None

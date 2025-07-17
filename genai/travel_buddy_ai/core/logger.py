@@ -5,29 +5,29 @@ from typing import Optional
 
 def get_logger(name: str, level: str = "INFO") -> logging.Logger:
     """
-    创建并配置日志记录器
+    Create and configure logger
     
     Args:
-        name: 日志记录器名称
-        level: 日志级别
+        name: Logger name
+        level: Log level
         
     Returns:
-        配置好的日志记录器
+        Configured logger
     """
     logger = logging.getLogger(name)
     
     if not logger.handlers:
-        # 创建控制台处理器
+        # Create console handler
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(getattr(logging, level.upper()))
         
-        # 创建格式化器
+        # Create formatter
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
         console_handler.setFormatter(formatter)
         
-        # 添加处理器到日志记录器
+        # Add handler to logger
         logger.addHandler(console_handler)
         logger.setLevel(getattr(logging, level.upper()))
     

@@ -1,12 +1,10 @@
 from typing import Dict
 from travel_buddy_ai.pipelines.parser.base import InputParser
 from travel_buddy_ai.pipelines.parser.keyword_parser import KeywordParser
-from travel_buddy_ai.pipelines.parser.spacy_parser import SpacyParser
 from travel_buddy_ai.pipelines.parser.llm_parser import LLMParser
 
 _PARSERS: Dict[str, InputParser] = {
     KeywordParser.name: KeywordParser(),
-    SpacyParser.name: SpacyParser(),
     LLMParser.name: LLMParser(),
 }
 
