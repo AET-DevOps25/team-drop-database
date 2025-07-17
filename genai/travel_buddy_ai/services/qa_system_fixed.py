@@ -21,10 +21,9 @@ class AttractionQASystem:
     """Attraction Q&A System"""
     
     def __init__(self, model_type: str = None):
-        self.qdrant_client = get_qdrant_connection()
         self.collection_name = "attractions_collection"
         self.embeddings = OpenAIEmbeddings(
-            model="text-embedding-3-large", 
+            model="text-embedding-3-large",
             api_key=settings.openai_api_key
         )
         self.openai_timeout = 40
@@ -121,8 +120,8 @@ class AttractionQASystem:
                 }
                 if score_threshold:
                     search_params["score_threshold"] = score_threshold
-                
-                search_results = self.qdrant_client.search(**search_params)
+                qdrant_client = get_qdrant_connection()
+                search_results = qdrant_client.search(**search_params)
                 if search_results:
                     break
             

@@ -3,6 +3,8 @@ from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Optional
 
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
+
 from travel_buddy_ai.core.config import settings
 from travel_buddy_ai.core.logger import get_logger
 
@@ -57,7 +59,11 @@ def get_database_session() -> Session:
     """
     return db_connection.get_session()
 
-
+@retry(
+    stop=stop_after_attempt(5),         # 最多重试 5 次
+    wait=wait_fixed(2),                 # 每次间隔 2 秒
+    retry=retry_if_exception_type(Exception)  # 捕获所有连接类错误
+)
 def get_qdrant_connection() -> QdrantClient:
     """
     Get Qdrant client connection
@@ -91,5 +97,6 @@ def get_qdrant_connection() -> QdrantClient:
                 api_key=settings.qdrant_api_key
             )
             logger.info("Qdrant remote client connection created (host-port mode)")
+    db_connection._qdrant_client.get_collections()
     
     return db_connection._qdrant_client

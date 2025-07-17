@@ -5,10 +5,8 @@ from uvicorn import run as uvicorn_run
 from travel_buddy_ai.api.v1 import router as v1_router
 from travel_buddy_ai.core.config import settings
 from travel_buddy_ai.core.logger import get_logger
-from travel_buddy_ai.core.state import app_state  # Import state management
 from dotenv import load_dotenv
 
-from travel_buddy_ai.services.qa_system_fixed import AttractionQASystem
 
 logger = get_logger(__name__)
 load_dotenv()
@@ -16,21 +14,10 @@ load_dotenv()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifecycle management"""
-    
-    # Initialize on startup
-    try:
-        logger.info("🧪 Starting Q&A system initialization...")
-        qa_system = AttractionQASystem()
-        app_state.set_qa_system(qa_system)  # Set to global state
-        logger.info("✅ Q&A system initialized successfully")
-    except Exception as e:
-        logger.error(f"❌ QA system initialization failed: {e}")
-        app_state.set_qa_system(None)
-    
+    logger.info("🚀 Application starting up...")
     yield  # During application runtime
-    
-    # Cleanup resources on shutdown (if needed)
-    logger.info("🔄 Application shutting down, cleaning up resources...")
+    logger.info("🔄 Application shutting down...")
+
 
 class AppCreator:
     
@@ -60,11 +47,13 @@ class AppCreator:
 
         @app.get("/health", tags=["_infra"])
         async def health():
-            qa_system = app_state.get_qa_system()
+            qa_ready = hasattr(app.state, 'qa_system') and app.state.qa_system is not None
+            vector_ready = hasattr(app.state, 'vector_service') and app.state.vector_service is not None
             return {
                 "status": "ok", 
                 "service": "Travel Buddy AI",
-                "qa_system": "ready" if qa_system else "not_initialized"
+                "qa_system": "ready" if qa_ready else "not_initialized",
+                "vector_service": "ready" if vector_ready else "not_initialized"
             }
 
         return app

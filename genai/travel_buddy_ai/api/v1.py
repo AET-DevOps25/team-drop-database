@@ -1,10 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional
 from travel_buddy_ai.pipelines.parser import get_parser
 from travel_buddy_ai.pipelines.retriever import semantic_search
 from travel_buddy_ai.api.vector_api import router as vector_router
-from travel_buddy_ai.core.state import app_state  # Import state management
+from travel_buddy_ai.services.qa_system_fixed import AttractionQASystem
 
 router = APIRouter()
 router.include_router(vector_router)
@@ -44,13 +44,21 @@ async def recommend(req: RecommendRequest):
     )
 
 @router.post("/ask", response_model=QuestionResponse)
-async def ask_question(req: QuestionRequest):
-    # Get QA system from global state
-    qa_system = app_state.get_qa_system()
-    
+async def ask_question(req: QuestionRequest, request: Request):
+    if not hasattr(request.app.state, "qa_system") or request.app.state.qa_system is None:
+        try:
+            request.app.state.qa_system = AttractionQASystem()
+        except Exception as e:
+            raise HTTPException(
+                status_code=503,
+                detail=f"QA system initialization failed: {str(e)}"
+            )
+
+    qa_system = request.app.state.qa_system
+
     if qa_system is None:
         raise HTTPException(
-            status_code=503, 
+            status_code=503,
             detail="QA system not initialized or initialization failed, please try again later"
         )
 
@@ -58,16 +66,15 @@ async def ask_question(req: QuestionRequest):
         raise HTTPException(400, "question cannot be empty")
 
     try:
-        # Call QA system with correct method name
         result = qa_system.ask(req.question.strip())
-        
+
         return QuestionResponse(
             success=True,
             question=result["question"],
             answer=result["answer"],
             results_count=result["results_count"]
         )
-        
+
     except Exception as e:
         raise HTTPException(
             status_code=500,
