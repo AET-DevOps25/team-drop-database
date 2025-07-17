@@ -1,14 +1,68 @@
-version: "3.8"
+version: '3.8'
 
 services:
+  # 开发环境服务 - 支持热重载
+  travel-buddy-ai-dev:
+    build:
+      context: .
+      target: development
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - HOST=0.0.0.0
+      - PORT=8000
+      - PATH=/app/.venv/bin:$PATH
+    env_file:
+      - .env
+    volumes:
+      - ./travel_buddy_ai:/app/travel_buddy_ai  # 挂载源码目录
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+    depends_on:
+      - qdrant
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # 生产环境服务
+  travel-buddy-ai:
+    build:
+      context: .
+      target: production
+    ports:
+      - "8001:8000"  # 不同端口避免冲突
+    environment:
+      - PYTHONPATH=/app
+      - HOST=0.0.0.0
+      - PORT=8000
+      - PATH=/app/.venv/bin:$PATH
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - production  # 只在生产profile时启动
+
   qdrant:
     image: qdrant/qdrant:latest
-    container_name: qdrant_travel
     ports:
-      - "6334:6333"  # REST API
-      - "6335:6334"  # gRPC API
+      - "6333:6333"
+      - "6334:6334"
     volumes:
-      - qdrant_data:/qdrant/storage
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    restart: unless-stopped
 
 volumes:
-  qdrant_data:
+  qdrant_storage:
