@@ -53,5 +53,6 @@ jobs:
 
       - name: Build and push ${{ matrix.service }} Docker image
         run: |
-          docker build -f ${{ matrix.dockerfile }} -t ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest ${{ matrix.context }}
-          docker push ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -f ${{ matrix.dockerfile }} -t ghcr.io/$REPO_NAME/${{ matrix.service }}:latest ${{ matrix.context }}
+          docker push ghcr.io/$REPO_NAME/${{ matrix.service }}:latest
