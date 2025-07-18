@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 
-COPY pyproject.toml README.md ./
+COPY pyproject.toml ./
+COPY README.md ./
 RUN pip install --upgrade pip \
  && pip install .
 
@@ -24,4 +25,4 @@ COPY travel_buddy_ai ./travel_buddy_ai
 EXPOSE 8000
 
 
-CMD ["uvicorn", "travel_buddy_ai.main:create_app", "--host", "0.0.0.0", "--port", "8000", "--reload",]
+CMD ["uvicorn", "travel_buddy_ai.main:create_app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
