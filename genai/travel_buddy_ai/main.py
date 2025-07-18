@@ -4,11 +4,10 @@ import time
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from uvicorn import run as uvicorn_run
 from dotenv import load_dotenv
 
 # Prometheus client
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST, collect_default_metrics
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 from travel_buddy_ai.api.v1 import router as v1_router
 from travel_buddy_ai.core.config import settings
@@ -49,7 +48,7 @@ LLM_INFERENCE_ERRORS = Counter(
 )
 
 # Collect default process metrics (CPU, GC, etc.)
-collect_default_metrics()
+# (No need to call collect_default_metrics; prometheus_client collects default metrics automatically)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -130,13 +129,18 @@ class AppCreator:
 
         return app
 
+def create_app() -> FastAPI:
+    """Module-level factory function for uvicorn"""
+    return AppCreator.create_app()
+
 if __name__ == "__main__":
-    app = AppCreator.create_app()
-    uvicorn_run(
-        "travel_buddy_ai.main:AppCreator.create_app",
+    import uvicorn
+    uvicorn.run(
+        "travel_buddy_ai.main:create_app",
         host=settings.host,
         port=settings.port,
         factory=True,
         reload=True,
-        log_level="info",
+        log_level="info"
     )
+
