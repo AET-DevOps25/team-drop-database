@@ -1,24 +1,23 @@
 version: '3.8'
 
 services:
-  # 开发环境服务 - 支持热重载
   travel-buddy-ai-dev:
     build:
       context: .
-      target: development
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - PYTHONPATH=/app
       - HOST=0.0.0.0
       - PORT=8000
-      - PATH=/app/.venv/bin:$PATH
     env_file:
       - .env
     volumes:
-      - ./travel_buddy_ai:/app/travel_buddy_ai  # 挂载源码目录
+      - ./travel_buddy_ai:/app/travel_buddy_ai 
       - ./logs:/app/logs
       - ./.env:/app/.env
+    command: >
+      uvicorn travel_buddy_ai.main:create_app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - qdrant
     restart: unless-stopped
@@ -29,29 +28,30 @@ services:
       retries: 3
       start_period: 60s
 
-  # 生产环境服务
+
   travel-buddy-ai:
     build:
       context: .
-      target: production
     ports:
-      - "8001:8000"  # 不同端口避免冲突
+      - "8002:8000"
     environment:
       - PYTHONPATH=/app
       - HOST=0.0.0.0
       - PORT=8000
-      - PATH=/app/.venv/bin:$PATH
     env_file:
       - .env
     volumes:
       - ./logs:/app/logs
+      - ./.env:/app/.env
+    command: >
+      uvicorn travel_buddy_ai.main:create_app --host 0.0.0.0 --port 8000
     depends_on:
-      qdrant:
-        condition: service_healthy
+      - qdrant
     restart: unless-stopped
     profiles:
-      - production  # 只在生产profile时启动
+      - production
 
+  # Qdrant
   qdrant:
     image: qdrant/qdrant:latest
     ports:

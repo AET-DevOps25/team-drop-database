@@ -1,5 +1,5 @@
 [project]
-name = "travel-buddy-ai"
+name = "travel_buddy_ai"
 version = "0.1.0"
 description = "AI-powered travel companion service"
 authors = [
@@ -24,7 +24,8 @@ dependencies = [
     "python-dotenv>=1.0.0,<2.0.0",
     "fastembed>=0.3.0,<1.0.0",
     "multidict>=6.6.3,<7.0.0",
-    "tenacity>=9.1.2"
+    "tenacity>=9.1.2",
+    "prometheus-client (>=0.22.1,<0.23.0)"
 ]
 
 [project.optional-dependencies]
@@ -34,9 +35,9 @@ test = [
     "httpx>=0.28.1"
 ]
 
-[project.scripts]
-travel-buddy-api = "travel_buddy_ai.main:create_app"
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["travel_buddy_ai"]
