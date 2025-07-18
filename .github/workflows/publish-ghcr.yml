@@ -26,7 +26,7 @@ jobs:
         include:
           - service: llmservice
             dockerfile: genai/Dockerfile
-            context: llmservice
+            context: genai
           - service: attractionservice
             dockerfile: server/AttractionService/Dockerfile
             context: server/AttractionService
