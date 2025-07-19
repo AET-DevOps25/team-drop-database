@@ -5,14 +5,18 @@ meta {
 }
 
 post {
-  url: http://{{attraction-service}}/attraction-service/api/v1/attractions
+  url: http://{{attraction-service}}/attractions/list
   body: json
-  auth: inherit
+  auth: bearer
 }
 
 headers {
   X-API-KEY: travel-buddy-devops-2025
   Content-Type: application/json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiJ9.eyJwZXJtaXNzaW9ucyI6WyJhZG1pbjpkZWxldGUiLCJtYW5hZ2VtZW50OmNyZWF0ZSIsImFkbWluOnJlYWQiLCJtYW5hZ2VtZW50OmRlbGV0ZSIsImFkbWluOmNyZWF0ZSIsIm1hbmFnZW1lbnQ6dXBkYXRlIiwibWFuYWdlbWVudDpyZWFkIiwiYWRtaW46dXBkYXRlIl0sInJvbGVzIjpbIkFETUlOIl0sInN1YiI6InRlc3RfYWRtaW5AdHVtLmRlIiwiaWF0IjoxNzUyOTUxMzYzLCJleHAiOjE3NTMwMzc3NjN9.bGn2wb-Q9BcrA_jKpt52fqely0fwdOkfg98mZUG8RuYMMZN2Z068pzNID8ZB-SwmfDxYMG8Q_SVkNHayL0vx86rS0FixPbXuMLTnHaZaHE25mFc6AIMcVE6njGIhdEczygqOQT2byvrzR29faVLOI9B4mfkqqfikYlHsvDeEmM5b2874yphjbqzb9iSzBWV_fVREnEVEFPFTeMTZ9kcYkp_Pu7ZwHyLrT1kdkDqV8fIOfIukUyh7g96oiyKPW1al8cZWCPgQMO6hPpsMG2VWLm2d8MgimYAc49ZsaEQpqNQoy2H6V6NZRc6tWF1NPgVzCFPgOZLhwlSu-zgf23zA-A
 }
 
 body:json {
