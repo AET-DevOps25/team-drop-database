@@ -39,6 +39,11 @@ jobs:
           - service: client
             dockerfile: client/travel-buddy/Dockerfile
             context: client/travel-buddy
+            build_args: ""
+          - service: client-aws
+            dockerfile: client/travel-buddy/Dockerfile
+            context: client/travel-buddy
+            build_args: "--build-arg DEPLOYMENT_TARGET=aws"
 
     steps:
       - name: Checkout source code
@@ -54,5 +59,5 @@ jobs:
       - name: Build and push ${{ matrix.service }} Docker image
         run: |
           REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build -f ${{ matrix.dockerfile }} -t ghcr.io/$REPO_NAME/${{ matrix.service }}:latest ${{ matrix.context }}
+          docker build -f ${{ matrix.dockerfile }} ${{ matrix.build_args }} -t ghcr.io/$REPO_NAME/${{ matrix.service }}:latest ${{ matrix.context }}
           docker push ghcr.io/$REPO_NAME/${{ matrix.service }}:latest

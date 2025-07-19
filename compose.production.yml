@@ -1,0 +1,155 @@
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+services:
+  reverse-proxy:
+    image: traefik:v3.4
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--log.level=INFO"
+      - "--accesslog=true"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - app-network
+    depends_on:
+      - userservice
+      - attractionservice
+      - authservice
+      - client
+      - genai-service
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  userservice:
+    image: ghcr.io/aet-devops25/team-drop-database/userservice:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USERNAME=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.userservice.rule=Host(`${USERSERVICE_HOST}`)"
+      - "traefik.http.services.userservice.loadbalancer.server.port=8080"
+      - "traefik.http.routers.userservice.entrypoints=web"
+    volumes:
+      - ./keys/public.pem:/app/config/public.pem:ro
+      - ./keys/private.pem:/app/config/private.pem:ro
+
+  attractionservice:
+    image: ghcr.io/aet-devops25/team-drop-database/attractionservice:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USERNAME=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.attractionservice.rule=Host(`${ATTRACTIONSERVICE_HOST}`)"
+      - "traefik.http.services.attractionservice.loadbalancer.server.port=8080"
+      - "traefik.http.routers.attractionservice.entrypoints=web"
+    volumes:
+      - ./keys/public.pem:/app/config/public.pem:ro
+
+  
+  authservice:
+    image: ghcr.io/aet-devops25/team-drop-database/authservice:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USERNAME=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authservice.rule=Host(`${AUTH_HOST}`)"
+      - "traefik.http.services.authservice.loadbalancer.server.port=8080"
+      - "traefik.http.routers.authservice.entrypoints=web"
+    volumes:
+      - ./keys/public.pem:/app/config/public.pem:ro
+      - ./keys/private.pem:/app/config/private.pem:ro
+
+
+  genai-service:
+    image: ghcr.io/aet-devops25/team-drop-database/llmservice:latest
+    environment:
+      - PYTHONUNBUFFERED=1
+      - API_KEY=${GENAI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    restart: unless-stopped
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.genai.rule=Host(`${GENAI_HOST}`)"
+      - "traefik.http.services.genai.loadbalancer.server.port=8000"
+      - "traefik.http.routers.genai.entrypoints=web"
+  
+  client:
+    image: ghcr.io/aet-devops25/team-drop-database/client-aws:latest
+    environment:
+      - REACT_APP_API_URL=${PUBLIC_API_URL}
+    depends_on:
+      - userservice
+      - attractionservice
+      - authservice
+      - genai-service
+    restart: unless-stopped
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.rule=Host(`${CLIENT_HOST}`)"
+      - "traefik.http.services.client.loadbalancer.server.port=80"
+      - "traefik.http.routers.client.entrypoints=web"
+      - "traefik.http.middlewares.client-compress.compress=true"
+      - "traefik.http.routers.client.middlewares=client-compress"
+      - "traefik.http.routers.client.priority=1"
