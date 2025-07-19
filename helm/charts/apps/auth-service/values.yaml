@@ -1,0 +1,67 @@
+image:
+  repository: ghcr.io/aet-devops25/team-drop-database/authservice
+  tag: latest
+  pullPolicy: Always
+  pullSecrets:
+    - ghcr-secret
+
+host: auth-service.travel-buddy.student.k8s.aet.cit.tum.de
+
+service:
+  name: auth-service
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+
+namespace:
+  name: tdd-apps
+
+authservice:
+  keyMount:
+    enabled: true          # create and mount the Secret
+    usePrivate: true       # include the private key, not just the public one
+
+sharedKeys:
+  mountPath: /app/config
+  secretName: travel-buddy-jwt-keys   # metadata.name of the k8s Secret
+  publicKeyFile: public.pem       # must exist in charts/apps/authservice/secrets/
+  privateKeyFile: private.pem     # idem (ignored if usePrivate=false)
+
+env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: docker
+  - name: SPRING_DATASOURCE_URL
+    value: jdbc:postgresql://authservice-auth-postgres:5432/auth-db
+  - name: SPRING_DATASOURCE_USERNAME
+    value: auth_user
+  - name: SPRING_DATASOURCE_PASSWORD
+    value: auth_pwd
+
+monitoring:
+  enabled: true
+  serviceMonitor: false
+  scrape:
+    path: /auth-service/api/v1/actuator/prometheus
+    port: 8080
+
+auth-postgres:
+  architecture: standalone        # (default) - adjust if you need replication
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: csi-rbd-sc
+  auth:
+    username: auth_user
+    password: auth_pwd
+    database: auth-db

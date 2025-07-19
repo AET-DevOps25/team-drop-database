@@ -1,0 +1,20 @@
+{{- if .Values.dashboards.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grafana.fullname" . }}-dashboards
+  namespace: {{ .Values.namespace.name }}
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: {{ .Values.dashboards.provider.name }}
+        orgId: 1
+        folder: "{{ .Values.dashboards.provider.folder }}"
+        type: {{ .Values.dashboards.provider.type }}
+        disableDeletion: {{ .Values.dashboards.provider.disableDeletion }}
+        editable: {{ .Values.dashboards.provider.editable }}
+        updateIntervalSeconds: {{ .Values.dashboards.provider.updateIntervalSeconds }}
+        options:
+          path: /var/lib/grafana/dashboards
+{{- end }}

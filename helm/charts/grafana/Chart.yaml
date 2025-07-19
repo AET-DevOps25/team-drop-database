@@ -1,0 +1,6 @@
+apiVersion: v2
+name: grafana-standalone
+description: Namespaced Grafana with provisioned datasource, dashboards, and unified alerting.
+type: application
+version: 0.1.0           
+appVersion: "11.1.0"      
