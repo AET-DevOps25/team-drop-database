@@ -15,7 +15,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("http://localhost:*", "https://*.k8s.aet.cit.tum.de")
+                        .allowedOriginPatterns("http://localhost:*", "https://*.k8s.aet.cit.tum.de", "http://*.nip.io", "https://*.nip.io")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true)
