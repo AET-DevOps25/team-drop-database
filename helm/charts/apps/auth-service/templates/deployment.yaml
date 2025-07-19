@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "authservice.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "authservice.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "authservice.name" . }}
+        monitoring: "enabled"
+      annotations:
+        forceUpdateTimestamp: "{{ .Values.forceUpdate | default "" }}"
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+
+{{- /* Mount the JWT key Secret only if requested */}}
+{{- if .Values.authservice.keyMount.enabled }}
+      volumes:
+        - name: auth-keys
+          secret:
+            secretName: {{ .Values.sharedKeys.secretName }}
+{{- end }}
+
+      containers:
+        - name: {{ include "authservice.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+{{- if .Values.authservice.keyMount.enabled }}
+          volumeMounts:
+            - name: auth-keys
+              mountPath: {{ .Values.sharedKeys.mountPath }}
+              readOnly: true
+{{- end }}
+
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+
+          resources:
+{{-   toYaml .Values.resources | nindent 12 }}
+
+          env:
+{{- range .Values.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+{{- end }}
+{{- if .Values.authservice.keyMount.enabled }}
+            - name: PUBLIC_KEY_PATH
+              value: "{{ printf "%s/%s" .Values.sharedKeys.mountPath .Values.sharedKeys.publicKeyFile }}"
+{{-   if .Values.authservice.keyMount.usePrivate }}
+            - name: PRIVATE_KEY_PATH
+              value: "{{ printf "%s/%s" .Values.sharedKeys.mountPath .Values.sharedKeys.privateKeyFile }}"
+{{-   end }}
+{{- end }}

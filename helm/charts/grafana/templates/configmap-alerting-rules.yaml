@@ -1,0 +1,45 @@
+{{- if and .Values.alerting.enabled .Values.alerting.ruleGroups }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grafana.fullname" . }}-alerting-rules
+  namespace: {{ .Values.namespace.name }}
+data:
+  rules.yaml: |
+    apiVersion: 1
+    groups:
+{{- range .Values.alerting.ruleGroups }}
+      - orgId: 1
+        name: {{ .name }}
+        folder: "{{ .folder }}"
+        interval: {{ .interval }}
+        rules:
+{{- range .rules }}
+          - uid: {{ .uid }}
+            title: {{ .title | quote }}
+            condition: A
+            data:
+              - refId: A
+                datasourceUid: {{ $.Values.datasource.prometheus.uid }}
+                relativeTimeRange:
+                  from: 300
+                  to: 0
+                model:
+                  expr: {{ .expr | quote }}
+                  interval: ""
+                  refId: A
+            noDataState: NoData
+            execErrState: Error
+            for: {{ .for }}
+            annotations:
+{{- range $k,$v := .annotations }}
+              {{ $k }}: {{ $v | quote }}
+{{- end }}
+            labels:
+{{- range $k,$v := .labels }}
+              {{ $k }}: {{ $v | quote }}
+{{- end }}
+            isPaused: false
+{{- end }}
+{{- end }}
+{{- end }}

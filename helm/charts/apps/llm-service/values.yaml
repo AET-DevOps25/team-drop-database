@@ -1,0 +1,46 @@
+namespace:
+  name: tdd-apps
+
+image:
+  repository: ghcr.io/aet-devops25/team-drop-database/llmservice
+  tag: latest
+  pullPolicy: IfNotPresent
+  pullSecrets:
+    - ghcr-secret
+
+service:
+  name: llm-service
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: "1"
+    memory: "4Gi"
+  requests:
+    cpu: "500m"
+    memory: "2Gi"
+
+# Optional: mount a PVC that already contains model weights
+persistence:
+  enabled: false          # set true to mount a PVC
+  existingClaim: ""       # e.g. "llm-models-pvc"
+  mountPath: /models
+  size: 20Gi              # only used when enabled & no existingClaim
+  storageClass: ""        # default storage class if empty
+
+forceUpdate: ""
+
+monitoring:
+  enabled: true
+  serviceMonitor: false
+  scrape:
+    path: /metrics
+    port: 8000
+
+envFrom:
+  secrets:
+    - llm-env

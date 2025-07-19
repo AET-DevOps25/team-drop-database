@@ -1,0 +1,49 @@
+namespace:
+  name: tdd-apps
+
+image:
+  repository: ghcr.io/aet-devops25/team-drop-database/client
+  tag: latest
+  pullPolicy: Always
+  pullSecrets:
+    - ghcr-secret
+
+service:
+  name: frontend
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+
+forceUpdate: ""
+
+env:
+  - name: NODE_ENV
+    value: production
+
+monitoring:
+  enabled: true
+  serviceMonitor: false
+  scrape:
+    path: /metrics
+    port: 9300
+
+metrics:
+  enabled: true
+  port: 9300
+  path: /metrics
+  readinessPath: /ready
+  livenessPath: /health
+  # If your Node app needs an env var to enable metrics:
+  env:
+    - name: METRICS_PORT
+      value: "9300"

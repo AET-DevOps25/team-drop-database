@@ -1,0 +1,163 @@
+namespace:
+  name: tdd-monitoring
+
+image:
+  repository: grafana/grafana
+  tag: 11.1.0
+  pullPolicy: IfNotPresent
+  pullSecrets: []          # e.g. ["ghcr-secret"] if using a private mirror
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  host: grafana.travel-buddy.student.k8s.aet.cit.tum.de
+  tls:
+    enabled: true
+    secretName: travel-buddy-tls-grafana
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # (Optional hardening)
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+
+persistence:
+  enabled: true
+  existingClaim: ""
+  size: 5Gi
+  storageClass: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  mountPath: /var/lib/grafana
+
+admin:
+  createSecret: true
+  user: admin
+  password: "admin"     
+  existingSecret: ""           # name of secret with keys 'admin-user' and 'admin-password'
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 472          # default grafana UID
+  runAsGroup: 472
+  fsGroup: 472
+  fsGroupChangePolicy: OnRootMismatch
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+
+forceUpdate: ""         # set to timestamp to force rollout
+extraEnv: []            # list of { name: X, value: Y }
+extraEnvFrom: []        # list of secretRef/configMapRef objects
+extraVolumeMounts: []
+extraVolumes: []
+
+datasource:
+  enabled: true
+  prometheus:
+    uid: prometheus
+    name: Prometheus
+    url: http://prometheus-promethues.tdd-monitoring.svc.cluster.local:9090
+    isDefault: true
+    editable: false
+    access: proxy
+    jsonData: {}
+    secureJsonData: {}
+
+dashboards:
+  enabled: true
+  provider:
+    name: default
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+  jsons:
+    # Place dashboard JSON directly here (key becomes filename.json):
+    example-overview.json: |
+      {
+        "annotations": {"list":[]},
+        "editable": true,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 0,
+        "panels": [],
+        "schemaVersion": 39,
+        "tags": ["example"],
+        "timezone": "",
+        "title": "Example Overview",
+        "version": 1
+      }
+
+alerting:
+  enabled: true
+  contactPoints:
+    - name: default-email
+      type: email
+      settings:
+        addresses: zhiyuan.ni@tum.de
+  notificationPolicies:
+    - orgId: 1
+      receiver: default-email
+      group_by: ["alertname"]
+      continue: false
+      routes: []
+  ruleGroups:
+    - name: basic
+      folder: General
+      interval: 1m
+      rules:
+        - uid: high_error_rate
+          title: High error rate (userservice)
+          expr: rate(http_requests_total{job="userservice",status=~"5.."}[5m]) / rate(http_requests_total{job="userservice"}[5m])
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: High HTTP 5xx rate (>5% over 5m)
+        - uid: pod_restarts
+          title: Pod restart burst
+          expr: increase(kube_pod_container_status_restarts_total[10m]) > 3
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Pod restarting frequently (>3 in 10m)
+
+grafanaIni:
+  server:
+    # root_url templated if ingress.enabled
+    domain: ""
+    serve_from_sub_path: true
+  security:
+    admin_user: "%ADMIN_USER%"
+    admin_password: "%ADMIN_PASSWORD%"
+  analytics:
+    reporting_enabled: false
+  unified_alerting:
+    enabled: true
+  panels:
+    disable_sanitize_html: false
+
+plugins: []    # e.g. ["grafana-piechart-panel"]
+
+livenessProbe:
+  enabled: true
+  path: /api/health
+  initialDelaySeconds: 30
+  periodSeconds: 30
+
+readinessProbe:
+  enabled: true
+  path: /api/health
+  initialDelaySeconds: 10
+  periodSeconds: 15

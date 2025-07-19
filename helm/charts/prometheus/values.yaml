@@ -1,0 +1,144 @@
+# Namespace to deploy into
+namespace:
+  name: tdd-monitoring
+
+image:
+  repository: prom/prometheus
+  tag: v2.53.1
+  # Optionally pin the exact manifest (replace with current digest).
+  # Leave empty to omit digest (tag only).
+  digest: sha256:9abc6cf6aea7710d163dbb28d8eeb7dc5baef01e38fa4cd146a406dd9f07f70d
+  pullPolicy: IfNotPresent
+  pullSecrets: []     # e.g. ["ghcr-secret"] if needed (official image is public)
+
+# Retention & scrape timings
+retention: 15d
+scrapeInterval: 15s
+evaluationInterval: 15s
+
+# Persistence (PVC). If existingClaim is set, size/storageClass ignored.
+persistence:
+  enabled: true
+  existingClaim: ""
+  size: 5Gi
+  storageClass: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  mountPath: /prometheus
+
+service:
+  type: ClusterIP
+  port: 9090
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+podSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+  fsGroup: 65534
+  fsGroupChangePolicy: OnRootMismatch
+
+ingress:
+  enabled: true
+  className: nginx
+  host: prometheus.travel-buddy.student.k8s.aet.cit.tum.de
+  tls:
+    enabled: true
+    secretName: travel-buddy-tls-prometheus
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # (Optional hardening)
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+
+serviceAccount:
+  name: prometheus-prometheus
+  create: true
+
+rbac:
+  create: true
+  targetNamespaces:
+    - tdd-apps
+
+prometheusConfig: |-
+  global:
+    scrape_interval: 15s
+    evaluation_interval: 15s
+
+  scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: services
+    kubernetes_sd_configs:
+      - role: service
+        namespaces:
+          names: ['tdd-apps']
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_label_monitoring]
+        action: keep
+        regex: enabled
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+        action: replace
+        target_label: __scheme__
+        regex: (https?)
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+        action: replace
+        regex: (.+?)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_service_name]
+        target_label: service
+
+  - job_name: pods
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: ['tdd-apps']
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_ip, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: (.+);(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      # Uncomment if you *also* want a pod label gate
+      # - source_labels: [__meta_kubernetes_pod_label_monitoring]
+      #   action: keep
+      #   regex: enabled
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        target_label: pod
+      - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+        target_label: app
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        target_label: app
+        regex: (.+)
+        action: replace

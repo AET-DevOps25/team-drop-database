@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "attractionservice.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "attractionservice.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "attractionservice.name" . }}
+        monitoring: "enabled"
+      annotations:
+        # bump to force a rollout without changing the image tag
+        forceUpdateTimestamp: "{{ .Values.forceUpdate | default "" }}"
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+
+{{- /* ─────────────── JWT key Secret (optional) ─────────────── */}}
+{{- if .Values.attractionservice.keyMount.enabled }}
+      volumes:
+        - name: auth-keys
+          secret:
+            secretName: {{ .Values.sharedKeys.secretName }}
+{{- end }}
+
+      containers:
+        - name: {{ include "attractionservice.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+{{- if .Values.attractionservice.keyMount.enabled }}
+          volumeMounts:
+            - name: auth-keys
+              mountPath: {{ .Values.sharedKeys.mountPath }}
+              readOnly: true
+{{- end }}
+
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+
+          resources:
+{{- toYaml .Values.resources | nindent 12 }}
+
+          env:
+{{- range .Values.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+{{- end }}
+{{- if .Values.attractionservice.keyMount.enabled }}
+            - name: PUBLIC_KEY_PATH
+              value: "{{ printf "%s/%s" .Values.sharedKeys.mountPath .Values.sharedKeys.publicKeyFile }}"
+{{-   if .Values.attractionservice.keyMount.usePrivate }}
+            - name: PRIVATE_KEY_PATH
+              value: "{{ printf "%s/%s" .Values.sharedKeys.mountPath .Values.sharedKeys.privateKeyFile }}"
+{{-   end }}
+{{- end }}

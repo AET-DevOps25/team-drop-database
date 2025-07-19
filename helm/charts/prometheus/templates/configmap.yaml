@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "prometheus.fullname" . }}-config
+  labels:
+    app: {{ include "prometheus.name" . }}
+data:
+  prometheus.yml: |
+{{ .Values.prometheusConfig | indent 4 }}

@@ -1,0 +1,34 @@
+namespace:
+  name: tdd-apps
+
+ingress:
+  enabled: true
+  className: nginx      
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  tls:
+    secretName: travel-buddy-tls
+
+frontend:
+  host: travel-buddy.student.k8s.aet.cit.tum.de
+  service:
+    name: frontend
+    port: 80
+
+authservice:
+  host: auth-service.travel-buddy.student.k8s.aet.cit.tum.de
+  service:
+    name: auth-service
+    port: 8080
+
+attractionservice:
+  host: attraction-service.travel-buddy.student.k8s.aet.cit.tum.de
+  service:
+    name: attraction-service
+    port: 8080
+
+userservice:
+  host: user-service.travel-buddy.student.k8s.aet.cit.tum.de
+  service:
+    name: user-service
+    port: 8080

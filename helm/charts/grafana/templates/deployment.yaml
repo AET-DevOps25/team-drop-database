@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "grafana.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "grafana.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "grafana.fullname" . }}
+        monitoring: "enabled"
+      annotations:
+        forceUpdateTimestamp: "{{ .Values.forceUpdate | default "" }}"
+    spec:
+      serviceAccountName: {{ include "grafana.fullname" . }}
+{{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+{{- range .Values.image.pullSecrets }}
+        - name: {{ . }}
+{{- end }}
+{{- end }}
+      securityContext:
+{{ toYaml .Values.podSecurityContext | indent 8 }}
+      volumes:
+        - name: grafana-ini
+          configMap:
+            name: {{ include "grafana.fullname" . }}-ini
+        - name: datasources
+          configMap:
+            name: {{ include "grafana.fullname" . }}-datasources
+            optional: true
+        - name: dashboards-provisioning
+          configMap:
+            name: {{ include "grafana.fullname" . }}-dashboards
+            optional: true
+        - name: dashboards-json
+          configMap:
+            name: {{ include "grafana.fullname" . }}-dashboard-jsons
+            optional: true
+        - name: alerting-provisioning
+          configMap:
+            name: {{ include "grafana.fullname" . }}-alerting
+            optional: true
+        - name: alerting-rules
+          configMap:
+            name: {{ include "grafana.fullname" . }}-alerting-rules
+            optional: true
+{{- if .Values.persistence.enabled }}
+        - name: storage
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{ else }}{{ include "grafana.fullname" . }}-data{{ end }}
+{{- end }}
+{{- if .Values.extraVolumes }}
+{{ toYaml .Values.extraVolumes | indent 8 }}
+{{- end }}
+      containers:
+        - name: grafana
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.admin.existingSecret }}{{ .Values.admin.existingSecret }}{{ else }}{{ include "grafana.fullname" . }}-admin{{ end }}
+                  key: admin-user
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.admin.existingSecret }}{{ .Values.admin.existingSecret }}{{ else }}{{ include "grafana.fullname" . }}-admin{{ end }}
+                  key: admin-password
+{{- if and .Values.ingress.enabled }}
+            - name: GF_SERVER_ROOT_URL
+              value: "%(protocol)s://{{ .Values.ingress.host }}"
+            - name: GF_SERVER_SERVE_FROM_SUB_PATH
+              value: "true"
+{{- end }}
+{{- range .Values.extraEnv }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+{{- end }}
+{{- if .Values.plugins }}
+            - name: GF_INSTALL_PLUGINS
+              value: {{ join "," .Values.plugins | quote }}
+{{- end }}
+{{- if .Values.extraEnvFrom }}
+          envFrom:
+{{ toYaml .Values.extraEnvFrom | indent 12 }}
+{{- end }}
+          ports:
+            - name: http
+              containerPort: 3000
+          resources:
+{{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: grafana-ini
+              mountPath: /etc/grafana/grafana.ini
+              subPath: grafana.ini
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboards-provisioning
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboards-json
+              mountPath: /var/lib/grafana/dashboards
+            - name: alerting-provisioning
+              mountPath: /etc/grafana/provisioning/alerting
+            - name: alerting-rules
+              mountPath: /etc/grafana/provisioning/alerting/rules
+{{- if .Values.persistence.enabled }}
+            - name: storage
+              mountPath: {{ .Values.persistence.mountPath }}
+{{- end }}
+{{- if .Values.extraVolumeMounts }}
+{{ toYaml .Values.extraVolumeMounts | indent 12 }}
+{{- end }}
+{{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+{{- end }}
+{{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+{{- end }}

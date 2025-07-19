@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+    monitoring: "enabled"                     
+  annotations:
+    prometheus.io/scrape: "true"              
+    prometheus.io/path:   "{{ .Values.monitoring.scrape.path }}"
+    prometheus.io/port:   "{{ .Values.monitoring.scrape.port }}"
+spec:
+  selector:
+    app: {{ include "userservice.name" . }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP

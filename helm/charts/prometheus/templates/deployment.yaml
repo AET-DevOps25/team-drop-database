@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "prometheus.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ include "prometheus.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "prometheus.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "prometheus.name" . }}
+        monitoring: "enabled"
+{{- if .Values.podLabels }}
+{{ toYaml .Values.podLabels | indent 8 }}
+{{- end }}
+      annotations:
+        forceUpdateTimestamp: "{{ .Values.forceUpdate | default "" }}"
+        # Roll pod when the Prometheus config changes
+        checksum/prom-config: {{ (printf "%s" .Values.prometheusConfig) | sha256sum }}
+{{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+{{- end }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name | default (printf "%s-prometheus" (include "prometheus.name" . )) }}
+{{- if .Values.podSecurityContext.enabled }}
+      securityContext:
+{{- /*
+      Remove the helper flag 'enabled' so only real fields render.
+      Use 'omit' if you have the Sprig function; otherwise manual approach.
+*/}}
+{{- $psc := omit .Values.podSecurityContext "enabled" }}
+{{ toYaml $psc | indent 8 }}
+{{- end }}
+{{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+{{- range .Values.image.pullSecrets }}
+        - name: {{ . }}
+{{- end }}
+{{- end }}
+      containers:
+        - name: prometheus
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}{{- if .Values.image.digest }}@{{ .Values.image.digest }}{{- end }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path={{ .Values.persistence.mountPath }}
+            - --storage.tsdb.retention.time={{ .Values.retention }}
+            - --web.enable-lifecycle
+{{- range .Values.extraArgs }}
+            - {{ . | quote }}
+{{- end }}
+          ports:
+            - name: http
+              containerPort: 9090
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+{{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+{{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "prometheus.fullname" . }}-config
+{{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "prometheus.fullname" . }}-pvc
+{{- end }}

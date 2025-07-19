@@ -1,0 +1,7 @@
+apiVersion: v2
+name: prometheus
+description: Namespaced Prometheus (no ClusterRoles) with label/annotation discovery.
+type: application
+version: 0.1.0        
+appVersion: "2.53.1"  
+
