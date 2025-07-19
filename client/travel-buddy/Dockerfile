@@ -1,22 +1,41 @@
 # 第 1 阶段：使用 Node 构建 React 应用
 FROM node:18 AS builder
 
+# build args for deployment target
+ARG DEPLOYMENT_TARGET=k8s
+ARG AWS_HOST=3.91.223.60.nip.io
+ARG K8S_AUTH_HOST=auth-service.travel-buddy.student.k8s.aet.cit.tum.de
+ARG K8S_ATTR_HOST=attraction-service.travel-buddy.student.k8s.aet.cit.tum.de
+ARG K8S_USER_HOST=user-service.travel-buddy.student.k8s.aet.cit.tum.de
+
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+
+# based on the deployment target, set environment variables
+RUN if [ "$DEPLOYMENT_TARGET" = "aws" ]; then \
+        echo "REACT_APP_BASE_AUTH_URL=http://${AWS_HOST}/auth-service/api/v1" > .env.production && \
+        echo "REACT_APP_BASE_ATTR_URL=http://${AWS_HOST}/attraction-service/api/v1" >> .env.production && \
+        echo "REACT_APP_BASE_USER_URL=http://${AWS_HOST}/user-service/api/v1" >> .env.production; \
+    else \
+        echo "REACT_APP_BASE_AUTH_URL=https://${K8S_AUTH_HOST}/auth-service/api/v1" > .env.production && \
+        echo "REACT_APP_BASE_ATTR_URL=https://${K8S_ATTR_HOST}/attraction-service/api/v1" >> .env.production && \
+        echo "REACT_APP_BASE_USER_URL=https://${K8S_USER_HOST}/user-service/api/v1" >> .env.production; \
+    fi
+
 RUN npm run build
 
-# 第 2 阶段：用 nginx 运行构建好的静态文件
+# stage 2: Serve the app with nginx
 FROM nginx:alpine
 
-# 删除默认配置
+# delete default configuration
 RUN rm /etc/nginx/conf.d/default.conf
 
-# 拷贝前端构建产物
+# copy frontend build artifacts
 COPY --from=builder /app/build /usr/share/nginx/html
 
-# 拷贝自定义 nginx 配置（可选）
+# copy custom nginx configuration (optional)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
