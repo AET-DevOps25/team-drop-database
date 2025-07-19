@@ -1,9 +1,8 @@
-# 第 1 阶段：使用 Node 构建 React 应用
 FROM node:18 AS builder
 
 # build args for deployment target
 ARG DEPLOYMENT_TARGET=k8s
-ARG AWS_HOST=3.91.223.60.nip.io
+ARG AWS_HOST=client.3.91.223.60.nip.io
 ARG K8S_AUTH_HOST=auth-service.travel-buddy.student.k8s.aet.cit.tum.de
 ARG K8S_ATTR_HOST=attraction-service.travel-buddy.student.k8s.aet.cit.tum.de
 ARG K8S_USER_HOST=user-service.travel-buddy.student.k8s.aet.cit.tum.de
