@@ -17,11 +17,16 @@ class AttractionsImporter:
     """Attraction data importer"""
     
     def __init__(self, collection_name: str = "attractions_collection"):
-        self.vector_service = GenericVectorService(collection_name)
-        self.reader = SimpleAttractionReader()
+        self.vector_service = None
+        self.reader = None
     
     def import_attractions(self, batch_size: int = 50):
         """Import attraction data in batches"""
+        if not self.vector_service:
+            self.vector_service = GenericVectorService(collection_name="attractions_collection")
+            self.vector_service.create_collection(self.vector_service.collection_name)
+        if not self.reader:
+            self.reader = SimpleAttractionReader()
         total = self.reader.count_attractions()
         logger.info(f"🚚 Importing {total} attractions to Qdrant...")
 
