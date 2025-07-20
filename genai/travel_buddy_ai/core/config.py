@@ -15,13 +15,13 @@ class Settings(BaseSettings):
     llm_model_name: str = "gpt-4.1"  # specific model name
     llm_model_path: Optional[str] = None  # local model path (for llamacpp etc.)
     
-    # 本地Ollama API配置
+    # Local Ollama configuration
     local_ollama_url: str = "http://ollama.wei-tech.site/api/generate"
     local_ollama_model: str = "llama3.2:3b"
     
     # Qdrant vector database configuration
     qdrant_host: str = "localhost"
-    qdrant_port: int = 6334
+    qdrant_port: int = 6333
     qdrant_api_key: Optional[str] = None
     qdrant_url: Optional[str] = None
     
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     
     # Database configuration (connect to tourism attraction database)
     attraction_db_host: str = "localhost"
-    attraction_db_port: int = 5443
+    attraction_db_port: int = 5432 
     attraction_db_name: str = "team-drop-database"
     attraction_db_user: str = "user"
     attraction_db_password: str = "password"
