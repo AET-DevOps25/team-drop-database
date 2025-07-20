@@ -1,0 +1,76 @@
+{{- if .Values.qdrant.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "llmservice.qdrant.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+{{ include "llmservice.labels" . | indent 4 }}
+spec:
+  serviceName: {{ include "llmservice.qdrant.fullname" . }}
+  replicas: {{ .Values.qdrant.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "llmservice.qdrant.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "llmservice.qdrant.fullname" . }}
+        monitoring: "enabled"
+    spec:
+{{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+{{- range .Values.image.pullSecrets }}
+        - name: {{ . }}
+{{- end }}
+{{- end }}
+      containers:
+        - name: qdrant
+          image: "{{ .Values.qdrant.image.repository }}:{{ .Values.qdrant.image.tag }}"
+          imagePullPolicy: {{ .Values.qdrant.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.qdrant.ports.http }}
+            - name: grpc
+              containerPort: {{ .Values.qdrant.ports.grpc }}
+          volumeMounts:
+{{- if .Values.qdrant.persistence.enabled }}
+            - name: qdrant-storage
+              mountPath: {{ .Values.qdrant.persistence.mountPath }}
+{{- end }}
+          resources:
+{{ toYaml .Values.qdrant.resources | indent 12 }}
+{{- if .Values.qdrant.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.qdrant.probes.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.qdrant.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.qdrant.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.qdrant.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.qdrant.probes.liveness.failureThreshold }}
+{{- end }}
+{{- if .Values.qdrant.probes.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.qdrant.probes.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.qdrant.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.qdrant.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.qdrant.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.qdrant.probes.readiness.failureThreshold }}
+{{- end }}
+  volumeClaimTemplates:
+{{- if and .Values.qdrant.persistence.enabled (empty .Values.qdrant.persistence.existingClaim) }}
+    - metadata:
+        name: qdrant-storage
+      spec:
+        accessModes: {{ toYaml .Values.qdrant.persistence.accessModes | nindent 10 }}
+        resources:
+          requests:
+            storage: {{ .Values.qdrant.persistence.size }}
+{{- if .Values.qdrant.persistence.storageClass }}
+        storageClassName: {{ .Values.qdrant.persistence.storageClass }}
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,4 +1,4 @@
-name: Deploy to K8s
+name: Deploy to K8s (Apps Only)
 
 on:
   workflow_run:
@@ -12,6 +12,10 @@ jobs:
       github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
 
+    env:
+      APPS_NS: tdd-apps
+      APP_CHARTS: "frontend auth-service user-service attraction-service llm-service"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -24,16 +28,47 @@ jobs:
           echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > ~/.kube/config
           chmod 600 ~/.kube/config
 
-      - name: Helm upgrade
+      - name: Add external Helm repos (if any dependencies)
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo update
-          helm dependency build helm/travel-buddy
-        
-          TIMESTAMP=$(date +%s)
-          helm upgrade --install travelbuddy helm/travel-buddy \
-          --namespace travelbuddy \
-          --create-namespace \
-          --atomic \
-          --set forceUpdate=$TIMESTAMP
+          helm repo update || true
 
+      - name: Ensure apps namespace exists
+        run: |
+          kubectl get ns "${APPS_NS}" || kubectl create namespace "${APPS_NS}"
+
+      - name: Build (fetch) Helm dependencies for app charts
+        run: |
+          set -e
+          for c in $APP_CHARTS; do
+            path="charts/apps/$c"
+            if [ -f "$path/Chart.yaml" ]; then
+              echo "== dependency update: $c"
+              helm dependency update "$path" || true
+            else
+              echo "Skipping $c (Chart.yaml not found at $path)" >&2
+            fi
+          done
+
+      - name: Deploy / Upgrade microservices
+        run: |
+          set -e
+          TS=$(date +%s)
+          for c in $APP_CHARTS; do
+            chart_path="charts/apps/$c"
+            if [ ! -d "$chart_path" ]; then
+              echo "Chart directory missing: $chart_path" >&2
+              exit 1
+            fi
+            echo "---- Deploying chart: $c ----"
+            helm upgrade --install "$c" "$chart_path" \
+              -n "${APPS_NS}" \
+              --atomic --wait \
+              --set forceUpdate=$TS
+          done
+
+      - name: Post-deploy summary
+        run: |
+          echo "Deployment complete. Listing services & pods:"
+          kubectl get svc -n "${APPS_NS}"
+          kubectl get pods -n "${APPS_NS}" -o wide

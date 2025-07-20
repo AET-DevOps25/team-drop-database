@@ -1,0 +1,22 @@
+{{- if .Values.qdrant.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "llmservice.qdrant.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+{{ include "llmservice.labels" . | indent 4 }}
+  annotations:
+    prometheus.io/scrape: "false"
+spec:
+  type: {{ .Values.qdrant.service.type | default "ClusterIP" }}
+  selector:
+    app: {{ include "llmservice.qdrant.fullname" . }}
+  ports:
+    {{- range .Values.qdrant.service.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort | default .port }}
+      protocol: {{ .protocol | default "TCP" }}
+    {{- end }}
+{{- end }}
