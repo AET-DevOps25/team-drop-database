@@ -48,6 +48,8 @@ env:
     value: user_user
   - name: SPRING_DATASOURCE_PASSWORD
     value: user_pwd
+  - name: LLM_API_BASE-URL
+    value: http://llm-service:8000/api/v1
 
 # Prometheus scraping config
 monitoring:
