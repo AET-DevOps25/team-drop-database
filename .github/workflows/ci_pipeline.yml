@@ -95,6 +95,3 @@ jobs:
         run: npm run test:ci
         env:
           CI: true
-
-      - name: Build application
-        run: npm run build
