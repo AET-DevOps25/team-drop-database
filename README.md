@@ -2,7 +2,12 @@
 
 ![Landing Page](documentation/images/landing-page.png)
 
-This repository contains the source code and documentation for a GenAI-powered web application designed to deliver personalized travel itineraries using conversational AI to provide personalized attraction recommendation.
+This repository contains the source code and documentation for a GenAI-powered web application designed to deliver personal> **Tip**  
+> The URLs are defined via Helm `values.yaml` – adjust the `ingress.host` field of each chart if you deploy to a different domain.
+
+## Documentation
+
+Additional detailed documentation, architectural diagrams, and API specifications can be found in the project's [Confluence page](https://confluence.aet.cit.tum.de/spaces/DO25WR/pages/258580908/Team-Drop+Database).ravel itineraries using conversational AI to provide personalized attraction recommendation.
 
 ## Overview
 
