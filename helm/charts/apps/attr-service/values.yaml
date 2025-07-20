@@ -44,7 +44,7 @@ env:
   - name: SPRING_PROFILES_ACTIVE
     value: docker
   - name: SPRING_DATASOURCE_URL
-    value: jdbc:postgresql://attractionservice-attr-postgres:5432/attr-db
+    value: jdbc:postgresql://attr-service-attr-postgres:5432/attr-db
   - name: SPRING_DATASOURCE_USERNAME
     value: attr_user
   - name: SPRING_DATASOURCE_PASSWORD

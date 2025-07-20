@@ -14,7 +14,7 @@ jobs:
 
     env:
       APPS_NS: tdd-apps
-      APP_CHARTS: "frontend auth-service user-service attraction-service llm-service"
+      APP_CHARTS: "frontend auth-service user-service attr-service llm-service"
 
     steps:
       - uses: actions/checkout@v4
