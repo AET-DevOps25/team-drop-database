@@ -40,21 +40,3 @@ spec:
               value: "{{ .value }}"
           {{- end }}
           {{- end }}
-          {{- if .Values.metrics.enabled }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.metrics.readinessPath }}
-              port: metrics
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.metrics.livenessPath }}
-              port: metrics
-            initialDelaySeconds: 30
-            periodSeconds: 30
-          {{- end }}
-          {{- if .Values.resources }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- end }}

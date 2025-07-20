@@ -31,19 +31,8 @@ env:
     value: production
 
 monitoring:
-  enabled: true
+  enabled: false
   serviceMonitor: false
   scrape:
     path: /metrics
     port: 9300
-
-metrics:
-  enabled: true
-  port: 9300
-  path: /metrics
-  readinessPath: /ready
-  livenessPath: /health
-  # If your Node app needs an env var to enable metrics:
-  env:
-    - name: METRICS_PORT
-      value: "9300"
