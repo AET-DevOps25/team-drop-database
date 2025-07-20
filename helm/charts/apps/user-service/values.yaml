@@ -43,7 +43,7 @@ env:
   - name: SPRING_PROFILES_ACTIVE
     value: docker
   - name: SPRING_DATASOURCE_URL
-    value: jdbc:postgresql://userservice-user-postgres:5432/user-db
+    value: jdbc:postgresql://user-service-user-postgres:5432/user-db
   - name: SPRING_DATASOURCE_USERNAME
     value: user_user
   - name: SPRING_DATASOURCE_PASSWORD
