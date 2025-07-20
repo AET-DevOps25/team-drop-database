@@ -41,7 +41,7 @@ jobs:
         run: |
           set -e
           for c in $APP_CHARTS; do
-            path="charts/apps/$c"
+            path="helm/charts/apps/$c"
             if [ -f "$path/Chart.yaml" ]; then
               echo "== dependency update: $c"
               helm dependency update "$path" || true
