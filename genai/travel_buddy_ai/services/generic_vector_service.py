@@ -39,9 +39,9 @@ class GenericVectorService:
     )
     def create_collection(self, collection_name: str) -> None:
         """Create Qdrant collection"""
-        self._lazy_init()
-        if not self._qdrant_client.collection_exists(collection_name):
-            self._qdrant_client.create_collection(
+        client = get_qdrant_connection()
+        if not client.collection_exists(collection_name):
+            client.create_collection(
                 collection_name=collection_name,
                 vectors_config={
                     "dense": VectorParams(size=3072, distance=Distance.COSINE)
@@ -131,11 +131,19 @@ class GenericVectorService:
         """Lazily initialize vector store and client if not already done"""
         if self._qdrant_client and self.vector_store:
             return
-
         self._qdrant_client = get_qdrant_connection()
-
-        self.create_collection(self.collection_name)
-
+        if not self._qdrant_client.collection_exists(self.collection_name):
+            self.create_collection(
+                self.collection_name,
+                vectors_config={
+                    "dense": VectorParams(size=3072, distance=Distance.COSINE)
+                },
+                sparse_vectors_config={
+                    "sparse": SparseVectorParams(
+                        index=models.SparseIndexParams(on_disk=False)
+                    )
+                },
+            )
         self.vector_store = QdrantVectorStore(
             client=self._qdrant_client,
             collection_name=self.collection_name,
