@@ -161,6 +161,36 @@ The system employs Retrieval-Augmented Generation (RAG) to recommend real-world 
    npm start
    ```
 
+## Testing
+
+The project includes comprehensive testing for all components:
+
+### Running Tests
+
+```sh
+# Frontend tests only
+cd client/travel-buddy
+npm run test:ci
+
+# Or use the convenience script
+./test-frontend.sh
+
+# Backend Java tests
+cd server/AttractionService && ./gradlew test
+cd server/AuthService && ./gradlew test  
+cd server/UserService && ./gradlew test
+
+# Python/GenAI tests
+cd genai && pytest -v
+```
+
+### CI/CD Testing
+
+All tests run automatically in GitHub Actions on every push and pull request. The pipeline includes:
+- Frontend React/TypeScript tests with Jest
+- Backend Java unit tests with Gradle
+- Python tests with pytest
+
 ## Usage
 
 * Access the application via `http://localhost:3000` or under `https://travel-buddy.student.k8s.aet.cit.tum.de/`
