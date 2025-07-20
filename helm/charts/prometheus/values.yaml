@@ -1,4 +1,3 @@
-# Namespace to deploy into
 namespace:
   name: tdd-monitoring
 
