@@ -3,16 +3,6 @@ name: Publish Docker images to GHCR
 on:
   push:
     branches: ["main"]
-    paths:
-      - '**/Dockerfile'
-      - '**/*.py'
-      - '**/*.js'
-      - '**/*.ts'
-      - '**/*.java'
-      - 'pyproject.toml'
-      - 'package.json'
-      - 'build.gradle'
-      - '.github/workflows/publish-ghcr.yml'
 
 jobs:
   build-and-push:
