@@ -14,6 +14,19 @@ service:
   port: 8000
   targetPort: 8000
 
+ingress:
+  enabled: true
+  className: nginx
+  host: llm-service.travel-buddy.student.k8s.aet.cit.tum.de
+  tls:
+    enabled: true
+    secretName: travel-buddy-tls-llm
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # (Optional hardening)
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+
 replicaCount: 1
 
 resources:
