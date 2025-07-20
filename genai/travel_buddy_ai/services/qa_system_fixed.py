@@ -92,7 +92,7 @@ class AttractionQASystem:
             frozenset(['itinerary', 'plan', 'days', 'schedule', 'trip']): "Munich attractions recommended attractions tourist attractions",
             frozenset(['food', 'restaurant', 'eat', 'dining']): "Munich restaurant food dining attractions",
             frozenset(['shopping', 'shop', 'buy', 'market']): "Munich shopping market attractions",
-            frozenset(['museum', 'art', 'culture', 'history']): "Munich museum art culture history attractions",
+            frozenset(['museum', 'art', 'culture', 'history', 'historical']): "Munich museum art culture history attractions",
             frozenset(['park', 'garden', 'nature', 'outdoor']): "Munich park garden nature outdoor attractions"
         }
         
