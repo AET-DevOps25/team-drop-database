@@ -191,6 +191,8 @@ services:
 
   genai-service:
     image: ghcr.io/aet-devops25/team-drop-database/llmservice:latest
+    env_file:
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
       - API_KEY=${GENAI_API_KEY}
