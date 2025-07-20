@@ -44,6 +44,7 @@ monitoring:
 envFrom:
   secrets:
     - llm-env
+env:
 
 qdrant:
   enabled: true

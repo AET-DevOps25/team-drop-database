@@ -56,6 +56,16 @@ spec:
               value: "{{ .value }}"
 {{- end }}
 
+{{- if .Values.envFrom }}
+          envFrom:
+{{- if .Values.envFrom.secrets }}
+{{- range .Values.envFrom.secrets }}
+            - secretRef:
+                name: {{ . }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- /* Auto‑create a PVC when enabled & no existingClaim is supplied */}}
 {{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
 ---
