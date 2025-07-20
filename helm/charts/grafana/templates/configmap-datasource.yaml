@@ -1,4 +1,4 @@
-{{- if and .Values.datasource.enabled .Values.datasource.prometheus.url }}
+{{- if and .Values.datasource.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,15 +8,12 @@ data:
   prometheus.yaml: |
     apiVersion: 1
     datasources:
-      - name: {{ .Values.datasource.prometheus.name }}
-        uid: {{ .Values.datasource.prometheus.uid }}
+      - name: {{ .Values.datasource.name }}
+        uid: {{ .Values.datasource.uid }}
         type: prometheus
-        access: {{ .Values.datasource.prometheus.access }}
-        url: {{ .Values.datasource.prometheus.url }}
-        isDefault: {{ .Values.datasource.prometheus.isDefault }}
-        editable: {{ .Values.datasource.prometheus.editable }}
-        jsonData: {{ toJson .Values.datasource.prometheus.jsonData }}
-{{- if .Values.datasource.prometheus.secureJsonData }}
-        secureJsonData: {{ toJson .Values.datasource.prometheus.secureJsonData }}
-{{- end }}
+        access: {{ .Values.datasource.access }}
+        url: {{ .Values.datasource.url }}
+        isDefault: {{ .Values.datasource.isDefault }}
+        jsonData: 
+          timeInterval: 15s
 {{- end }}

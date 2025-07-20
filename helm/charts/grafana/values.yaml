@@ -57,98 +57,37 @@ resources:
     memory: "256Mi"
 
 forceUpdate: ""         # set to timestamp to force rollout
-extraEnv: []            # list of { name: X, value: Y }
-extraEnvFrom: []        # list of secretRef/configMapRef objects
-extraVolumeMounts: []
-extraVolumes: []
 
 datasource:
   enabled: true
-  prometheus:
-    uid: prometheus
-    name: Prometheus
-    url: http://prometheus-promethues.tdd-monitoring.svc:9090
-    isDefault: true
-    editable: false
-    access: proxy
-    jsonData: {}
-    secureJsonData: {}
+  name: Prometheus
+  uid: prometheus_ds
+  type: prometheus
+  url: http://prometheus-prometheus.tdd-monitoring.svc:9090
+  access: proxy
+  isDefault: true
 
 dashboards:
   enabled: true
-  provider:
-    name: default
-    type: file
-    disableDeletion: false
-    editable: true
-    updateIntervalSeconds: 30
-  jsons:
-    # Place dashboard JSON directly here (key becomes filename.json):
-    example-overview.json: |
-      {
-        "annotations": {"list":[]},
-        "editable": true,
-        "fiscalYearStartMonth": 0,
-        "graphTooltip": 0,
-        "panels": [],
-        "schemaVersion": 39,
-        "tags": ["example"],
-        "timezone": "",
-        "title": "Example Overview",
-        "version": 1
-      }
+  grafana_dashboard: "true"
+  # Dashboard provisioning
+  provisioning:
+    enabled: true
+    dashboards:
+      - name: travel-buddy-dashboard
+        configMap: grafana-travel-buddy-dashboard
+    providers:
+      - name: travel-buddy-provider
+        configMap: grafana-dashboard-provider
+sidecar:
+  dashboards:
+    enabled: true
+    label: grafana_dashboard
+    folder: /var/lib/grafana/dashboards
+
 
 alerting:
   enabled: true
-  contactPoints:
-    - name: default-email
-      type: email
-      settings:
-        addresses: zhiyuan.ni@tum.de
-  notificationPolicies:
-    - orgId: 1
-      receiver: default-email
-      group_by: ["alertname"]
-      continue: false
-      routes: []
-  ruleGroups:
-    - name: basic
-      folder: General
-      interval: 1m
-      rules:
-        - uid: high_error_rate
-          title: High error rate (userservice)
-          expr: rate(http_requests_total{job="userservice",status=~"5.."}[5m]) / rate(http_requests_total{job="userservice"}[5m])
-          for: 2m
-          labels:
-            severity: warning
-          annotations:
-            summary: High HTTP 5xx rate (>5% over 5m)
-        - uid: pod_restarts
-          title: Pod restart burst
-          expr: increase(kube_pod_container_status_restarts_total[10m]) > 3
-          for: 5m
-          labels:
-            severity: warning
-          annotations:
-            summary: Pod restarting frequently (>3 in 10m)
-
-grafanaIni:
-  server:
-    # root_url templated if ingress.enabled
-    domain: ""
-    serve_from_sub_path: true
-  security:
-    admin_user: "%ADMIN_USER%"
-    admin_password: "%ADMIN_PASSWORD%"
-  analytics:
-    reporting_enabled: false
-  unified_alerting:
-    enabled: true
-  panels:
-    disable_sanitize_html: false
-
-plugins: []    # e.g. ["grafana-piechart-panel"]
 
 livenessProbe:
   enabled: true

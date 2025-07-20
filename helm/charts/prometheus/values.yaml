@@ -2,11 +2,8 @@ namespace:
   name: tdd-monitoring
 
 image:
-  repository: prom/prometheus
-  tag: v2.53.1
-  # Optionally pin the exact manifest (replace with current digest).
-  # Leave empty to omit digest (tag only).
-  digest: sha256:9abc6cf6aea7710d163dbb28d8eeb7dc5baef01e38fa4cd146a406dd9f07f70d
+  repository: quay.io/prometheus/prometheus
+  tag: v3.5.0
   pullPolicy: IfNotPresent
   pullSecrets: []     # e.g. ["ghcr-secret"] if needed (official image is public)
 
@@ -78,6 +75,10 @@ prometheusConfig: |-
   - job_name: prometheus
     static_configs:
       - targets: ['localhost:9090']
+
+  - job_name: kube-state-metrics
+    static_configs:
+      - targets: ['kube-state-metrics.tdd-monitoring.svc:8080']
 
   - job_name: services
     kubernetes_sd_configs:
