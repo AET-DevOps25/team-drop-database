@@ -56,10 +56,6 @@ env:
     value: password
   - name: ATTRACTION_DB_USER
     value: user
-  - name: QDRANT_HOST
-    value: llm-service-qdrant
-  - name: QDRANT_PORT
-    value: "6333"
 
 qdrant:
   enabled: true
