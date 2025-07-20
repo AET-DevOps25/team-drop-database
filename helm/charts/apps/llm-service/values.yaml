@@ -18,11 +18,11 @@ replicaCount: 1
 
 resources:
   limits:
-    cpu: "1"
-    memory: "4Gi"
-  requests:
     cpu: "500m"
     memory: "2Gi"
+  requests:
+    cpu: "100m"
+    memory: "512Mi"
 
 # Optional: mount a PVC that already contains model weights
 persistence:
@@ -44,3 +44,71 @@ monitoring:
 envFrom:
   secrets:
     - llm-env
+
+qdrant:
+  enabled: true
+  image:
+    repository: qdrant/qdrant
+    tag: v1.11.0
+    pullPolicy: IfNotPresent
+
+  ports:
+    http: 6333
+    grpc: 6334
+
+  replicas: 1
+
+  service:
+    type: ClusterIP
+    ports:
+      - name: http
+        port: 6333
+        targetPort: 6333
+        protocol: TCP
+        checksEnabled: true
+      - name: grpc
+        port: 6334
+        targetPort: 6334
+        protocol: TCP
+        checksEnabled: false
+
+  persistence:
+    enabled: true  # Provide to reuse
+    existingClaim: ""
+    size: 5Gi
+    storageClass: csi-rbd-sc
+    accessModes: 
+      - ReadWriteOnce
+    mountPath: /qdrant/storage
+    
+  resources:
+    limits:
+      memory: 2Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+
+  probes:
+    liveness:
+      enabled: true
+      path: /livez
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      timeoutSeconds: 3
+      failureThreshold: 5
+    readiness:
+      enabled: true
+      path: /readyz
+      initialDelaySeconds: 40
+      periodSeconds: 20
+      timeoutSeconds: 4
+      failureThreshold: 3
+  config:                 # Rendered into configmap-qdrant.yaml
+    log_level: INFO
+    service:
+      http_port: 6333
+      grpc_port: 6334
+    storage:
+      storage_path: /qdrant/storage
+    cluster:
+      enabled: false  # Single node mode
