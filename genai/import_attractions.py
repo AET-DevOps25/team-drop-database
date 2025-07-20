@@ -22,13 +22,30 @@ class AttractionsImporter:
     
     def import_attractions(self, batch_size: int = 50):
         """Import attraction data in batches"""
-        if not self.vector_service:
-            self.vector_service = GenericVectorService(collection_name="attractions_collection")
-            self.vector_service.create_collection(self.vector_service.collection_name)
-        if not self.reader:
-            self.reader = SimpleAttractionReader()
-        total = self.reader.count_attractions()
-        logger.info(f"🚚 Importing {total} attractions to Qdrant...")
+        logger.info("🔄 Starting import process...")
+        
+        try:
+            if not self.vector_service:
+                logger.info("📡 Initializing vector service...")
+                self.vector_service = GenericVectorService(collection_name="attractions_collection")
+                logger.info("✅ Vector service initialized")
+                
+                logger.info("🏗️ Creating collection...")
+                self.vector_service.create_collection(self.vector_service.collection_name)
+                logger.info("✅ Collection created")
+                
+            if not self.reader:
+                logger.info("📖 Initializing attraction reader...")
+                self.reader = SimpleAttractionReader()
+                logger.info("✅ Attraction reader initialized")
+                
+            logger.info("🔢 Counting attractions...")
+            total = self.reader.count_attractions()
+            logger.info(f"🚚 Importing {total} attractions to Qdrant...")
+            
+        except Exception as e:
+            logger.error(f"❌ Initialization failed: {e}")
+            raise
 
         imported, offset = 0, 0
         while True:
@@ -59,21 +76,32 @@ class AttractionsImporter:
 
 
 def main():
+    import logging
+    logging.getLogger().setLevel(logging.DEBUG)
+    
     print("🚀 Starting import...")
+    logger.info("🚀 Import script started")
     importer = AttractionsImporter()
 
     try:
+        logger.info("🔧 Starting attractions import...")
         importer.import_attractions()
+        logger.info("✅ Import completed successfully")
+        
         print("🧪 Running test searches...\n")
+        logger.info("🧪 Starting test searches...")
         for q in ["beach", "museum", "nature", "historic places"]:
             print(f"\n🔍 {q}")
+            logger.info(f"🔍 Testing search for: {q}")
             importer.test_search(q)
 
         print("\n✅ Done! You can now call:")
         print("curl -X POST http://localhost:8000/api/v1/vector/search -d '{\"query\": \"beach\"}'")
+        logger.info("🎉 All operations completed successfully")
 
     except Exception as e:
         logger.error(f"❌ Import failed: {e}")
+        logger.exception("Full error details:")
         sys.exit(1)
 
 

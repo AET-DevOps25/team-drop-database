@@ -19,6 +19,10 @@ RUN if [ "$DEPLOYMENT_TARGET" = "aws" ]; then \
         echo "REACT_APP_BASE_AUTH_URL=http://${AWS_AUTH_HOST}/auth-service/api/v1" > .env.production && \
         echo "REACT_APP_BASE_ATTR_URL=http://${AWS_ATTR_HOST}/attraction-service/api/v1" >> .env.production && \
         echo "REACT_APP_BASE_USER_URL=http://${AWS_USER_HOST}/user-service/api/v1" >> .env.production; \
+    elif [ "$DEPLOYMENT_TARGET" = "local" ]; then \
+        echo "REACT_APP_BASE_AUTH_URL=http://localhost:8081/auth-service/api/v1" > .env.production && \
+        echo "REACT_APP_BASE_ATTR_URL=http://localhost:8082/attraction-service/api/v1" >> .env.production && \
+        echo "REACT_APP_BASE_USER_URL=http://localhost:8083/user-service/api/v1" >> .env.production; \
     else \
         echo "REACT_APP_BASE_AUTH_URL=https://${K8S_AUTH_HOST}/auth-service/api/v1" > .env.production && \
         echo "REACT_APP_BASE_ATTR_URL=https://${K8S_ATTR_HOST}/attraction-service/api/v1" >> .env.production && \
