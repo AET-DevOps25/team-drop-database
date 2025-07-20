@@ -19,6 +19,8 @@ RUN pip install --upgrade pip \
 
 
 COPY travel_buddy_ai ./travel_buddy_ai
+COPY import_attractions.py ./
+COPY test_qa_fixed.py ./
 
 
 EXPOSE 8000

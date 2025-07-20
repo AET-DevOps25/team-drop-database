@@ -1,9 +1,61 @@
 networks:
   app-network:
     driver: bridge
+  monitoring:
+    driver: bridge
 
 volumes:
   postgres_data:
+  qdrant_storage:
+  prometheus_data:
+  grafana-storage:
+
+configs:
+  prometheus_config:
+    content: |
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+
+      scrape_configs:
+        - job_name: 'prometheus'
+          static_configs:
+            - targets: ['localhost:9090']
+
+        - job_name: 'attraction_service'
+          metrics_path: 'attraction-service/api/v1/actuator/prometheus'
+          static_configs:
+            - targets: ['attractionservice:8080']
+          scrape_interval: 30s
+
+        - job_name: 'auth_service'
+          metrics_path: 'auth-service/api/v1/actuator/prometheus'
+          static_configs:
+            - targets: ['authservice:8080']
+          scrape_interval: 30s
+
+        - job_name: 'user_service'
+          metrics_path: 'user-service/api/v1/actuator/prometheus'
+          static_configs:
+            - targets: ['userservice:8080']
+          scrape_interval: 30s
+
+        - job_name: 'genai-service'
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['genai-service:8000']
+          scrape_interval: 30s
+
+        - job_name: 'qdrant'
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['qdrant:6333']
+          scrape_interval: 30s
+
+        - job_name: 'traefik'
+          static_configs:
+            - targets: ['reverse-proxy:8082']
+          scrape_interval: 30s
 
 services:
   reverse-proxy:
@@ -14,9 +66,14 @@ services:
       - "--entrypoints.web.address=:80"
       - "--log.level=INFO"
       - "--accesslog=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.metrics.address=:8082"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.entrypoint=metrics"
     restart: unless-stopped
     ports:
       - "80:80"
+      - "8082:8082"  # Prometheus metrics port
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
@@ -27,6 +84,9 @@ services:
       - authservice
       - client
       - genai-service
+      - qdrant
+      - prometheus
+      - grafana
 
   postgres:
     image: postgres:15-alpine
@@ -138,11 +198,79 @@ services:
     restart: unless-stopped
     networks:
       - app-network
+    depends_on:
+      - qdrant
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.genai.rule=Host(`${GENAI_HOST}`)"
       - "traefik.http.services.genai.loadbalancer.server.port=8000"
       - "traefik.http.routers.genai.entrypoints=web"
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    restart: unless-stopped
+    networks:
+      - app-network
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - app-network
+      - monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`${PROMETHEUS_HOST}`)"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.routers.prometheus.entrypoints=web"
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_FEATURE_TOGGLES_ENABLE=logsInExplore
+      - GF_LOG_CONSOLECOLORS=true
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+      - app-network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`${GRAFANA_HOST}`)"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.entrypoints=web"
   
   client:
     image: ghcr.io/aet-devops25/team-drop-database/client-aws:latest

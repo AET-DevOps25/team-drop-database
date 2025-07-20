@@ -66,3 +66,7 @@ services:
 
 volumes:
   qdrant_storage:
+
+networks:
+  monitoring:
+    driver: bridge
