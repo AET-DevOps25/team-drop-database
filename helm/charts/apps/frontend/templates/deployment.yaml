@@ -12,7 +12,7 @@ spec:
     metadata:
       labels:
         app: {{ include "frontend.name" . }}
-        monitoring: "enabled"
+        monitoring: "disabled"
       annotations:
         forceUpdateTimestamp: "{{ .Values.forceUpdate | default "" }}"
     spec:
@@ -25,18 +25,8 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
-          {{- if .Values.metrics.enabled }}
-            - name: metrics
-              containerPort: {{ .Values.metrics.port }}
-          {{- end }}
           env:
           {{- range .Values.env }}
             - name: {{ .name }}
               value: "{{ .value }}"
-          {{- end }}
-          {{- if and .Values.metrics.enabled .Values.metrics.env }}
-          {{- range .Values.metrics.env }}
-            - name: {{ .name }}
-              value: "{{ .value }}"
-          {{- end }}
           {{- end }}
