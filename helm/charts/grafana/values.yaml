@@ -67,7 +67,7 @@ datasource:
   prometheus:
     uid: prometheus
     name: Prometheus
-    url: http://prometheus-promethues.tdd-monitoring.svc.cluster.local:9090
+    url: http://prometheus-promethues.tdd-monitoring.svc:9090
     isDefault: true
     editable: false
     access: proxy

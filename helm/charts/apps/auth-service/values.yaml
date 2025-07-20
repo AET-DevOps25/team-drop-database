@@ -28,7 +28,7 @@ namespace:
 
 authservice:
   keyMount:
-    enabled: true          # create and mount the Secret
+    enabled: false
     usePrivate: true       # include the private key, not just the public one
 
 sharedKeys:
