@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ .Values.service.name }}
   labels:
-    monitoring: "enabled"                     
+    monitoring: "disabled"                     
   annotations:
     prometheus.io/scrape: "true"              
     prometheus.io/path:   "{{ .Values.monitoring.scrape.path }}"
