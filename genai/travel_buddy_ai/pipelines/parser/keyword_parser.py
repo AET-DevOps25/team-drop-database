@@ -22,9 +22,9 @@ class KeywordParser(InputParser):
 
         # TODO: Add some testing pattern
         prefs = []
-        if "budget" in text.lower() or "省钱" in text:
+        if "budget" in text.lower() or "money saving" in text:
             prefs.append("budget")
-        if "art" in text.lower() or "文艺" in text:
+        if "art" in text.lower() or "culture" in text:
             prefs.append("culture")
 
         return ParsedQuery(

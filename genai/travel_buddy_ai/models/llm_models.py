@@ -94,7 +94,7 @@ class OpenAIModel(BaseLLMModel):
 
 
 class LocalOllamaModel(BaseLLMModel):
-    """本地Ollama API模型实现"""
+    """local Ollama API implementation"""
     
     def __init__(self, model_name: str = "llama3.2:3b", api_url: str = "http://ollama.wei-tech.site/api/generate", **kwargs):
         super().__init__(model_name, **kwargs)
@@ -104,7 +104,6 @@ class LocalOllamaModel(BaseLLMModel):
         try:
             import requests
             self.session = requests.Session()
-            # 测试连接
             test_response = self.session.post(
                 self.api_url,
                 json={
@@ -127,19 +126,17 @@ class LocalOllamaModel(BaseLLMModel):
                 pass
     
     def generate(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7, **kwargs) -> str:
-        """使用本地Ollama API生成响应"""
+        """local Ollama API response: """
         if not self.session:
             raise RuntimeError("requests session not available")
         
         try:
-            # 构建完整的prompt，包含系统提示
             full_prompt = f"""You are a professional tourism attraction recommendation assistant, capable of providing accurate and useful travel advice based on provided attraction information.
 
 User question: {prompt}
 
 Please provide a helpful and detailed response:"""
-            
-            # 构建请求数据
+
             data = {
                 "model": self.model_name,
                 "prompt": full_prompt,
@@ -149,22 +146,19 @@ Please provide a helpful and detailed response:"""
                     "num_predict": max_tokens,
                 }
             }
-            
-            # 添加其他选项
+
             if kwargs:
                 data["options"].update(kwargs)
-            
-            # 发送请求
+
             response = self.session.post(
                 self.api_url,
                 json=data,
-                timeout=60  # 本地模型可能需要更长时间
+                timeout=60
             )
             
             response.raise_for_status()
             result = response.json()
-            
-            # 解析响应
+
             if 'response' in result:
                 answer = result['response'].strip()
             else:
@@ -179,12 +173,11 @@ Please provide a helpful and detailed response:"""
             raise
     
     def is_available(self) -> bool:
-        """检查本地Ollama模型是否可用"""
+        """check Ollama availability"""
         if not self.session:
             return False
         
         try:
-            # 发送简单测试请求
             response = self.session.post(
                 self.api_url,
                 json={

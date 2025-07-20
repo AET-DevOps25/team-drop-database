@@ -7,7 +7,7 @@ class VectorSearchRequest(BaseModel):
     query: str
     limit: int = 10
     score_threshold: float = 0.7
-    filters: Optional[dict] = None  # 通用过滤器
+    filters: Optional[dict] = None
 
 
 class VectorSearchResult(BaseModel):
@@ -19,7 +19,7 @@ class VectorSearchResult(BaseModel):
 
 class DocumentIndexRequest(BaseModel):
     """Document indexing request model"""
-    documents: List[dict]  # 通用文档格式
+    documents: List[dict]
     force_reindex: bool = False
 
 
