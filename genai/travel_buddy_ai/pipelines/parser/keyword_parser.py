@@ -3,7 +3,7 @@ from travel_buddy_ai.pipelines.parser.base import InputParser
 from travel_buddy_ai.pipelines.parser.schema import ParsedQuery
 
 CITY_PATTERN = r"(Berlin|Munich|Hamburg|Paris|Rome)"
-DAYS_PATTERN = r"(\d+)\s*(?:days?|天)"
+DAYS_PATTERN = r"(\d+)\s*(?:days?|day)"
 
 class KeywordParser(InputParser):
     name = "keyword"

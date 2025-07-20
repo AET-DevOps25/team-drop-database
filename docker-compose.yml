@@ -1,0 +1,377 @@
+version: '3.8'
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  # Database volumes
+  auth_pgdata:
+  attraction_pgdata:
+  user_pgdata:
+  # Vector database
+  qdrant_storage:
+  # Monitoring volumes
+  prometheus_data:
+  grafana-storage:
+
+services:
+  # ========================================
+  # Database Services
+  # ========================================
+  
+  # Auth Service Database
+  postgres-auth:
+    image: postgres:15
+    container_name: teamdrop-db-auth
+    environment:
+      POSTGRES_DB: team-drop-database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5442:5432"
+    volumes:
+      - auth_pgdata:/var/lib/postgresql/data
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Attraction Service Database
+  postgres-attraction:
+    image: postgres:15
+    container_name: teamdrop-db-attraction
+    environment:
+      POSTGRES_DB: team-drop-database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5443:5432"
+    volumes:
+      - attraction_pgdata:/var/lib/postgresql/data
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # User Service Database
+  postgres-user:
+    image: postgres:15
+    container_name: teamdrop-db-user
+    environment:
+      POSTGRES_DB: team-drop-database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5444:5432"
+    volumes:
+      - user_pgdata:/var/lib/postgresql/data
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ========================================
+  # Vector Database Services
+  # ========================================
+  
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # ========================================
+  # Backend Services
+  # ========================================
+
+  # Authentication Service
+  authservice:
+    build: 
+      context: ./server/AuthService
+      dockerfile: Dockerfile
+    container_name: authservice
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./server/AuthService/src/main/resources/keys/private.pem:/app/config/private.pem:ro
+      - ./server/AuthService/src/main/resources/keys/public.pem:/app/config/public.pem:ro
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/team-drop-database
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      PRIVATE_KEY_PATH: /app/config/private.pem
+      PUBLIC_KEY_PATH: /app/config/public.pem
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # Attraction Service
+  attractionservice:
+    build: 
+      context: ./server/AttractionService
+      dockerfile: Dockerfile
+    container_name: attractionservice
+    depends_on:
+      postgres-attraction:
+        condition: service_healthy
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./server/AttractionService/src/main/resources/keys/public.pem:/app/config/public.pem:ro
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-attraction:5432/team-drop-database
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      PUBLIC_KEY_PATH: /app/config/public.pem
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # User Service
+  userservice:
+    build: 
+      context: ./server/UserService
+      dockerfile: Dockerfile
+    container_name: userservice
+    depends_on:
+      postgres-user:
+        condition: service_healthy
+      travel-buddy-ai:
+        condition: service_healthy
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./server/UserService/src/main/resources/keys/public.pem:/app/config/public.pem:ro
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-user:5432/team-drop-database
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      PUBLIC_KEY_PATH: /app/config/public.pem
+      LLM_API_BASE_URL: http://travel-buddy-ai:8000/api/v1
+      LLM_API_KEY: super-secret-12345
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # ========================================
+  # AI Services
+  # ========================================
+
+  # Travel Buddy AI Service (Production)
+  travel-buddy-ai:
+    build:
+      context: ./genai
+      dockerfile: Dockerfile
+    container_name: travel-buddy-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - HOST=0.0.0.0
+      - PORT=8000
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./genai/.env
+    volumes:
+      - ./genai/logs:/app/logs
+      - ./genai/.env:/app/.env
+    command: >
+      uvicorn travel_buddy_ai.main:create_app --host 0.0.0.0 --port 8000
+    depends_on:
+      qdrant:
+        condition: service_started
+    networks:
+      - monitoring
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Travel Buddy AI Service (Development) - with hot reload
+  travel-buddy-ai-dev:
+    build:
+      context: ./genai
+      dockerfile: Dockerfile
+    container_name: travel-buddy-ai-dev
+    ports:
+      - "8001:8000"
+    environment:
+      - PYTHONPATH=/app
+      - HOST=0.0.0.0
+      - PORT=8000
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./genai/.env
+    volumes:
+      - ./genai/travel_buddy_ai:/app/travel_buddy_ai 
+      - ./genai/logs:/app/logs
+      - ./genai/.env:/app/.env
+    command: >
+      uvicorn travel_buddy_ai.main:create_app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      qdrant:
+        condition: service_started
+    networks:
+      - monitoring
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    profiles:
+      - development
+
+  # ========================================
+  # Frontend Services
+  # ========================================
+
+  # React Application
+  react-app:
+    build:
+      context: ./client/travel-buddy
+      dockerfile: Dockerfile
+      args:
+        DEPLOYMENT_TARGET: local
+    container_name: travel-buddy
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_BASE_AUTH_URL=http://localhost:8081/auth-service/api/v1
+      - REACT_APP_BASE_ATTR_URL=http://localhost:8082/attraction-service/api/v1
+      - REACT_APP_BASE_USER_URL=http://localhost:8083/user-service/api/v1
+    depends_on:
+      - authservice
+      - attractionservice
+      - userservice
+    networks:
+      - monitoring
+    restart: always
+
+  # Frontend Metrics Server
+  metrics-server:
+    build: 
+      context: ./client/travel-buddy/metrics-server
+      dockerfile: Dockerfile
+    container_name: metrics-server
+    ports:
+      - "9300:9300"
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # ========================================
+  # Monitoring Services
+  # ========================================
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./grafana/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # Grafana
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_FEATURE_TOGGLES_ENABLE=logsInExplore
+      - GF_LOG_CONSOLECOLORS=true
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # ========================================
+  # Database Admin Tools
+  # ========================================
+
+  # Auth Database Admin
+  auth-adminer:
+    image: adminer
+    container_name: auth-adminer
+    ports:
+      - "8091:8080"
+    depends_on:
+      - postgres-auth
+    networks:
+      - monitoring
+    restart: always
+
+  # Attraction Database Admin
+  attraction-adminer:
+    image: adminer
+    container_name: attraction-adminer
+    ports:
+      - "8092:8080"
+    depends_on:
+      - postgres-attraction
+    networks:
+      - monitoring
+    restart: always
+
+  # User Database Admin
+  user-adminer:
+    image: adminer
+    container_name: user-adminer
+    ports:
+      - "8093:8080"
+    depends_on:
+      - postgres-user
+    networks:
+      - monitoring
+    restart: always

@@ -39,7 +39,7 @@ class AuthenticationAndConnectionIntegrationTest {
      * JWT produced by a subsequent authentication call.
      */
     private String registerAndLogin(String email, String password, String role) throws Exception {
-        // 直接用 register 的响应，不再手动调用 authenticate
+        // Use register response directly, no longer manually call authenticate
         String registerBody = objectMapper.createObjectNode()
                 .put("email", email)
                 .put("password", password)
