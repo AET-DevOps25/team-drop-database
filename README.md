@@ -204,6 +204,23 @@ All tests run automatically in GitHub Actions on every push and pull request. Th
 | Haochuan Huai | 1. GenAI Service Implementation <br/> 2. AWS Deployment <br/> 3. Backend Attraction Service API Implementation <br/> 4. Frontend Attraction Detail Page Implementation |
 | Zhiyuan Ni    | 1. Attraction Service Implementation <br/> 2. Grafana and Prometheus Implementation <br/> 3. Helm and K8S Deployment and Debugging <br/> 4. Frontend List View Implementation |
 
+## Monitoring & Service Endpoints
+
+Once the Helm charts are deployed on the TUM student cluster, the following public URLs are available:
+
+| Component | URL |
+|-----------|-----|
+| Frontend | https://travel-buddy.student.k8s.aet.cit.tum.de |
+| Grafana (dashboards, alerting) | https://grafana.travel-buddy.student.k8s.aet.cit.tum.de |
+| Prometheus (raw metrics & targets) | https://prometheus.travel-buddy.student.k8s.aet.cit.tum.de |
+| Auth-Service API | https://auth-service.travel-buddy.student.k8s.aet.cit.tum.de/auth-service/api/v1 |
+| User-Service API | https://user-service.travel-buddy.student.k8s.aet.cit.tum.de/user-service/api/v1 |
+| Attraction-Service API | https://attr-service.travel-buddy.student.k8s.aet.cit.tum.de/attraction-service/api/v1 |
+| LLM-Service API | https://llm-service.travel-buddy.student.k8s.aet.cit.tum.de/api/v1 |
+
+> **Tip**  
+> The URLs are defined via Helm `values.yaml` – adjust the `ingress.host` field of each chart if you deploy to a different domain.
+
 ## Documentation
 
 Additional detailed documentation, architectural diagrams, and API specifications can be found in the project’s [Confluence page](confluence-url).
