@@ -49,8 +49,8 @@ env:
 qdrant:
   enabled: true
   image:
-    repository: qdrant/qdrant
-    tag: v1.11.0
+    repository: ghcr.io/qdrant/qdrant/qdrant
+    tag: v1.14.1
     pullPolicy: IfNotPresent
 
   ports:
