@@ -52,6 +52,10 @@ env:
     value: "5432"
   - name: ATTRACTION_DB_NAME
     value: team_drop_database
+  - name: ATTRACTION_DB_PASSWORD
+    value: password
+  - name: ATTRACTION_DB_USER
+    value: user
   - name: QDRANT_HOST
     value: llm-service-qdrant
   - name: QDRANT_PORT
