@@ -45,10 +45,11 @@ The system employs Retrieval-Augmented Generation (RAG) to recommend real-world 
 
 ### Prerequisites
 
-* Java 21
-* Node.js 18 or higher
-* PostgreSQL
-* Docker (optional but recommended)
+* Java 21 (for development setup)
+* Node.js 18 or higher (for development setup)
+* PostgreSQL (for development setup)
+* Docker and Docker Compose (for Docker deployment - recommended)
+* Python 3.11+ with Poetry (for GenAI service development)
 
 ### Steps
 
@@ -58,15 +59,37 @@ The system employs Retrieval-Augmented Generation (RAG) to recommend real-world 
 
    ```sh
    git clone git@github.com:AET-DevOps25/team-drop-database.git
+   cd team-drop-database
    ```
    
-2. **Build and Run Docker Containers**
+2. **Configure Environment Variables**
 
-   enter the path where you cloned the repository
-
+   Set up the necessary environment files for each service:
    ```sh
-   ./start-docker-all.sh
+   # Copy example environment files and configure them
+   cp genai/.env.example genai/.env
+   # Edit genai/.env file with your OpenAI API key and other configurations
+   
+   # Other services use environment variables defined in docker-compose.yml
    ```
+
+3. **One-Click Docker Deployment**
+
+   For automatic deployment of all services:
+   ```sh
+   # Option 1: Use the provided script (recommended)
+   ./start-docker-all.sh
+   
+   # Option 2: Use docker-compose directly
+   docker-compose up --build
+   ```
+
+   This will automatically:
+   - Build and start all microservices (AuthService, AttractionService, UserService)
+   - Start the GenAI service
+   - Start the React frontend
+   - Set up PostgreSQL database with initial schema
+   - Configure all service networking and dependencies
 
 ### Development Setup
 
@@ -95,10 +118,45 @@ The system employs Retrieval-Augmented Generation (RAG) to recommend real-world 
    before running the microservices, make sure to set up the PostgreSQL database and update the `application.properties` files with your database credentials.
    you should also specify the profile to be "dev"
 
-3. **Frontend Setup**
+3. **GenAI Service Setup**
 
    ```sh
-   cd frontend
+   cd genai
+   ```
+
+   Create and activate a virtual environment:
+   ```sh
+   # Using venv (recommended)
+   python -m venv venv
+   source venv/bin/activate  # On macOS/Linux
+   
+   # Or using conda
+   conda create -n travelbuddy python=3.11
+   conda activate travelbuddy
+   ```
+
+   Install dependencies:
+   ```sh
+   # Install poetry if not already installed
+   brew install poetry  # On macOS
+   
+   # Install project dependencies
+   poetry install
+   
+   # Download required language model
+   python -m spacy download en_core_web_sm
+   ```
+
+   Set up environment variables:
+   ```sh
+   cp .env.example .env
+   # Edit .env file with your API keys and configuration
+   ```
+
+4. **Frontend Setup**
+
+   ```sh
+   cd client/travel-buddy
    npm install
    npm start
    ```
@@ -112,9 +170,9 @@ The system employs Retrieval-Augmented Generation (RAG) to recommend real-world 
 
 | Student Name  | Responsibility                                                                                                                        |
 |---------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| Shuaiwei Yu   | 1. AuthService Implementation <br/> 2. Client Side Authentication & Conservation Page Implementation <br/> 3. Helm and K8S deployment |
-| Haochuan Huai |                                                                                                 |
-| Zhiyuan Ni    |                                                                                         |
+| Shuaiwei Yu   | 1. AuthService Implementation <br/> 2. Client Side Authentication & Conversation Page Implementation <br/> 3. Helm and K8S deployment |
+| Haochuan Huai | 1. GenAI Service Implementation <br/> 2. AWS Deployment <br/> 3. Backend Attraction Service API Implementation <br/> 4. Frontend Attraction Detail Page Implementation |
+| Zhiyuan Ni    | 1. Attraction Service Implementation <br/> 2. Grafana and Prometheus Implementation <br/> 3. Helm and K8S Deployment and Debugging <br/> 4. Frontend List View Implementation |
 
 ## Documentation
 
