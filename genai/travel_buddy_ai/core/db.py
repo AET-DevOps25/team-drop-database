@@ -60,9 +60,9 @@ def get_database_session() -> Session:
     return db_connection.get_session()
 
 @retry(
-    stop=stop_after_attempt(5),         # 最多重试 5 次
-    wait=wait_fixed(2),                 # 每次间隔 2 秒
-    retry=retry_if_exception_type(Exception)  # 捕获所有连接类错误
+    stop=stop_after_attempt(5),         # Maximum 5 retries
+    wait=wait_fixed(2),                 # Wait 2 seconds between retries
+    retry=retry_if_exception_type(Exception)  # Catch all connection type errors
 )
 def get_qdrant_connection() -> QdrantClient:
     """
