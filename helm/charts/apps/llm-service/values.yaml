@@ -44,18 +44,6 @@ monitoring:
 envFrom:
   secrets:
     - llm-env
-    
-env:
-  - name: ATTRACTION_DB_HOST
-    value: attr-service-attr-postgres
-  - name: ATTRACTION_DB_PORT
-    value: "5432"
-  - name: ATTRACTION_DB_NAME
-    value: team_drop_database
-  - name: ATTRACTION_DB_PASSWORD
-    value: password
-  - name: ATTRACTION_DB_USER
-    value: user
 
 qdrant:
   enabled: true
