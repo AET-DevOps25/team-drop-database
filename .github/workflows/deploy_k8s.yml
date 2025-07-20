@@ -1,15 +1,16 @@
 name: Deploy to K8s (Apps Only)
 
+#on:
+#  workflow_run:
+#    workflows: ["Publish Docker images to GHCR"]
+#    types: [completed]
 on:
-  workflow_run:
-    workflows: ["Publish Docker images to GHCR"]
-    types: [completed]
-
+  workflow_dispatch:
 jobs:
   deploy:
-    if: |
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main'
+#    if: |
+#      github.event.workflow_run.conclusion == 'success' &&
+#      github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
 
     env:
