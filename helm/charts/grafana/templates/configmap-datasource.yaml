@@ -1,0 +1,22 @@
+{{- if and .Values.datasource.enabled .Values.datasource.prometheus.url }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grafana.fullname" . }}-datasources
+  namespace: {{ .Values.namespace.name }}
+data:
+  prometheus.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: {{ .Values.datasource.prometheus.name }}
+        uid: {{ .Values.datasource.prometheus.uid }}
+        type: prometheus
+        access: {{ .Values.datasource.prometheus.access }}
+        url: {{ .Values.datasource.prometheus.url }}
+        isDefault: {{ .Values.datasource.prometheus.isDefault }}
+        editable: {{ .Values.datasource.prometheus.editable }}
+        jsonData: {{ toJson .Values.datasource.prometheus.jsonData }}
+{{- if .Values.datasource.prometheus.secureJsonData }}
+        secureJsonData: {{ toJson .Values.datasource.prometheus.secureJsonData }}
+{{- end }}
+{{- end }}

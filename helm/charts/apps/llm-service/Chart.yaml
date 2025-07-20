@@ -1,0 +1,6 @@
+apiVersion: v2
+name: llmservice
+description: "A python‑based Large Language Model (LLM) inference micro‑service for Travel‑Buddy"
+type: application
+version: 0.1.0         
+appVersion: "1.0.0"

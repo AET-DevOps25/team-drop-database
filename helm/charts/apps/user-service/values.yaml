@@ -1,0 +1,70 @@
+namespace:
+  name: tdd-apps
+
+image:
+  repository: ghcr.io/aet-devops25/team-drop-database/userservice
+  tag: latest
+  pullPolicy: Always
+  pullSecrets:
+    - ghcr-secret
+
+service:
+  name: user-service
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+
+forceUpdate: ""
+
+userservice:
+  keyMount:
+    enabled: true
+    usePrivate: false
+
+# Shared JWT secret (owned by auth‑service chart)
+sharedKeys:
+  secretName: travel-buddy-jwt-keys
+  mountPath: /app/config
+  publicKeyFile: public.pem
+  privateKeyFile: private.pem      # ignored by user‑service template
+
+# Environment variables injected into the container
+env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: docker
+  - name: SPRING_DATASOURCE_URL
+    value: jdbc:postgresql://userservice-user-postgres:5432/user-db
+  - name: SPRING_DATASOURCE_USERNAME
+    value: user_user
+  - name: SPRING_DATASOURCE_PASSWORD
+    value: user_pwd
+
+# Prometheus scraping config
+monitoring:
+  enabled: true
+  serviceMonitor: false
+  scrape:
+    path: /user-service/api/v1/actuator/prometheus
+    port: 8080
+
+user-postgres:
+  architecture: standalone        # (default) - adjust if you need replication
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: csi-rbd-sc
+  auth:
+    username: user_user
+    password: user_pwd
+    database: user-db
