@@ -191,8 +191,6 @@ All tests run automatically in GitHub Actions on every push and pull request. Th
 - Backend Java unit tests with Gradle
 - Python tests with pytest
 
-For detailed frontend testing information, see [FRONTEND_TESTING.md](FRONTEND_TESTING.md).
-
 ## Usage
 
 * Access the application via `http://localhost:3000` or under `https://travel-buddy.student.k8s.aet.cit.tum.de/`
